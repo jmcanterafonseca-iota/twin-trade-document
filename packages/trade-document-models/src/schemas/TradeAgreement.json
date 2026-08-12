@@ -1,0 +1,12 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/TradeAgreement",
+	"title": "TradeAgreement",
+	"description": "Trade Agreement Document",
+	"type": "object",
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/trade-document/UneceHeaderTradeAgreement"
+		}
+	]
+}

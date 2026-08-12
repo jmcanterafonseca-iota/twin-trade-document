@@ -1,2 +1,2 @@
-# twin-trade-document-schema
+# twin-trade-document
 Trade Document Schema

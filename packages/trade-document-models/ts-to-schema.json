@@ -1,0 +1,11 @@
+{
+	"baseUrl": "https://schema.twindev.org/trade-document/",
+	"types": [
+		"./src/models/ITradeAgreement.ts"
+	],
+	"externalReferences": {
+		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",
+		"IUnece(.*)": "https://schema.twindev.org/unece/Unece$1",
+		"Unece(.*)": "https://schema.twindev.org/unece/Unece$1"
+	}
+}
