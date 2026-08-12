@@ -6,6 +6,9 @@ import { IUneceHeaderTradeAgreement } from "@twin.org/standards-unece";
 /**
  * Trade Agreement Document
  */
-export interface ITradeAgreement extends IUneceHeaderTradeAgreement {
-
-}
+export type ITradeAgreement = IUneceHeaderTradeAgreement &
+  Required<
+    Pick<IUneceHeaderTradeAgreement, "@context" | "buyerApprovedDateTime" | "sellerReference">
+  > & {
+    issueDateTime: string;
+  };

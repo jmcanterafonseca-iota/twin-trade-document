@@ -4,9 +4,33 @@
 	"title": "TradeAgreement",
 	"description": "Trade Agreement Document",
 	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"buyerApprovedDateTime": {
+			"type": "string",
+			"description": "The date, time, date time, or other date time value of approval by the buyer for this header trade agreement.",
+			"format": "date-time"
+		},
+		"sellerReference": {
+			"type": "string",
+			"description": "A seller reference, expressed as text, for this header trade agreement."
+		},
+		"issueDateTime": {
+			"type": "string"
+		}
+	},
+	"required": [
+		"@context",
+		"buyerApprovedDateTime",
+		"sellerReference",
+		"issueDateTime"
+	],
 	"allOf": [
 		{
-			"$ref": "https://schema.twindev.org/trade-document/UneceHeaderTradeAgreement"
+			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeAgreement"
 		}
 	]
 }
