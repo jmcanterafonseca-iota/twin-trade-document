@@ -1,13 +1,13 @@
-# TWIN Auditable Item Graph Models
+# TWIN Trade Document Models
 
-This package defines the shared contracts used by the wider graph ecosystem, including typed interfaces, JSON schemas, and JSON-LD contexts.
+This package defines the shared contracts used by trade documents including typed interfaces, JSON schemas, and JSON-LD contexts.
 
-It provides the common data foundation needed to exchange graph items and audit structures reliably across services and clients.
+It provides the common data foundation needed to exchange trade documents across services and clients.
 
 ## Installation
 
 ```shell
-npm install @twin.org/auditable-item-graph-models
+npm install @twin.org/trade-document-models
 ```
 
 ## Examples
