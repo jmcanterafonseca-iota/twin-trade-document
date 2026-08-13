@@ -23,6 +23,8 @@ export const TradeDocumentContexts = {
 	 */
 	ContextTradeAgreement: `${UneceContexts.Context}`,
 
+	ContextPurchaseOrder: `https://unvtd.unece.org/purchase-order-context.json`
+
 } as const;
 
 /**

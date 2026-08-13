@@ -1,9 +1,14 @@
 // Copyright 2024 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { DataTypeHelper, IJsonSchema } from "@twin.org/data-core";
+import { DataTypeHelper } from "@twin.org/data-core";
 import { TradeDocumentContexts } from "../models/tradeDocumentContexts.js";
 import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
+
+import TradeAgreementSchema from "../schemas/TradeAgreement.json" with { type: "json" };
+import TradePartySchema from "../schemas/TradeParty.json" with { type: "json" };
+import TradeItemSchema from "../schemas/TradeItem.json" with { type: "json" };
+
 
 /**
  * Handle all the data types for auditable item graph.
@@ -16,7 +21,15 @@ export class TradeDocumentDataTypes {
     const types = [
       {
         type: TradeDocumentTypes.TradeAgreement,
-		schema: "" as unknown as IJsonSchema
+        schema: TradeAgreementSchema,
+      },
+       {
+        type: TradeDocumentTypes.TradeItem,
+        schema: TradeItemSchema
+      },
+      {
+        type: TradeDocumentTypes.TradeParty,
+        schema: TradePartySchema,
       },
     ];
 

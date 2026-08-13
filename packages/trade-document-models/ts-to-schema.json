@@ -1,7 +1,9 @@
 {
 	"baseUrl": "https://schema.twindev.org/trade-document/",
 	"types": [
-		"./src/models/ITradeAgreement.ts"
+		"./src/models/ITradeAgreement.ts",
+		"./src/models/ITradeParty.ts",
+		"./src/models/ITradeItem.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",

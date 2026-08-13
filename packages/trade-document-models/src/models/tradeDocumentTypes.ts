@@ -12,6 +12,10 @@ export const TradeDocumentTypes = {
 	 * A Trade Agreement Contract
 	 */
 	TradeAgreement: `${UneceTypes.HeaderTradeAgreement}`,
+	TradeParty: `${UneceTypes.TradeParty}`,
+	TradeItem: `${UneceTypes.LineTradeAgreement}`,
+
+	PurchaseOrder: ``
 
 } as const;
 

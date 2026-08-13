@@ -14,19 +14,34 @@
 			"description": "The date, time, date time, or other date time value of approval by the buyer for this header trade agreement.",
 			"format": "date-time"
 		},
+		"buyerParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+		},
+		"sellerParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+		},
 		"sellerReference": {
 			"type": "string",
 			"description": "A seller reference, expressed as text, for this header trade agreement."
 		},
 		"issueDateTime": {
 			"type": "string"
+		},
+		"includesTradeItem": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
+			}
 		}
 	},
 	"required": [
 		"@context",
 		"buyerApprovedDateTime",
+		"buyerParty",
+		"sellerParty",
 		"sellerReference",
-		"issueDateTime"
+		"issueDateTime",
+		"includesTradeItem"
 	],
 	"allOf": [
 		{
