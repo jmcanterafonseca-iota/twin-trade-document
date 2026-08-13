@@ -2,19 +2,38 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "Trade Agreement Document",
-	"allOf": [
-		{
-			"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
+	"description": "A single contracted lot of coffee, carried as one line of a trade document.\n\nRe-based from IUneceLineTradeAgreement onto IUneceSupplyChainTradeLineItem.\nThe line agreement carries prices and ordering constraints only: it has no\nproperty for the ordered quantity and none for the product, so it cannot\nexpress \"200 Bags AB Asali\". UN/CEFACT puts those on the line item, which is\nthe only class reaching all four facets a coffee lot needs:\n\n- `associatedDocumentLineDocument.lineId` — the lot reference, \"ctr/742\" on\nthe seller's confirmation or \"46690\" on the buyer's contract.\n- `specifiedTradeProduct[]` — the mark, grade and origin, such as\n\"Acacias,Thunguri,AA\" from \"Kenya\".\n- `specifiedLineTradeDelivery[].orderQuantity` — the number of bags, \"200\";\n`perPackageUnitQuantity` carries the \"60 kg per bag\".\n- `specifiedLineTradeAgreement.agreedPriceProductPrice[]` — the unit price,\n\"USD 290 per 50 kgs\": `unitAmount[]` for the amount and currency,\n`basisQuantity` for the 50 kg basis.\n\nThe mandatory price of the previous model is preserved one level down, by\nnarrowing `specifiedLineTradeAgreement` to require `agreedPriceProductPrice`.\n\nLike ITradeParty this is a child type and asks to be hoisted into the\nreferencing document's `$defs`. The tag is a no-op today: ts-to-schema only\nvisits direct property references, never array `items`, and every document\nreferences this type through an array. It is kept to record the intent and\nwill start working if that traversal gap is fixed upstream.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
 		},
-		{
-			"description": "The contractual terms of a line trade agreement.",
+		"type": {
+			"const": "SupplyChainTradeLineItem",
+			"description": "JSON-LD Type."
+		},
+		"associatedDocumentLineDocument": {
+			"$ref": "https://schema.twindev.org/unece/UneceDocumentLineDocument",
+			"description": "The document line associated with this trade line item."
+		},
+		"specifiedLineTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/unece/UneceLineTradeDelivery"
+			},
+			"description": "A line trade delivery specified for this supply chain trade line item."
+		},
+		"specifiedTradeProduct": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
+			},
+			"description": "A product specified for this supply chain trade line item."
+		},
+		"specifiedLineTradeAgreement": {
 			"type": "object",
 			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
 				"agreedPriceProductPrice": {
 					"type": "array",
 					"items": {
@@ -23,14 +42,27 @@
 					"description": "An agreed product price for this line trade agreement."
 				}
 			},
-			"$comment": "Inlined utility base type UneceLineTradeAgreement so utility transformations can operate on concrete properties instead of a $ref.",
 			"required": [
-				"@context",
 				"agreedPriceProductPrice"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
+				}
 			]
-		},
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"associatedDocumentLineDocument",
+		"specifiedLineTradeDelivery",
+		"specifiedTradeProduct",
+		"specifiedLineTradeAgreement"
+	],
+	"allOf": [
 		{
-			"type": "object"
+			"$ref": "https://schema.twindev.org/unece/UneceSupplyChainTradeLineItem"
 		}
 	]
 }

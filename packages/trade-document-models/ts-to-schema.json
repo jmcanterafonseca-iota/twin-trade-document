@@ -2,6 +2,7 @@
 	"baseUrl": "https://schema.twindev.org/trade-document/",
 	"types": [
 		"./src/models/ITradeAgreement.ts",
+		"./src/models/IPurchaseOrder.ts",
 		"./src/models/ITradeParty.ts",
 		"./src/models/ITradeItem.ts"
 	],

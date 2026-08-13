@@ -2,50 +2,91 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeAgreement",
 	"title": "TradeAgreement",
-	"description": "Trade Agreement Document",
+	"description": "A seller issued sales contract, also called a sale confirmation.\n\nThe seller always assigns its own contract number, so `sellerReference`\ncarries it (\"S - JCT / 742-744\") and is mandatory. The buyer's number is\nfrequently still \"TBA\" when the confirmation is issued, so `buyerReference`\n— inherited from IUneceHeaderTradeAgreement — stays optional.\n\nThe mirror document, a buyer issued purchase contract, is the same UN/CEFACT\nclass seen from the other side and is modelled by {@link IPurchaseOrder}.\n\nTerms observed on the sample documents are all inherited from the base and\nneed no local declaration:\n- Incoterm and named place — `applicableDeliveryTerms`, whose\n`deliveryTermsDeliveryTypeCode` takes UneceDeliveryTermsCodeList.FreeOnBoard\nand whose `relevantLocation.name` takes the named port.\n- Payment terms — `applicablePaymentTerms`.\n- Shipment month or window — `shippingPeriod`.\n- Destination — `applicableLocation[]`.\n- Governing standard terms — `contractDocument[]`, `salesConditionsDocument[]`.\n- Buyer's countersignature date — `buyerApprovedDateTime`, optional because\nthe buyer's acceptance block is unsigned on both sale confirmation samples.\n\nTwo properties deviate from UN/CEFACT and are deliberate:\n`issueDateTime` and `includedSupplyChainTradeLineItem` are real UN/CEFACT\nterms, but D23B declares them on SupplyChainTradeTransaction rather than on\nHeaderTradeAgreement. They are used off-domain here to keep the flat,\nextraction-friendly shape of this model. See docs/model-guide.md.",
 	"type": "object",
 	"properties": {
 		"@context": {
 			"$ref": "https://schema.twindev.org/unece/UneceContextType",
 			"description": "JSON-LD Context."
 		},
-		"buyerApprovedDateTime": {
-			"type": "string",
-			"description": "The date, time, date time, or other date time value of approval by the buyer for this header trade agreement.",
-			"format": "date-time"
-		},
-		"buyerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
-		},
-		"sellerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+		"type": {
+			"const": "HeaderTradeAgreement",
+			"description": "JSON-LD Type."
 		},
 		"sellerReference": {
 			"type": "string",
 			"description": "A seller reference, expressed as text, for this header trade agreement."
 		},
 		"issueDateTime": {
-			"type": "string"
+			"type": "string",
+			"description": "The date, time or date time the document was issued.\nUN/CEFACT declares issueDateTime on SupplyChainTradeTransaction and on\nDocument, not on HeaderTradeAgreement, which carries no date of its own.",
+			"format": "date-time"
 		},
-		"includesTradeItem": {
+		"buyerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The buyer party for this sales contract."
+		},
+		"sellerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The seller party for this sales contract."
+		},
+		"includedSupplyChainTradeLineItem": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
-			}
+			},
+			"description": "A contracted lot within this sales contract.\nOptional because a single lot contract states its quantity, quality and\nprice at header level and has no line breakdown at all."
+		},
+		"includedNote": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/unece/UneceNote"
+			},
+			"description": "A note on this sales contract, discriminated by its `subject` or\n`noteSubjectCode`. See {@link IPurchaseOrder.includedNote} for why the\nterm is lifted onto a header trade agreement."
 		}
 	},
 	"required": [
 		"@context",
-		"buyerApprovedDateTime",
-		"buyerParty",
-		"sellerParty",
+		"type",
 		"sellerReference",
 		"issueDateTime",
-		"includesTradeItem"
+		"buyerParty",
+		"sellerParty"
 	],
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeAgreement"
 		}
-	]
+	],
+	"$defs": {
+		"TradeParty": {
+			"title": "TradeParty",
+			"description": "A party taking a role in a trade document, such as the buyer or the seller.\n\nOnly the name is promoted to mandatory. The sample documents identify their\ncounterparties by name alone (\"Jowam Coffee Trading Co Ltd\"), or by name and\ncountry (\"D.R. Wakefield & Company Ltd. United Kingdom\"); only one of the\nthree carries a street address. Requiring `postalAddress` would make a real\ndocument unrepresentable.\n\nEverything else UN/CEFACT offers stays optional and is inherited from\nIUneceTradeParty, notably `postalAddress`, `partyRoleCode` (Buyer, Seller,\nExporter), `identifier`, `definedContact` and the communication properties.\n\nThis is a child type, never a document in its own right, so it is hoisted\ninto the `$defs` of whichever document schema references it rather than\nbeing left as an external `$ref`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "TradeParty",
+					"description": "JSON-LD Type."
+				},
+				"name": {
+					"type": "string",
+					"description": "A name, expressed as text, for this trade party."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"name"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
+				}
+			]
+		}
+	}
 }

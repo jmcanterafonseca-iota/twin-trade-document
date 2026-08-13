@@ -49,8 +49,8 @@ Seven coffee trade documents are in scope. Sample PDFs for each live in `.contex
 
 | # | Document | Sample folder | Model | Status |
 |---|---|---|---|---|
-| 1 | Sales contract / Sale confirmation | `01-Sale Confirmation(s)` | `ITradeAgreement` | strawman |
-| 2 | Buyer purchase order | `02-Buyer Purchase Contract(s)` | `IPurchaseOrder` | strawman |
+| 1 | Sales contract / Sale confirmation | `01-Sale Confirmation(s)` | `ITradeAgreement` | validates the samples |
+| 2 | Buyer purchase order | `02-Buyer Purchase Contract(s)` | `IPurchaseOrder` | validates the samples |
 | 3 | Auction purchase confirmation (Coffee DSS invoice) | `12- Auction Purchase Confirmation(s)` | `IAuctionPurchaseConfirmation` | not started |
 | 4 | Coffee warrant | `03-Storage Warrant(s)-…` | `IWarrant` | not started |
 | 5 | Warehouse delivery note | `13- Warehouse Delivery Note(s)` | `IDeliveryNote` | not started |
@@ -105,10 +105,12 @@ twin-trade-document/
         └── vitest.config.ts
 ```
 
-## 4. Two UN/CEFACT vocabularies — read this before modelling
+## 4. Three UN/CEFACT deliverables — read this before modelling
 
-This is the single most confusing thing about the repository. **There are two different UN/CEFACT
-vocabularies in play, and they are not interchangeable.**
+This is the single most confusing thing about the repository. **Three different UN/CEFACT artefacts
+are in play, at different layers.**
+
+Two of them are *vocabularies* and are not interchangeable:
 
 | | **BSP D23B** (what the code compiles against) | **Web Vocabulary** (what `vocabulary_reference.md` documents) |
 |---|---|---|
@@ -126,6 +128,21 @@ vocabularies in play, and they are not interchangeable.**
 
 The Web Vocabulary is a *distillation* of BSP — much friendlier for an extraction pipeline — but
 until `@twin.org/standards-unece` ships interfaces for it, **only the BSP model is usable in code**.
+
+The third artefact is not a vocabulary at all. **UNVTD** (`https://unvtd.unece.org/`) publishes 21
+trade documents as W3C **Verifiable Credentials** — a self-contained JSON Schema and a JSON-LD
+context each. Its context is a *mapping layer*: it binds friendly wire names onto BSP D23B IRIs,
+declaring for example `"PurchaseOrder": "unece:HeaderTradeAgreement"`,
+`"orderDate": "unece:issueDateTime"` and
+`"orderedItems": "unece:includedSupplyChainTradeLineItem"`. So UNVTD is a serialization of BSP, not
+a competitor to it — and it independently confirms several of this repo's modelling choices.
+
+UNVTD covers only one of this repo's seven target documents (the buyer purchase order) and is much
+shallower than BSP: an instance of the sample purchase contract validates, but only ~38% of the
+document's facts survive intact. See
+[docs/model-guide.md §6](packages/trade-document-models/docs/model-guide.md) for the measured
+coverage, the four required properties a paper document cannot supply, and the four defects in the
+published schema.
 
 Practical rules:
 
@@ -226,8 +243,8 @@ ones, which is how `ITradeAgreement`'s local `buyerParty: ITradeParty` overrides
 
 **A trailing `& { }` breaks the flattening.** An empty type literal maps to `{ "type": "object" }`
 with no `properties`, the merge aborts, and the output degrades to a raw three-branch `allOf` with a
-dead `{"type":"object"}` element. `ITradeParty.ts` and `ITradeItem.ts` both end in `& { }` today and
-both produce that degraded shape — compare `TradeParty.json` with `TradeAgreement.json` to see it.
+dead `{"type":"object"}` element. `ITradeParty.ts` and `ITradeItem.ts` both used to end that way;
+removing the empty literal is what makes their schemas match `TradeAgreement.json`'s flat shape.
 
 **JSDoc is load-bearing.** The leading description becomes the schema `description`; `@json-schema
 format:date-time` becomes `"format": "date-time"`. Note that these ride in from the dependency's
@@ -265,54 +282,58 @@ Two traps:
 
 ## 6. Current state
 
-Bootstrapped from the `twin-auditable-item-graph` template; the port is incomplete. Treat the
-following as work in progress, **not** as conventions to copy.
+Bootstrapped from the `twin-auditable-item-graph` template; the port is still incomplete.
 
 **Verified working**
 
-- `npm run build` exits 0, with no warnings. The committed `src/schemas/*` are in sync with the
-  sources (a rebuild produces a zero-byte diff).
-- `npm run validate-locales` and `npm run test:build` both pass.
+- `npm run dist` — the full gate: clean, build, validate-locales, test:build, test — exits 0.
+- Four models generate four schemas: `TradeAgreement`, `PurchaseOrder`, `TradeItem`, `TradeParty`.
+  All are registered, all are exported from `src/index.ts`.
+- The test suite validates payloads transcribed from the real sample documents: the D.R. Wakefield
+  sale confirmation (3 lots), the Blaser sale confirmation (no lots), and the D.R. Wakefield
+  purchase contract (3 lots), plus the negative cases.
+- **The buyer purchase contract is transcribed in full and proven expressible.** Its page carries
+  106 atomic facts, 71 of them data bearing; all 71 are carried by the model and asserted
+  individually. See
+  [docs/model-guide.md §8](packages/trade-document-models/docs/model-guide.md).
+- Each schema's registration key now matches its `$id`, so a `$ref` between the generated schemas
+  resolves against the local factory instead of 404-ing over HTTP.
+- The tests call `UneceDataTypes.registerTypes()` before validating. That alone takes the suite from
+  95 s to 9 s, because every `https://schema.twindev.org/unece/*` `$ref` then resolves locally.
 
-**Verified broken**
+**Still open**
 
-- **`npm test` is RED**: 1 failed, 1 skipped, 0 passed. `Can validate an empty Trade Agreement`
-  sends `{ "@context": […], type, issueDate }` but `TradeAgreement.json` requires 7 properties, and
-  `issueDate` is a typo for the model's `issueDateTime` — silently ignored, because no schema emits
-  `additionalProperties: false`. Result: `expected 6 to deeply equal +0`.
-- The skipped test `Can fail to validate an empty Trade Agreement` asserts 3 validation failures;
-  the real number is 8 (7 local `required` + `type` from the remote UNECE base). The `3` is
-  template residue.
-- **Registration key ≠ schema `$id`.** `TradeAgreement.json` has
-  `$id: …/trade-document/TradeAgreement` but is registered under
-  `…/trade-document/HeaderTradeAgreement` (because `TradeDocumentTypes.TradeAgreement` resolves to
-  `UneceTypes.HeaderTradeAgreement`). Same for `TradeItem` / `LineTradeAgreement`. Consequence: a
-  `$ref` to `…/trade-document/TradeItem` cannot be resolved locally, goes to the network and 404s,
-  so `includesTradeItem[]` elements are effectively unvalidated.
-- **`src/index.ts` does not export `ITradeParty`, `ITradeItem` or `IPurchaseOrder`.** Anything
-  public must be re-exported there; `ITradeAgreement.buyerParty: ITradeParty` currently references a
-  type consumers cannot import.
-- **`TradeDocumentContexts` is internally inconsistent**: `Namespace` is
-  `https://schema.twindev.org/trade-document/`, `Context` is `https://unvtd.unece.org/`,
-  `ContextTradeAgreement` is the UNECE D23B context, `ContextPurchaseOrder` is a third URL. Nothing
-  cross-checks them at runtime.
-- **`TradeDocumentTypes.PurchaseOrder` is the empty string**; `IPurchaseOrder` has no schema, is not
-  in `ts-to-schema.json`, and is not registered.
 - **`ts-to-jsonld-context.json` still uses the `twin-aig` prefix and an empty `types` array**, so
   `types.jsonld` is generated near-empty. Note that simply adding the model files will not work:
-  the generator only visits `interface` declarations, and `ITradeAgreement` / `ITradeParty` /
-  `ITradeItem` are type *aliases*.
+  the generator only visits `interface` declarations, and all four models are type *aliases*.
+- **Two properties on `ITradeAgreement` / `IPurchaseOrder` are used off-domain.** `issueDateTime`
+  and `includedSupplyChainTradeLineItem` are real UN/CEFACT terms, but D23B declares them on
+  `SupplyChainTradeTransaction`, not on `HeaderTradeAgreement`. UNECE's own UNVTD context does the
+  same for this document type, so it is the sanctioned shape rather than a local shortcut; the fully
+  faithful alternative is written up in
+  [docs/model-guide.md §2.5](packages/trade-document-models/docs/model-guide.md).
+- **`$ref`s to `https://schema.twindev.org/trade-document/*` return 404** because the package is not
+  published. They resolve locally at validation time and do not affect the build. Only
+  `#/$defs/TradeParty` is genuinely self-contained; a fully self-contained schema is not achievable
+  with this toolchain — see [docs/model-guide.md §7](packages/trade-document-models/docs/model-guide.md).
+- **No `additionalProperties: false` is ever emitted**, so an unknown or misspelled property always
+  passes validation silently.
+- Five of the seven target documents have no model yet.
 
 **Template residue**
 
-`docs/examples.md` and `docs/changelog.md` still describe the auditable-item-graph package;
-doc comments across `src/models/` and `src/dataTypes/` still say "auditable item graph"; the test
-`describe` block is named `AuditableItemGraphDataTypes`.
+`docs/examples.md` and `docs/changelog.md` still describe the auditable-item-graph package.
 
 ## 7. Adding a new document model
 
-1. Read the samples in `.context/Document Samples/<folder>/` and build a field inventory
-   (label → verbatim value → header/line → semantic meaning).
+The whole procedure is packaged as a Claude Code skill:
+[`.claude/skills/trade-document-model/`](.claude/skills/trade-document-model/SKILL.md). It asks for
+the standard to align to and a real sample PDF, then walks the steps below with the verified
+UN/CEFACT property map, the UNVTD suite and the toolchain traps as reference material. Manual
+summary:
+
+1. Read the samples in `.context/Document Samples/<folder>/` and build an atomic fact inventory
+   (verbatim value → header/line → meaning → data bearing or page furniture).
 2. Find the BSP class that owns each field. `grep` under
    `.context/twin-standards/packages/standards-unece/src/models/bsp/`. Do not guess property names.
 3. Create `src/models/IFoo.ts` following the house idiom — intersect the UN/CEFACT interface with a

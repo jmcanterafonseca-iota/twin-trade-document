@@ -1,0 +1,272 @@
+---
+name: trade-document-model
+description: Generate a UN/CEFACT-aligned TypeScript model, JSON Schema and coverage proof for a trade document in this repository, starting from a real sample PDF and, where one exists, the published UNVTD schema. Use when adding or revising any document model under packages/trade-document-models/src/models — bill of lading, commercial invoice, auction purchase confirmation, goods receipt note, transfer note, warrant, holding certificate, delivery note, or any other trade document.
+---
+
+# Trade document model generation
+
+Turn a real trade document into a TypeScript model, a generated JSON Schema, and an executable
+proof that the document round-trips without losing data.
+
+## The two rules that decide every tie
+
+1. **The real sample documents must be fully representable, with nothing left behind.** This
+   outranks everything else, including matching a published schema's `required` list. If a standard
+   demands a field the paper does not carry, the field is optional here.
+2. **Take as much as possible from the published standard.** Where UNVTD publishes a schema for the
+   document, its property set, its required list and above all its JSON-LD context are the starting
+   point. The context is the valuable part: it maps UNVTD's friendly wire names onto UN/CEFACT BSP
+   D23B IRIs, which is exactly what this repository models.
+
+And one rule that follows from the first:
+
+3. **Never derive, infer or synthesise a value.** If the page does not state it, leave the property
+   absent. A composite invented to satisfy a `required` list — a range of line numbers standing in
+   for a missing document number, a role code inferred from a letterhead — is data corruption, not
+   completeness. Deterministic *format* normalisation of a value that IS on the page (a written date
+   to ISO 8601, a stated month to its first and last day) is not derivation and is expected.
+
+## Step 0 — Collect the inputs
+
+Ask the user, in one `AskUserQuestion` call, unless they have already said:
+
+- **Which standard to align to.** Offer the UNVTD document name if one plausibly exists — check
+  `references/unvtd.md` for the published list of 21 — or "none, generate from the PDF".
+- **The sample PDF(s).** Path under `.context/Document Samples/`. More than one sample of the same
+  document type is much better than one: it reveals which fields are optional.
+- **The model name**, e.g. `IBillOfLading`. Follow the existing `I<Document>` convention.
+
+If the user already named a UNVTD URL and a PDF, skip the question and proceed.
+
+## Step 1 — Read the document exhaustively
+
+This is the step that determines quality. Do not skim it.
+
+```shell
+pdfinfo "<pdf>"                                   # page size, and whether there is a text layer
+pdftotext -layout "<pdf>" -                       # try the text layer first
+pdftoppm -png -r 200 "<pdf>" /tmp/doc             # render, then Read the PNG
+```
+
+- **Find the native resolution before choosing a dpi.** These scans are single JPEGs; rendering
+  above the raster's own dpi only interpolates and recovers nothing. `pdfimages -list` shows it.
+- **Text layers on scanned samples are frequently corrupt.** Read the render visually and treat it
+  as authoritative; use the text layer only to cross-check spellings.
+- **Faint regions need contrast stretching, not more dpi.** Crop the native pixels and stretch.
+- Read the whole page systematically, top to bottom. Empty boxes, blank ruled rows, stamps,
+  manuscript marks and small print all count.
+
+Produce a numbered **atomic fact inventory** — one row per indivisible fact:
+
+| id | verbatim string | where | H/L | meaning | data kind |
+
+Splitting rules, learned the hard way:
+
+- Split every composite string into its atoms. `FOB origin, N.S.W, 0.5% franchise, Actual Tare.` is
+  **four** facts. `CWT, Tilbury, United Kingdom` is **three**. `$/50kg` is **two**. `Asali,AB` is
+  **two**.
+- Classify each fact as **data bearing** or **page furniture**. Furniture — logos, straplines,
+  column captions, field labels, ruling, empty boxes, scanner dust, blank page area — needs no home
+  in a schema and must not inflate the coverage claim.
+- Flag low-confidence readings explicitly and carry the flag through to the fixture comments.
+- Note contradictions on the page itself. Real documents contain them: a typed party name that
+  differs from the stamped one, a header total that disagrees with the line sum, a struck-through
+  value amended by hand. The model must be able to hold what the page says, not a tidied version.
+
+Record the totals: total atomic facts, data bearing, page furniture.
+
+## Step 2 — Fetch the standard
+
+If a UNVTD document exists:
+
+```shell
+curl -sS https://unvtd.unece.org/<name>-schema.yaml  -o /tmp/<name>-schema.yaml
+curl -sS https://unvtd.unece.org/<name>-context.json -o /tmp/<name>-context.json
+```
+
+Read **both**. Only `credentialSubject` and below matters — the rest is the Verifiable Credential
+envelope, which this repository does not model.
+
+**The context is the important file.** It tells you which UN/CEFACT class the document is and which
+D23B IRI each wire name expands to. For the purchase order it declares
+`"PurchaseOrder": "unece:HeaderTradeAgreement"`, `"orderDate": "unece:issueDateTime"`,
+`"orderedItems": "unece:includedSupplyChainTradeLineItem"` — which is how the base class and half
+the property names were chosen. Do the same for your document.
+
+Be aware that the UNVTD schemas have real defects; see `references/unvtd.md`. They are not valid
+JSON Schema 2020-12 despite declaring it, they set no `additionalProperties`, and several field
+types are wrong (`zip` as a number, `unlocode` as a URI). Use them for *vocabulary and structure*,
+not as a validation authority.
+
+If no UNVTD document exists, say so explicitly with the URLs you probed, and generate from the PDF
+alone — staying coherent with the existing models and reusing their classes.
+
+## Step 3 — Find a grep-proven home for every data-bearing fact
+
+Work in `.context/twin-standards/packages/standards-unece/src/models/`, which matches the installed
+`@twin.org/standards-unece`.
+
+**Never name a property you have not confirmed.** Every claim needs a `file:line`:
+
+```shell
+BSP=.context/twin-standards/packages/standards-unece/src/models/bsp
+grep -nE '^\s+<property>\??:' $BSP/IUnece<Class>.ts       # does it exist, and what type
+grep -rn '<property>' $BSP/                                # who else declares it
+grep -rnE '^\s+[a-zA-Z]*<Concept>[a-zA-Z]*\??:' $BSP/      # find candidates by concept
+```
+
+For code list values, quote the exact member:
+
+```shell
+grep -nB2 -E '^\s+<Member>:' .context/twin-standards/packages/standards-unece/src/models/lists/<list>.ts
+```
+
+`references/unece-property-map.md` has the paths already proven for the coffee documents — parties,
+lines, prices, quantities, packaging, incoterms, periods, locations, documents, clauses, notes,
+authentications — plus the known gaps. Start there before searching.
+
+For each fact record: **HOME** with the full path, or **NO HOME** with the closest miss and why it
+fails. A near-miss that means something else is not a home. Two real examples from this repo:
+`IUneceCargoInsurance` exists but hangs off a physical `Consignment`, so it cannot carry a contract's
+insurance allocation; `IUneceMarking` is documented as an inscription *on packaging*, so it cannot
+carry a rubber stamp on paper.
+
+## Step 4 — Write the model
+
+Follow the house idiom exactly — see `packages/trade-document-models/docs/model-guide.md §1`:
+
+```ts
+export type IFoo = IUneceBar &
+  Required<Pick<IUneceBar, "@context" | "type" | "alwaysPresentField">> & {
+    /** TSDoc — this becomes the schema description, so keep it short. */
+    localField: string;
+  };
+```
+
+- **Reuse before you add.** `ITradeParty` and `ITradeItem` already model a party and a contracted
+  lot; check whether they fit before writing a new supporting type. If they nearly fit, widen them
+  rather than forking — every model in the package should share one party type and one line type.
+- **Choose the base from the standard**, via the UNVTD context if there is one, otherwise by
+  matching the document's semantics to a BSP class. Check `references/unece-property-map.md §1` for
+  the classes already in use and what each can and cannot hold.
+- **Promote to mandatory only what every sample carries.** Two samples disagreeing means optional.
+- **Promote `type` alongside `@context`** so the JSON-LD discriminator lands in the local schema.
+- **Never end the type with `& { }`** — it silently degrades the generated schema.
+- **A local property must reuse a UN/CEFACT name that exists somewhere**, even if on another class,
+  rather than inventing one. `includedNote`, `issueDateTime` and
+  `includedSupplyChainTradeLineItem` are all used off-domain here for exactly that reason, and
+  UNECE's own UNVTD context does the same. Document the lift in the TSDoc.
+- **Prose with no typed slot goes in `includedNote[]`**, each note discriminated by `subject`. This
+  is the escape hatch for governing terms, precedence rules, arbitration forums, allocations and
+  instructions — all things BSP has no property for.
+
+## Step 5 — Wire it, all four places
+
+A model that misses any of these is invisible or broken:
+
+1. `src/models/tradeDocumentTypes.ts` — add a local profile name. It must equal the schema `$id`
+   segment, and it must be unique even when two documents share a UN/CEFACT class.
+2. `ts-to-schema.json` — add the file path to `types`. **Child types must stay listed too**;
+   removing them emits dangling `$ref`s silently.
+3. `src/dataTypes/tradeDocumentDataTypes.ts` — import and register the generated schema.
+4. `src/index.ts` — re-export the model.
+
+See `references/toolchain.md` for what the generator does with the idiom and where it will surprise
+you.
+
+## Step 6 — Prove it, executably
+
+Two files, and they are the deliverable as much as the model is:
+
+**`tests/fixtures/<document>.ts`** — the whole sample transcribed into the model, every property
+tagged with its fact id in a comment. If a path does not exist with the right type, `tspc` rejects
+the file, which is the point: the compiler does the verification.
+
+**`tests/documents/<document>.spec.ts`** — three things:
+
+1. the fixture validates against the generated schema;
+2. `test.each` over a `[factId, label, actual, expected]` table asserting **every** data-bearing
+   fact individually;
+3. an assertion that the covered fact-id set is **exactly** the inventory's data-bearing set, and a
+   "nothing is derived" test asserting that what the page does not state is absent.
+
+Do not put test files under `tests/coverage/` — `.gitignore` has a bare `coverage` rule and they
+will never be committed.
+
+Then run the gate and do not stop until it is green:
+
+```shell
+cd packages/trade-document-models && npm run dist
+```
+
+## Step 7 — Simulate the OCR output and look at it
+
+Before documenting anything, produce the artefact that shows what the pipeline would actually emit
+for this PDF, and read it against the page:
+
+```shell
+node .claude/skills/trade-document-model/scripts/ocr-preview.mjs \
+  --fixture packages/trade-document-models/tests/fixtures/<document>.ts \
+  --export  <FIXTURE_EXPORT> \
+  --type    <TradeDocumentTypes value> \
+  --pdf     "<path to the sample PDF>"
+```
+
+It writes to `.ocr-preview/<document>/`, which is gitignored — **none of it is committed**, and it
+is regenerated on demand. Three files:
+
+- `normalized.json` — the instance the pipeline would commit to TWIN Core, pretty-printed.
+- `mapping.md` — every leaf as a JSON path and value, so the conversion can be read line by line
+  against the page. JSON-LD scaffolding is listed separately so it does not drown the payload.
+- `validation.txt` — the real result of validating against the generated schema, via the same
+  `DataTypeHelper` a consumer would use.
+
+Because it loads the fixture and the generated schema directly, it cannot drift from what the tests
+assert. Then do the three checks `mapping.md` ends with:
+
+1. **Every value in the preview is on the page.** Anything that is not is a derivation — remove it
+   and leave the property absent.
+2. **Every fact on the page is in the preview**, or is deliberately absent and recorded as such.
+   Compare against the fact inventory from step 1; page furniture does not count.
+3. **Nothing landed in a property that means something else.** This is the check the schema cannot
+   do for you: a value in a syntactically valid but semantically wrong slot validates fine.
+
+Show the user the payload count and the validation result, and offer them the path. Reviewing this
+artefact is cheaper than reviewing the model, and it is the step that catches a wrong mapping.
+
+## Step 8 — Document it
+
+Add a section to `packages/trade-document-models/docs/model-guide.md`:
+
+- the fact totals — atomic, data bearing, page furniture;
+- where the non-obvious facts landed;
+- which facts needed `includedNote` and why no typed slot exists, with the grep that proves it;
+- anything left absent because the page does not state it;
+- residual limitations, separating what is missing here from what is missing upstream.
+
+Update the target-document table in the root `README.md`.
+
+## Report honestly
+
+State the coverage as a count, not an impression: *N atomic facts, M data bearing, all M carried* —
+or, if not all, exactly which are not and why. If a fact could only be placed by bending a property
+to mean something it does not, say so rather than counting it as covered. If the sample contradicts
+itself, report the contradiction; do not resolve it silently.
+
+## What a run delivers
+
+| | committed |
+|---|---|
+| `src/models/I<Document>.ts` and any widened supporting type | yes |
+| the four wiring edits | yes |
+| `src/schemas/<Document>.json`, regenerated | yes |
+| `tests/fixtures/<document>.ts` and `tests/documents/<document>.spec.ts` | yes |
+| a section in `docs/model-guide.md` and a row in the root `README.md` | yes |
+| `.ocr-preview/<document>/` — the simulated conversion | **no**, gitignored, regenerate on demand |
+
+## References
+
+- `references/unece-property-map.md` — proven property paths, the classes in use, the known gaps
+- `references/unvtd.md` — the published UNVTD suite, its house style, its defects
+- `references/toolchain.md` — ts-to-schema behaviour, build chain, the traps
+- `scripts/ocr-preview.mjs` — the step 7 generator

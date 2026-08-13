@@ -13,8 +13,8 @@ that checkout.
 
 ## 1. The house idiom
 
-Three of the four models follow one pattern: **take a UN/CEFACT interface, promote the fields the
-document always carries to mandatory, then add what UN/CEFACT does not have.**
+All four models follow one pattern: **take a UN/CEFACT interface, promote the fields the document
+always carries to mandatory, then add what UN/CEFACT does not have.**
 
 ```ts
 export type IFoo = IUneceBar &
@@ -30,221 +30,294 @@ Two mechanical rules:
 
 - **Never end the type with `& { }`.** An empty type literal aborts the intersection flattening and
   degrades the generated schema to a three-branch `allOf` with a dead `{"type":"object"}` element.
-  `ITradeItem.ts` and `ITradeParty.ts` both do this today — compare `TradeParty.json` with
-  `TradeAgreement.json`.
 - **Write TSDoc on every local property.** It is the only source of the schema `description`, and
-  the only place to record why a local property exists instead of a UN/CEFACT one.
+  the only place to record why a local property exists instead of a UN/CEFACT one. Keep it short:
+  the whole comment is copied verbatim into the published schema.
+- **Promote `type` as well as `@context`.** `Required<Pick<Base, "type">>` is a semantic no-op —
+  `type` is already mandatory upstream — but it surfaces the JSON-LD `@type` const into the local
+  schema, so the discriminator is checked without resolving the remote UN/CEFACT `$ref`.
 
 ## 2. Model-by-model state of play
+
+All four models are wired end to end: listed in `ts-to-schema.json`, generating a schema, registered
+in `tradeDocumentDataTypes.ts`, exported from `src/index.ts`, and exercised by a test built from a
+real sample document.
 
 ### 2.1 `ITradeParty` — *supporting type*
 
 ```ts
 export type ITradeParty = IUneceTradeParty &
-  Required<Pick<IUneceTradeParty, "@context" | "postalAddress">> & { };
+  Required<Pick<IUneceTradeParty, "@context" | "type" | "name">>;
 ```
 
 | | |
 |---|---|
 | Base | `IUneceTradeParty` (82 properties) |
-| Promoted | `@context`, `postalAddress` |
-| Schema | `src/schemas/TradeParty.json` — degraded `allOf` shape (trailing `& {}`) |
-| Exported from `index.ts` | **no** |
+| Promoted | `@context`, `type`, `name` |
+| Schema | `src/schemas/TradeParty.json` — flat shape, **and** hoisted into each document's `$defs` |
+| Registered as | `https://schema.twindev.org/trade-document/TradeParty` |
 
-Issues:
+It carries `@json-schema embedded:defs`, so `TradeAgreement.json` and `PurchaseOrder.json` reference
+it as `#/$defs/TradeParty` instead of by external URL. See §7 for what that tag does and does not
+fix.
 
-1. Trailing `& { }` — remove it.
-2. Doc comment still says "Trade Agreement Document".
-3. `postalAddress` is mandatory, but two of the three sample documents give the counterparty as a
-   bare name (`D.R. Wakefield & Company Ltd. United Kingdom`, `Jowam Coffee Trading Co Ltd` — no
-   address at all). **A verbatim extraction of the samples cannot satisfy this model.** Either
-   `name` is the right thing to promote instead, or `postalAddress` must be demoted to optional.
-4. Not exported, yet `ITradeAgreement.buyerParty: ITradeParty` is public — consumers cannot name the
-   type of a property they receive.
+`name` is promoted rather than `postalAddress`: two of the three sample documents give the
+counterparty as a bare name (`D.R. Wakefield & Company Ltd. United Kingdom`, `Jowam Coffee Trading
+Co Ltd`), so requiring an address would reject a real document. `postalAddress` is still available,
+optional, from the base.
 
-Useful `IUneceTradeParty` properties not yet used: `name` (:1289), `identifier` (:1266),
-`registeredId` (:1344), `partyRoleCode` (:1302), `specifiedLegalOrganization` (:1452),
-`definedContact` (:1218), `emailURICommunication` (:1236), `telephoneCommunication` (:1494),
-`uRICommunication` (:1506), `specifiedAuthoritativeSignatoryPerson` (:1404).
+Useful `IUneceTradeParty` properties not yet promoted: `identifier` (:1266), `registeredId` (:1344),
+`partyRoleCode` (:1302 — carries `Buyer`/`Seller`/`Exporter` from `UnecePartyRoleCodeList`),
+`specifiedLegalOrganization` (:1452), `definedContact` (:1218), `emailURICommunication` (:1236),
+`telephoneCommunication` (:1494), `uRICommunication` (:1506),
+`specifiedAuthoritativeSignatoryPerson` (:1404).
 
 ### 2.2 `ITradeItem` — *supporting type*
 
 ```ts
-export type ITradeItem = IUneceLineTradeAgreement &
-  Required<Pick<IUneceLineTradeAgreement, "@context" | "agreedPriceProductPrice">> & { };
-```
-
-| | |
-|---|---|
-| Base | `IUneceLineTradeAgreement` (79 properties) |
-| Promoted | `@context`, `agreedPriceProductPrice` |
-| Schema | `src/schemas/TradeItem.json` — degraded `allOf` shape |
-| Exported from `index.ts` | **no** |
-
-**This is the model with the largest structural gap.** `LineTradeAgreement` is the *pricing and
-contractual-terms facet* of a line. It carries no quantity and no product:
-
-| What a line needs | Where UN/CEFACT puts it | Reachable from `IUneceLineTradeAgreement`? |
-|---|---|---|
-| Ordered quantity (`200` bags) | `IUneceLineTradeDelivery.orderQuantity` (:375) | **no** |
-| Product / grade / mark (`Asali, AB`) | `IUneceSupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | **no** |
-| Line number / contract no (`46690`) | `IUneceSupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | **no** |
-| Unit price (`290.00 USD / 50 kg`) | `IUneceLineTradeAgreement.agreedPriceProductPrice[]` → `IUneceTradePrice.unitAmount[]` + `.basisQuantity` | yes |
-| Incoterm per line (`FOB`) | `IUneceLineTradeAgreement.applicableDeliveryTerms` (:51) | yes |
-
-The quantities that *are* on `LineTradeAgreement` are ordering **constraints**, not the ordered
-amount: `economicOrderQuantity` (:137), `minimum`/`maximum`/`incrementalProductOrderableQuantity`.
-Do not repurpose them.
-
-So `ITradeItem` can currently express *at what price*, but not *how much of what* — and every
-sample document states quantity and quality on every line. This has to be resolved before either
-document model is usable. See §4.
-
-### 2.3 `ITradeAgreement` — *sale confirmation / sales contract*
-
-```ts
-export type ITradeAgreement = IUneceHeaderTradeAgreement &
-  Required<Pick<IUneceHeaderTradeAgreement,
-    "@context" | "buyerApprovedDateTime" | "sellerReference" | "buyerParty" | "sellerParty">> & {
-    issueDateTime: string;
-    buyerParty: ITradeParty;
-    sellerParty: ITradeParty;
-    includesTradeItem: ITradeItem[];
+export type ITradeItem = IUneceSupplyChainTradeLineItem &
+  Required<
+    Pick<
+      IUneceSupplyChainTradeLineItem,
+      | "@context" | "type" | "associatedDocumentLineDocument"
+      | "specifiedTradeProduct" | "specifiedLineTradeDelivery"
+    >
+  > & {
+    specifiedLineTradeAgreement: IUneceLineTradeAgreement &
+      Required<Pick<IUneceLineTradeAgreement, "agreedPriceProductPrice">>;
   };
 ```
 
 | | |
 |---|---|
-| Base | `IUneceHeaderTradeAgreement` (69 properties) |
-| Promoted | `@context`, `buyerApprovedDateTime`, `sellerReference`, `buyerParty`, `sellerParty` |
-| Local | `issueDateTime`, `includesTradeItem`, narrowed `buyerParty`/`sellerParty` |
-| Schema | `src/schemas/TradeAgreement.json` — flat shape, 7 required |
-| Registered as | `https://schema.twindev.org/trade-document/HeaderTradeAgreement` |
-| Exported from `index.ts` | yes |
+| Base | `IUneceSupplyChainTradeLineItem` (re-based from `IUneceLineTradeAgreement`) |
+| Promoted | `@context`, `type`, line document, product, delivery, agreement |
+| Schema | `src/schemas/TradeItem.json` — flat shape, with a nested narrowed agreement |
+| Registered as | `https://schema.twindev.org/trade-document/TradeItem` |
 
-Issues, most important first:
+**Why the re-base was unavoidable.** `IUneceLineTradeAgreement` is the *pricing and contractual
+terms* facet of a line. It carries no quantity and no product, so it could not express
+`200 Bags AB Asali` — the primary content of every line on every sample:
 
-1. **`includesTradeItem` does not exist in UN/CEFACT.** `grep -rn "includesTradeItem"` over all 394
-   BSP interfaces returns zero matches, in any casing. The BSP term is
-   `SupplyChainTradeTransaction.includedSupplyChainTradeLineItem` (`IUneceSupplyChainTradeTransaction.ts:123`);
-   the Web-Vocabulary term is `TradeAgreement.includesItem`. Neither is spelled `includesTradeItem`.
-2. **`HeaderTradeAgreement` has no link to line items at all.** Header agreement and line agreements
-   are *siblings* under `SupplyChainTradeTransaction`, not parent and child:
+| What a line needs | UN/CEFACT location | On `LineTradeAgreement`? |
+|---|---|---|
+| Ordered quantity (`200`) | `IUneceLineTradeDelivery.orderQuantity` (:375) | no |
+| Product / grade / mark (`Asali, AB`) | `IUneceSupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | no |
+| Line number (`46690`, `ctr/742`) | `IUneceSupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | no |
+| Unit price (`290.00 USD / 50 kg`) | `IUneceLineTradeAgreement.agreedPriceProductPrice[]` | yes |
 
-   ```
-   IUneceSupplyChainTradeTransaction
-   ├── applicableHeaderTradeAgreement   : IUneceHeaderTradeAgreement[]      (:44)
-   ├── applicableHeaderTradeDelivery    : IUneceHeaderTradeDelivery[]       (:50)
-   ├── applicableTradeSettlement        : IUneceHeaderTradeSettlement       (:62)
-   └── includedSupplyChainTradeLineItem : IUneceSupplyChainTradeLineItem[]  (:123)
-       ├── specifiedLineTradeAgreement  : IUneceLineTradeAgreement          (:203)
-       ├── specifiedLineTradeDelivery   : IUneceLineTradeDelivery[]         (:209)
-       ├── specifiedLineTradeSettlement : IUneceLineTradeSettlement[]       (:215)
-       ├── specifiedTradeProduct        : IUneceTradeProduct[]              (:227)
-       └── associatedDocumentLineDocument : IUneceDocumentLineDocument      (:95)
-   ```
+`IUneceSupplyChainTradeLineItem` is the join node reaching all four. The quantities that *are* on
+`LineTradeAgreement` — `economicOrderQuantity` (:137), `minimum`/`maximum`/
+`incrementalProductOrderableQuantity` — are ordering **constraints**, not the ordered amount; do not
+repurpose them.
 
-   Hanging lines off the header is a deliberate deviation. It may be the right call for an
-   extraction target — but it should be a recorded decision, not an accident.
-3. **`issueDateTime` is not on `HeaderTradeAgreement`.** The class has exactly one date/time:
-   `buyerApprovedDateTime` (:95). `issueDateTime` *does* exist, on 20 other interfaces including
-   `IUneceSupplyChainTradeTransaction` (:142), `IUneceDocument` (:212) and
-   `IUneceDocumentLineDocument` (:77) — all as `issueDateTime?: string` with
-   `@json-schema format:date-time`. The local declaration is `issueDateTime: string` with no TSDoc,
-   so the generated schema has no `description` and **no `format: "date-time"`** — unlike
-   `buyerApprovedDateTime`, which inherits both from the dependency's `.d.ts`.
-4. **`buyerApprovedDateTime` is mandatory but is not the document's date.** It means "when the buyer
-   approved". On a *seller's* sale confirmation the buyer's acceptance line is frequently left
-   unsigned (both samples), so this field is often unknowable at extraction time.
-5. **`sellerReference` is mandatory, and the buyer's paper does not have one.** The D.R. Wakefield
-   purchase contract carries no reference to the seller's `S - JCT / 742-744` anywhere. If one model
-   is to carry both issuer perspectives, neither reference can be mandatory.
-6. The `Pick<>` list and the local literal both declare `buyerParty`/`sellerParty`. The local one
-   wins (last-write-wins in the merger), which is what makes the schema point at the local
-   `TradeParty` — but the duplication is easy to misread.
+The previous model's mandatory `agreedPriceProductPrice` is preserved one level down, by narrowing
+`specifiedLineTradeAgreement` inline. `ts-to-schema` renders that as a nested object with its own
+`required` and its own `allOf` `$ref` to `UneceLineTradeAgreement` — an anonymous type literal, so
+it needs no file of its own. (A *named* exported intermediate type would: `ts-to-schema` would emit
+a `$ref` to a schema it never generates.)
 
-### 2.4 `IPurchaseOrder` — *buyer purchase order*
+### 2.3 `ITradeAgreement` — *sale confirmation / sales contract*
 
 ```ts
-export interface IPurchaseOrder {
-  "@context": typeof TradeDocumentContexts.ContextPurchaseOrder;
-  buyer: ITradeParty;
-  seller: ITradeParty;
-  invoicee: ITradeParty;
-  orderDate: string;
-  purchaseOrderNumber: string;
-  paymentTerms: IUnecePaymentTerms;
-  paymentMethod: IUnecePaymentMeans;
-  allowanceCharge: IUneceTradeAllowanceCharge;
-  totalOrderAmount: IUneceAmountType;
-  orderedItems: ITradeItem[];
-}
+export type ITradeAgreement = IUneceHeaderTradeAgreement &
+  Required<Pick<IUneceHeaderTradeAgreement, "@context" | "type" | "sellerReference">> & {
+    issueDateTime: string;
+    buyerParty: ITradeParty;
+    sellerParty: ITradeParty;
+    includedSupplyChainTradeLineItem?: ITradeItem[];
+  };
 ```
 
 | | |
 |---|---|
-| Base | **none** — standalone `interface`, not an intersection |
-| Schema | **none** — not listed in `ts-to-schema.json` |
-| `TradeDocumentTypes.PurchaseOrder` | `""` (empty string) |
-| Registered | **no** |
-| Exported from `index.ts` | **no** |
+| Base | `IUneceHeaderTradeAgreement` (69 properties) — unchanged |
+| Required | `@context`, `type`, `sellerReference`, `issueDateTime`, `buyerParty`, `sellerParty` |
+| Schema | `src/schemas/TradeAgreement.json` |
+| Registered as | `https://schema.twindev.org/trade-document/TradeAgreement` |
+| Payload `type` | `HeaderTradeAgreement` |
 
-This model does not follow the house idiom, and it is the one place where the **two-vocabulary
-problem** (README §4) becomes concrete. Its *property names* come from the Web Vocabulary; its
-*types* come from BSP:
+What changed and why:
 
-| Property | Origin of the name | Nearest BSP name | Nearest Web-Vocabulary name |
-|---|---|---|---|
-| `buyer` | Web Vocabulary | `buyerParty` | `unece:buyer` ✔ |
-| `seller` | Web Vocabulary | `sellerParty` | `unece:seller` ✔ |
-| `invoicee` | Web Vocabulary | — (BSP has `buyerParty`, `payerParty` on settlement) | `unece:invoicee` ✔ |
-| `orderDate` | Web Vocabulary | — | `unece:orderDate` ✔ |
-| `purchaseOrderNumber` | **invented** | `buyerReference` / `identifier` | `unece:contractId` |
-| `paymentTerms` | shortened | `applicablePaymentTerms` | `unece:applicablePaymentTerms` |
-| `paymentMethod` | **invented** | `specifiedPaymentMeans` (on `HeaderTradeSettlement`) | `unece:paymentMeansId` |
-| `allowanceCharge` | shortened | `specifiedAllowanceCharge` / `appliedAllowanceCharge` | `unece:appliesCharge` |
-| `totalOrderAmount` | **invented** | `…MonetarySummation.grandTotalAmount` | `unece:duePayableAmount` |
-| `orderedItems` | **invented** | `includedSupplyChainTradeLineItem` | `unece:includesItem` |
+- `includesTradeItem` → `includedSupplyChainTradeLineItem`. The old name exists in neither
+  vocabulary — `grep -rn "includesTradeItem"` over all 394 BSP interfaces returns zero matches. The
+  new name is a real UN/CEFACT term.
+- It is now **optional**. The Blaser sale confirmation states quantity, quality and price at header
+  level and has no line breakdown at all; requiring lines made that document unrepresentable.
+- `buyerApprovedDateTime` is no longer required. It is the *buyer's* approval timestamp, and the
+  buyer's acceptance block is unsigned on both sale confirmation samples.
+- `issueDateTime` gained TSDoc and `@json-schema format:date-time`, so the generated schema now
+  carries a description and enforces the format.
+- `buyerParty`/`sellerParty` were declared twice, in the `Pick<>` list *and* in the local literal.
+  The local narrowing alone makes them required, so the duplicate `Pick<>` entries are gone.
 
-So five of eleven property names exist in neither vocabulary. The result compiles, but nothing in
-it round-trips to UN/CEFACT JSON-LD — which is the whole point of the repository.
+Everything the samples need at header level is inherited from the base and needs no local
+declaration: `applicableDeliveryTerms` (Incoterm + named place), `applicablePaymentTerms`,
+`shippingPeriod`, `applicableLocation[]` (destination), `buyerReference`, `contractDocument[]`,
+`salesConditionsDocument[]`, `applicableRegulatoryProcedure[]`.
 
-Additional issues:
+### 2.4 `IPurchaseOrder` — *buyer purchase order*
 
-- Every property is mandatory. `allowanceCharge` and `invoicee` appear in **neither** sample
-  document; `totalOrderAmount` appears in neither D.R. Wakefield document (the Blaser sale
-  confirmation has a handwritten total, the purchase contract has none).
-- `"@context": typeof TradeDocumentContexts.ContextPurchaseOrder` pins the context to
-  `https://unvtd.unece.org/purchase-order-context.json`, a URL that is not the UNECE D23B context
-  the other models use and is not published.
-- There is no `type` property, so the payload carries no JSON-LD `@type`.
+```ts
+export type IPurchaseOrder = IUneceHeaderTradeAgreement &
+  Required<
+    Pick<IUneceHeaderTradeAgreement, "@context" | "type" | "identifier" | "applicableLocation">
+  > & {
+    issueDateTime: string;
+    buyerParty: ITradeParty;
+    sellerParty: ITradeParty;
+    includedSupplyChainTradeLineItem: ITradeItem[];
+  };
+```
 
-### 2.5 Supporting files
+| | |
+|---|---|
+| Base | `IUneceHeaderTradeAgreement` — was a standalone `interface` with no base |
+| Required | `@context`, `type`, `applicableLocation`, `issueDateTime`, `buyerParty`, `sellerParty`, `includedSupplyChainTradeLineItem` |
+| Schema | `src/schemas/PurchaseOrder.json` — new |
+| Registered as | `https://schema.twindev.org/trade-document/PurchaseOrder` |
+| Payload `type` | `HeaderTradeAgreement` |
 
-**`tradeDocumentTypes.ts`** — `TradeAgreement`/`TradeParty`/`TradeItem` are aliases of
-`UneceTypes.HeaderTradeAgreement` / `TradeParty` / `LineTradeAgreement`. `PurchaseOrder: ""` is a
-placeholder. Note that `UneceTypes` (643 members) has **no** `PurchaseOrder`, `Warrant`,
-`DeliveryNote`, `HoldingCertificate` or `Transfer*` member — new document types will need locally
-namespaced IRIs. Doc comment still says "auditable item graph data".
+**The mandatory set is UNVTD's, translated.** Unlike `ITradeAgreement`, this document has a
+published UN/CEFACT counterpart, so its required properties are taken from
+`https://unvtd.unece.org/purchase-order-schema.yaml` and expressed in the D23B terms that schema's
+own context expands its wire names into:
 
-**`tradeDocumentContexts.ts`** — four URLs, three of them different, none cross-checked:
-
-| Constant | Value | Used where |
+| UNVTD `credentialSubject` required | context expands to | here |
 |---|---|---|
-| `Namespace` | `https://schema.twindev.org/trade-document/` | data-type registration key prefix |
-| `Context` | `https://unvtd.unece.org/` | passed as `jsonLdContext` at registration |
-| `ContextTradeAgreement` | `https://vocabulary.uncefact.org/unece-context-D23B.jsonld` | what the test puts in payloads |
-| `ContextPurchaseOrder` | `https://unvtd.unece.org/purchase-order-context.json` | `IPurchaseOrder["@context"]` |
+| `purchaseOrderNumber` | `unece:identifier` | `identifier` — **optional here**, see below |
+| `orderDate` | `unece:issueDateTime` | `issueDateTime` |
+| `buyer` | `unece:buyerParty` | `buyerParty` |
+| `seller` | `unece:sellerParty` | `sellerParty` |
+| `deliveryLocation` | `unece:shipToParty` | `applicableLocation` — see below |
+| `orderedItems` (`minItems: 1`) | `unece:includedSupplyChainTradeLineItem` | `includedSupplyChainTradeLineItem`, no longer optional |
 
-**`tradeDocumentDataTypes.ts`** — registers the three schemas correctly. Note the registration key
-is `Namespace + type`, so `TradeAgreement.json` (whose `$id` says `…/TradeAgreement`) is registered
-under `…/HeaderTradeAgreement`. Header comment says "auditable item graph".
+A test asserts this correspondence property by property, so the two cannot drift apart silently.
 
-**`index.ts`** — exports only `tradeDocumentDataTypes`, `ITradeAgreement`, `tradeDocumentContexts`,
-`tradeDocumentTypes`. `ITradeParty`, `ITradeItem` and `IPurchaseOrder` are missing.
+Two notes on the translation:
 
-**`ts-to-schema.json`** — lists three of the four models. `IPurchaseOrder.ts` is absent.
+- **`deliveryLocation`.** UNVTD maps it onto `unece:shipToParty`, a *Party* class that lives on the
+  delivery facet and is not reachable from a header trade agreement. A delivery address is a place,
+  not a party, so `applicableLocation: IUneceLogisticsLocation[]` is used instead, with
+  `locationFunctionTypeCode` set to `UneceLocationFunctionCodeList.PlaceOfDelivery`
+  (`unece:LocationFunctionCodeList#7`). The sample's `CWT, Tilbury, United Kingdom` decomposes into
+  `name`, `description`, `countryName` and `logisticsLocationCountryId`.
+- **`purchaseOrderNumber` → `identifier`, not `buyerReference`.** `identifier` is the document's own
+  number; `buyerReference`/`sellerReference` are the *counterparty's* references as cited. UNVTD
+  defines `purchaseOrderNumber` as "Identifier assigned by the buyer to an order", and its context
+  points at `unece:identifier`.
+  **It is the one required property not carried over**, and deliberately. The sample contract
+  numbers each line (`46690`/`46691`/`46692`) and has none at document level, so making it mandatory
+  would force a value that appears nowhere on the paper. Representing the real documents without
+  inventing data outranks matching a published required set, so `identifier` stays optional and is
+  left absent. This is the only place where the two priorities conflict, and the first one wins.
 
+`ITradeAgreement` keeps its own evidence-driven required set instead, because UNVTD publishes no
+sale-confirmation schema to align to (§6.1).
+
+The old model transcribed UNVTD's wire names onto BSP types — matching UNVTD on names only and D23B
+on types only, so it would not have serialised correctly for either. The migration:
+
+| was (UNVTD wire name) | now (D23B) | note |
+|---|---|---|
+| `buyer`, `seller` | `buyerParty`, `sellerParty` | inherited from the base |
+| `orderDate` | `issueDateTime` | |
+| `purchaseOrderNumber` | `identifier` | |
+| `orderedItems` | `includedSupplyChainTradeLineItem` | |
+| `paymentTerms` | `applicablePaymentTerms` | inherited; UNVTD types it as a bare string, D23B as an object |
+| *(absent)* | `applicableLocation` | UNVTD's required `deliveryLocation` was missing entirely |
+| `invoicee` | *(dropped)* | `IUneceHeaderTradeSettlement.invoiceeParty`; on no sample |
+| `paymentMethod` | *(dropped)* | `specifiedPaymentMeans[]` on the settlement facet |
+| `allowanceCharge` | *(dropped)* | `specifiedAllowanceCharge[]` on the settlement facet |
+| `totalOrderAmount` | *(dropped)* | settlement monetary summation; on no sample |
+| `"@context": ContextPurchaseOrder` | `UneceContextType` from the base | that URL is live, but it is the *per-document* UNVTD context and defines none of these terms |
+
+The four dropped properties all belong on `IUneceHeaderTradeSettlement` and appear on neither
+D.R. Wakefield document. When a settlement facet is genuinely needed — the Coffee DSS invoice will
+need one — add it then, under its real UN/CEFACT name.
+
+### 2.4.1 Where the contract table columns live
+
+Nothing from the buyer's table is declared on `IPurchaseOrder` itself: it is all on
+{@link ITradeItem}, one level down. A test asserts each of these against the fixture.
+
+| column | sample | path from `includedSupplyChainTradeLineItem[]` |
+|---|---|---|
+| `Contract No` | `46690` | `associatedDocumentLineDocument.lineId` |
+| `Origin` | `Kenya` | `specifiedTradeProduct[].originCountry[].countryId` (`UneceCountryId.KENYA`) |
+| `Quality` | `Asali,AB` | `specifiedTradeProduct[].name` = `Asali`, `.designation` = `AB` |
+| `Quantity` | `200` | `specifiedLineTradeDelivery[].orderQuantity.QuantityTypeValue` |
+| `Unit Type` | `Grain Pro` | `specifiedLineTradeDelivery[].includedPackaging[].packageTypeCode` = `UnecePackageTypeCodeList.Bag`, `.description` = `Grain Pro` |
+| `Kg per Unit` | `60` | `specifiedLineTradeDelivery[].perPackageUnitQuantity.QuantityTypeValue` |
+| `Price` | `290.00` | `specifiedLineTradeAgreement.agreedPriceProductPrice[].unitAmount[].AmountTypeValue` |
+| `Units` | `$/50kg` | `.unitAmount[].AmountTypeCurrency` = `USDollar`, `.basisQuantity.QuantityTypeValue` = `50` |
+
+Because both the 50 kg price basis and the 60 kg per bag are expressible, the contract total is
+computable from the model: `(200 × 60 ÷ 50 × 290) + (50 × 60 ÷ 50 × 296) + (70 × 60 ÷ 50 × 318)` =
+**114,072 USD**. A test asserts that figure. UNVTD's `unitPrice` is `{amount, currency}` with no
+basis quantity and its `quantityOrdered` is a bare number, so the same three lines there read as
+**95,060 USD** — see §6.2.
+
+One residual gap: `perPackageUnitQuantity` carries `60` but not `kg`. `IUneceQuantityCode` declares
+no value property at all — only `@context` and `type` — so `IUneceQuantityType` cannot express its
+unit of measure. This affects every quantity in the package. See §4.2.
+
+### 2.5 The two off-domain properties
+
+`issueDateTime` and `includedSupplyChainTradeLineItem` are real UN/CEFACT terms used **off-domain**:
+D23B declares both on `SupplyChainTradeTransaction`, not on `HeaderTradeAgreement`. BSP domains are
+`schema:domainIncludes`-style and therefore non-constraining, so both still expand correctly under
+the D23B context — unlike `includesTradeItem`, which expanded to nothing.
+
+**UNECE does exactly the same thing.** The published UNVTD purchase-order context declares
+`"PurchaseOrder": "unece:HeaderTradeAgreement"`, `"orderDate": "unece:issueDateTime"` and
+`"orderedItems": "unece:includedSupplyChainTradeLineItem"` — the same two terms, hung off the same
+class. See §6. So this is the sanctioned shape for this document type, not a local shortcut.
+
+The alternative is to re-root both documents on `IUneceSupplyChainTradeTransaction`, which owns
+`issueDateTime` natively and is the only class UN/CEFACT gives a link to line items:
+
+```
+IUneceSupplyChainTradeTransaction
+├── applicableHeaderTradeAgreement   : IUneceHeaderTradeAgreement[]      (:44)
+├── applicableHeaderTradeDelivery    : IUneceHeaderTradeDelivery[]       (:50)
+├── applicableTradeSettlement        : IUneceHeaderTradeSettlement       (:62)
+└── includedSupplyChainTradeLineItem : IUneceSupplyChainTradeLineItem[]  (:123)
+```
+
+That removes both deviations and gives the delivery and settlement facets a proper home — at the
+cost of four more files and a deeper access path for the extraction pipeline
+(`doc.applicableHeaderTradeAgreement[0].buyerParty.name` instead of `doc.buyerParty.name`). It was
+measured, not guessed: the faithful variant compiles clean and generates 8 schemas totalling ~8 KB
+against the current 4. It is the recommended direction once the extraction layer is settled.
+
+### 2.6 Supporting files
+
+**`tradeDocumentTypes.ts`** — now local profile names (`"TradeAgreement"`, `"PurchaseOrder"`,
+`"TradeItem"`, `"TradeParty"`) instead of aliases of `UneceTypes`. Two reasons:
+
+1. A sale confirmation and a purchase order are the *same* UN/CEFACT class. Deriving both from
+   `UneceTypes` would key both registrations on `…/trade-document/HeaderTradeAgreement`, and the
+   second would silently overwrite the first in `DataTypeHandlerFactory`.
+2. Each value now equals its schema's `$id`, so a `$ref` between the generated schemas resolves
+   against the local factory instead of 404-ing over HTTP.
+
+Note the consequence: **`TradeDocumentTypes.X` is the registration key, not the payload's `type`.**
+A payload's JSON-LD `@type` stays the UN/CEFACT class name that the base pins it to —
+`HeaderTradeAgreement` for both document models.
+
+**`tradeDocumentContexts.ts`** — reduced to `Namespace`, `Context` and `JsonSchemaNamespace`.
+`Context` is now `UneceContexts.Context` (the D23B context), because every property in every model
+comes from BSP D23B. The removed `ContextTradeAgreement` and `ContextPurchaseOrder` pointed at
+`https://unvtd.unece.org/…`, a host that appears nowhere in `standards-unece` and publishes no
+context document.
+
+**`tradeDocumentDataTypes.ts`** — registers all four schemas. Its TSDoc now tells consumers to call
+`UneceDataTypes.registerTypes()` first.
+
+**`index.ts`** — exports all four models plus the two const objects.
+
+**`ts-to-schema.json`** — lists all four model files.
 ## 3. What the sample documents actually contain
 
 Samples analysed:
@@ -307,8 +380,7 @@ not use it. `✘` = no home anywhere in BSP.
 ### 3.2 What the samples tell us about cardinality
 
 - **Line items are optional.** The Blaser sale confirmation has **zero** lines — quantity, quality
-  and price are all header-level. `includesTradeItem` being mandatory makes that document
-  unrepresentable.
+  and price are all header-level. This is why `includedSupplyChainTradeLineItem` is optional.
 - **Line identifiers are optional.** The buyer's contract numbers each line (`46690`/`46691`/`46692`);
   the seller's confirmation has one document-level reference covering a range (`S - JCT / 742-744`).
 - **At most one of `sellerReference` / `buyerReference` is populated at issue time.** Both sale
@@ -339,86 +411,61 @@ These are properties of the corpus, not of the models, but they constrain what c
   buyer's paper is wrong, as the seller's own stamp on it reads `TRADERS`.
 - Quality strings use opposite token order and different delimiters: `AB Asali` vs `Asali,AB`.
 
-## 4. Where to put your hands
+## 4. Where to put your hands next
 
-Ordered by dependency. Items marked **[decision]** need a human call before coding.
+`ITradeAgreement` and `IPurchaseOrder` are done: they validate all three sample documents and
+`npm run dist` is green. What follows is what is left, ordered by how much it blocks.
 
-### 4.1 `src/models/ITradeItem.ts`
+### 4.1 Fields the samples carry that nothing yet stores
 
-1. **[decision]** Choose how a line carries quantity and product. `IUneceLineTradeAgreement` cannot.
-   Options:
-   - **(a) Re-root on `IUneceSupplyChainTradeLineItem`** — UN/CEFACT-correct. Gives
-     `specifiedTradeProduct[]`, `specifiedLineTradeDelivery[]` (quantity),
-     `specifiedLineTradeAgreement` (price) and `associatedDocumentLineDocument` (line number) in one
-     object. Costs one extra nesting level for the extractor and makes `TradeItem.json` much larger.
-   - **(b) Keep `IUneceLineTradeAgreement` and add local flat properties** for quantity, product and
-     line number. Cheap for the extractor, but invents terms — the same mistake `includesTradeItem`
-     already makes.
-   - **(c) Intersect both** — `IUneceLineTradeAgreement & Pick<IUneceSupplyChainTradeLineItem, …>`.
-     Keeps the flat shape and every property name stays a real UN/CEFACT term.
-2. Remove the trailing `& { }`.
-3. Fix the doc comment.
+These are real facts on the paper with no home in either the models or BSP D23B. None of them
+blocks the current tests, and each needs a decision before it gets a local property:
 
-### 4.2 `src/models/ITradeParty.ts`
+| Fact | Sample value | Nearest BSP home | Proposal |
+|---|---|---|---|
+| Weight basis | `Net Shipping Weight`, `N.S.W` | none | `applicableDeliveryTerms.description`, verbatim |
+| Weight franchise | `0.5% franchise` | none | `specifiedAllowanceCharge[]` with `calculationPercent`, or free text |
+| Tare method | `Actual Tare` | none | free text alongside the weight basis |
+| Insurance allocation | `For buyer's account.` | none reachable from the agreement | a note, or `IUneceCargoInsurance` if the delivery facet is added |
+| Arbitration seat | `London Arbitration` | none | `contractDocument[]` clause text |
+| Place of payment presentation | `on first presentation in London` | none | `applicablePaymentTerms.description`, verbatim |
+| Shipment detail | `Buyer to nominate vessel.` | none | a note |
+| Issuer role | seller-issued vs buyer-issued | `partyRoleCode` on the party | already expressible — promote `partyRoleCode` if it must be mandatory |
+| Verbatim source string | the whole extraction stage is verbatim-only | none | a parallel `sourceText` structure, deliberately non-standard |
 
-1. Remove the trailing `& { }`.
-2. **[decision]** Demote `postalAddress` or promote `name` instead — the samples give bare names.
-3. Fix the doc comment.
+The pragmatic grouping is a single local `terms` sub-object, clearly marked as non-UN/CEFACT, rather
+than scattering free text across inherited `description` fields.
 
-### 4.3 `src/models/ITradeAgreement.ts`
+### 4.2 Price basis unit
 
-1. **[decision]** Rename `includesTradeItem`. It exists in neither vocabulary. Candidates:
-   `includedSupplyChainTradeLineItem` (BSP-correct) or `includesItem` (Web-Vocabulary-correct,
-   shorter, and the direction UN/CEFACT is heading).
-2. Make `includesTradeItem` **optional** — the Blaser sample has no lines.
-3. Add TSDoc + `@json-schema format:date-time` to `issueDateTime`, so the generated schema gets a
-   description and a format. Record in the TSDoc that BSP places `issueDateTime` on
-   `SupplyChainTradeTransaction`/`Document`, not on `HeaderTradeAgreement`.
-4. **[decision]** Demote `buyerApprovedDateTime` and `sellerReference` from the `Required<Pick<>>` —
-   neither is universally present. Promote instead what every sample has: the parties and the issue
-   date.
-5. Add the header fields the samples need and BSP already provides: `applicableDeliveryTerms`
-   (Incoterm + named place), `applicablePaymentTerms`, `shippingPeriod`, `buyerReference`,
-   `applicableLocation` (destination), `contractDocument` (governing terms).
-6. **[decision]** Decide how to carry the fields BSP has no home for: weight basis, franchise, tare
-   method, insurance allocation, arbitration seat, shipment detail, issuer role. A single local
-   `terms` sub-object keeps them together and clearly marked as non-standard.
-7. Drop the duplicate `buyerParty`/`sellerParty` from the `Pick<>` list, or drop the local
-   re-declaration — keeping both is confusing even though the behaviour is defined.
+`IUneceTradePrice.basisQuantity` is an `IUneceQuantityType`, whose `QuantityTypeCode` is an
+`IUneceQuantityCode` object. The sample's `$/50kg` currently stores the `50` but the tests do not
+set the `kg`. Confirm the house convention for the unit code before more documents are modelled —
+the Coffee DSS invoice uses the same 50 kg basis.
 
-### 4.4 `src/models/IPurchaseOrder.ts`
+### 4.3 Delivery and settlement facets
 
-1. **[decision]** Refactor to the house idiom. The buyer's purchase contract and the seller's sale
-   confirmation are the same document class from opposite sides (see §3.2), so the natural base is
-   the same `IUneceHeaderTradeAgreement`. Concretely: `IPurchaseOrder` becomes an intersection over
-   `IUneceHeaderTradeAgreement` with `buyerReference` promoted instead of `sellerReference`.
-2. Rename every property to a real vocabulary term (see the table in §2.4). `purchaseOrderNumber` →
-   `buyerReference`; `orderedItems` → whatever §4.3.1 settles on; `buyer`/`seller` → `buyerParty`/
-   `sellerParty` if BSP-rooted.
-3. Make optional everything the samples do not always carry: `invoicee`, `allowanceCharge`,
-   `totalOrderAmount`, `paymentMethod`.
-4. Add a `type` property so payloads carry a JSON-LD `@type`.
-5. **[decision]** Fix `ContextPurchaseOrder` — `https://unvtd.unece.org/purchase-order-context.json`
-   is not published and is not the context the other models use.
+Total quantity (`320 Bags`), destination, total contract value and payment means all belong on
+`IUneceHeaderTradeDelivery` / `IUneceHeaderTradeSettlement`, which the current flat models do not
+reach. Adding them is the natural moment to reconsider the re-rooting described in §2.5, since
+`SupplyChainTradeTransaction` is what composes all three facets.
 
-### 4.5 Wiring (do all four, or the model is invisible)
+### 4.4 JSON-LD context generation
 
-1. `tradeDocumentTypes.ts` — give `PurchaseOrder` a real value.
-2. `ts-to-schema.json` — add `./src/models/IPurchaseOrder.ts` to `types`.
-3. `tradeDocumentDataTypes.ts` — import and register `PurchaseOrder.json`.
-4. `index.ts` — export `ITradeParty`, `ITradeItem`, `IPurchaseOrder`.
+`ts-to-jsonld-context.json` still carries the `twin-aig` prefix, the `https://schema.twindev.org/aig/`
+URL and an empty `types` array, so `src/schemas/types.jsonld` is generated near-empty. Two traps
+before fixing it:
 
-### 4.6 Tests
+1. The generator only visits `interface` declarations. All four models are type *aliases*, so
+   listing their files changes nothing.
+2. It throws `noJsonLdProps` for any property without a `@json-ld` JSDoc tag, so every local
+   property needs one first.
 
-1. Fix `Can validate an empty Trade Agreement` — it currently fails, sending `issueDate` where the
-   model says `issueDateTime`, and omitting six required properties.
-2. Un-skip `Can fail to validate an empty Trade Agreement` and correct the expected count (the real
-   number today is 8, not 3 — and it is network-dependent unless `UneceDataTypes.registerTypes()`
-   is called).
-3. Add fixtures built from the real samples: the D.R. Wakefield sale confirmation (3 lines), the
-   Blaser sale confirmation (0 lines), the D.R. Wakefield purchase contract (3 lines, buyer-issued).
-   If a sample cannot be expressed, the model is wrong.
-4. Rename the `describe` block — it still says `AuditableItemGraphDataTypes`.
+### 4.5 Schema strictness
+
+No generated schema emits `additionalProperties: false`, so a misspelled property passes validation
+silently — which is exactly how the old test's `issueDate` typo went unnoticed. Decide whether the
+extraction output should be validated strictly.
 
 ## 5. Roadmap for the remaining five documents
 
@@ -477,6 +524,286 @@ Verified against sample values. These are what let the seven documents form one 
 - **The Delivery Note's `CERTIFICATION` column is the GRN's `Location`** (`15-19` vs `WH15-19`). Do
   not model it as a certification.
 - **Sample dates are in the future (2025–2026)** — the corpus is synthetic/anonymised.
-- `UneceTypes` has no member for any of the five new documents; their `@type` values will be locally
-  namespaced under `TradeDocumentContexts.Namespace`, even though their *document type codes* can
-  come from `UneceDocumentCodeList`.
+- `UneceTypes` has no member for any of the five new documents. That does not matter for
+  `TradeDocumentTypes`, which now holds local profile names anyway (§2.6); it matters for the
+  payload's JSON-LD `@type`, which comes from whichever UN/CEFACT base each model extends. The
+  *document type codes* can and should come from `UneceDocumentCodeList`.
+
+## 6. Relationship to UN/CEFACT Verifiable Trade Documents (UNVTD)
+
+`https://unvtd.unece.org/` is a second, live UN/CEFACT deliverable, distinct from BSP D23B. It
+publishes **21 trade documents as W3C Verifiable Credentials**: for each, a self-contained JSON
+Schema at `<name>-schema.yaml` and a JSON-LD context at `<name>-context.json`. Both were verified
+live.
+
+**The context is a mapping layer, not a rival vocabulary.** `purchase-order-context.json` binds
+UNVTD's friendly wire names onto BSP D23B IRIs under the prefix
+`"unece": "https://vocabulary.uncefact.org/"`:
+
+| UNVTD wire name | expands to |
+|---|---|
+| `PurchaseOrder` (the credential type) | `unece:HeaderTradeAgreement` |
+| `buyer` / `seller` / `invoicee` | `unece:buyerParty` / `unece:sellerParty` / `unece:invoiceeParty` |
+| `orderDate` | `unece:issueDateTime` |
+| `purchaseOrderNumber` | `unece:identifier` |
+| `orderedItems` | `unece:includedSupplyChainTradeLineItem` |
+| `TradeLineItem` | `unece:SupplyChainTradeLineItem` |
+| `product` / `productIdentifier` | `unece:specifiedTradeProduct` / `unece:identifier` |
+| `deliveryLocation` | `unece:shipToParty` |
+| `quantityOrdered` | `unece:billedQuantity` |
+| `unitPrice` / `lineTotal` / `totalOrderAmount` | `unece:chargeAmount` / `unece:lineTotalAmount` / `unece:grandTotalAmount` |
+| `name` / `street` / `city` / `state` / `zip` / `country` | `schema:*` — the address is schema.org, not UN/CEFACT |
+
+So UNVTD independently confirms three of the choices in §2: a purchase order **is** a
+`HeaderTradeAgreement`; its date **is** `issueDateTime` on that class; its lines **are**
+`includedSupplyChainTradeLineItem` of `SupplyChainTradeLineItem`. What §2.5 calls "off-domain" is
+exactly what UNECE itself publishes for this document.
+
+### 6.1 Coverage of the seven targets
+
+Probed 62 URL spellings; cross-checked against the authoritative `/docs` index of 21 documents.
+
+| target | nearest UNVTD schema | verdict |
+|---|---|---|
+| Buyer purchase order → `IPurchaseOrder` | `purchase-order` | **direct hit on identity, shallow on content** — 11 `credentialSubject` properties against 71 on `IUneceHeaderTradeAgreement` |
+| Sales contract → `ITradeAgreement` | `purchase-order` | same class, **wrong direction**: `purchaseOrderNumber` is required and buyer-assigned; no seller-reference property exists |
+| Coffee warrant → `IWarrant` | `warehouse-receipt` | structurally close, **legally not the same document**: no holder, no negotiability flag, no endorsement chain |
+| Holding certificate → `IHoldingCertificate` | `warehouse-receipt` | partial — the receipt records the deposit **event**, a holding certificate attests a **state** for a named current holder |
+| Auction purchase confirmation | `commercial-invoice` | weak — zero auction vocabulary, and its `required` list is empty |
+| Warehouse delivery note | `ships-delivery-order` | poor, wrong domain — 12 of 15 properties are required and maritime (B/L number, vessel, seal) |
+| Transfer note | *(none)* | no analogue |
+
+**UNVTD publishes nothing for six of the seven.** Only `IPurchaseOrder` has a real counterpart.
+
+### 6.2 Can UNVTD accept the sample purchase contract?
+
+An instance of the D.R. Wakefield contract was written and validated for real with ajv against the
+live schema. It **validates** — but that proves little, because `additionalProperties` is absent at
+every level, so almost anything validates. Of 53 distinct facts on the page:
+
+- **~38% survive intact** — the commercial skeleton: parties, date, quality marks, quantities, price
+  amounts, destination, payment terms.
+- **~15% survive degraded** — the three contract numbers only by putting a *contract* reference into
+  `productIdentifier` (a *product* reference); the seller's PO Box asserted as a street; the
+  `Exporter/Shipper` role flattened to the closed enum value `Seller`.
+- **~47% have no home at all** — origin `Kenya`, packaging `Grain Pro`, `60 kg` per unit, the whole
+  `Basis` line (`FOB origin, N.S.W, 0.5% franchise, Actual Tare`), shipment month, shipment detail,
+  insurance allocation, the sample-approval condition, **`EUDR Compliant`**, the European Standard
+  Contract for Coffee, the code of conduct, the precedence clause, `London Arbitration`, and every
+  trace that the document was stamped and signed.
+
+The loss is not random. What survives is *who, what, how many, how much*; what is lost is the entire
+**legal and regulatory layer** — which for an EU-bound 2024 coffee contract is the part a customs
+authority would actually query.
+
+**Four required properties cannot be honestly supplied by the PDF:**
+
+1. `purchaseOrderNumber` — a single header-level string, but the document numbers each line
+   separately (`46690`/`46691`/`46692`) and has no document-level number. An array is rejected
+   (`must be string`), so any value is a fabrication.
+2. `buyer.id` and `seller.id` — `format: uri`, exemplified as DIDs. The page carries no URI, DID,
+   DUNS, GLN, VAT, EORI, registration number, website or email. Unsatisfiable by any paper document
+   that predates a DID registry.
+3. `orderedItems[].productIdentifier` — the document has no product code; only the buyer's contract
+   number, which is a different thing.
+
+**And one silent corruption.** `unitPrice` is `{amount, currency}` with no basis quantity, but the
+contract prices per 50 kg on 60 kg bags. A consumer multiplying `unitPrice.amount` by
+`quantityOrdered` computes **95,060 USD** against a true **114,072 USD** — the schema produces a
+confidently wrong number, which is worse than a gap. The current models carry the basis in
+`agreedPriceProductPrice[].basisQuantity`.
+
+### 6.3 Four defects in the UNVTD purchase-order schema, proven by execution
+
+1. **Not valid JSON Schema 2020-12 despite declaring it.** It uses OpenAPI annotations — `name:` as
+   a schema keyword and `example:` (JSON Schema spells it `examples`, an array). ajv in default
+   strict mode refuses to compile it: `strict mode: unknown keyword: "name"`.
+2. **`credentialSubject` is entirely open** — `additionalProperties` appears nowhere in the file, so
+   arbitrary keys validate. But those keys are undefined in the context, so a strict JSON-LD
+   processor will drop or reject them. The schema and the context disagree about extension.
+3. **`zip` is `type: number`** in 67 of the 68 party objects across the whole suite. `SE1 0UQ` is
+   rejected; Nairobi's `00200` round-trips as `200`.
+4. **`unlocode` is `format: uri`** — a UN/LOCODE is `GBTIL`, five characters, and is rejected.
+
+### 6.4 What this means for the repo
+
+The two are layers, not alternatives: UNVTD is a **wire format** for credential exchange, D23B is
+the **semantic layer** it expands into, and this package models the semantic layer. Three options,
+should UNVTD interop become a requirement:
+
+- **Do nothing.** The models already emit the IRIs UNVTD's context expands to. A consumer that
+  expands both to RDF sees compatible triples for the properties both express.
+- **Add a projection.** A `toUnvtdPurchaseOrder()` serializer that emits the credential envelope and
+  the 11 `credentialSubject` properties, lossily and by design, from a full `IPurchaseOrder`. This
+  is the only option that produces a verifiable credential a third party can check against the
+  published schema, and it keeps the lossless model intact. Cost: the four unsatisfiable required
+  properties still have to be sourced from outside the document — party DIDs in particular.
+- **Adopt UNVTD as the model.** Rejected on the evidence above: it would discard 47% of the sample
+  document, cannot express the price basis without producing a wrong total, and covers only one of
+  the seven target documents.
+
+## 7. The `$ref` URLs in the generated schemas
+
+Two kinds appear, and only one of them is a problem.
+
+| `$ref` | live status | why |
+|---|---|---|
+| `https://schema.twindev.org/unece/Unece*` | **200** | `@twin.org/standards-unece` is published |
+| `https://schema.twindev.org/trade-document/*` | **404** | this package is not published yet |
+| `#/$defs/TradeParty` | n/a | local, always resolves |
+
+### 7.1 How they are minted
+
+Both are **pure string construction at build time**. `ts-to-schema` never dereferences, fetches or
+existence-checks a `$ref`; a 404 has no build-time meaning.
+
+- **Local** — `baseUrl` from `ts-to-schema.json` is passed as both the namespace and the package
+  name, and every schema gets `$id = baseUrl + StringHelper.stripPrefix(typeName)`. `ITradeParty` →
+  `TradeParty` → `https://schema.twindev.org/trade-document/TradeParty`. A cross-reference between
+  two types of the same package reuses that `$id` verbatim.
+- **External** — the `externalReferences` regex map. `"IUnece(.*)"` compiles to `/^IUnece(.*)$/` and
+  rewrites `IUneceHeaderTradeAgreement` → `https://schema.twindev.org/unece/UneceHeaderTradeAgreement`.
+
+The `trade-document/*` 404 therefore has exactly one cause — the package is unpublished — and
+exactly one fix: publish it. It does not affect the build, and it does not affect runtime validation
+either, because `TradeDocumentTypes` values now equal the schema `$id`s (§2.6), so
+`DataTypeHelper`'s schema loader resolves them from the local factory before ever reaching the
+network. It matters only to a third party who fetches one of these files standalone.
+
+### 7.2 Can a schema be emitted self-contained?
+
+**Partially.** `@twin.org/tools-core` supports `@json-schema embedded:defs` and
+`@json-schema embedded:inline`, which hoist a referenced schema into the referencing file. Verified
+empirically; the constraints are sharp:
+
+- **The tag goes on the referenced *declaration*, never on the referencing property.** Placed on a
+  property it is silently discarded — no error, no warning.
+- **It does not reach through arrays.** `ts-to-schema` visits direct property references but never
+  `items`, `additionalProperties`, `not`, `contains`, `propertyNames` or `if`/`then`/`else`. This is
+  why `ITradeParty` embeds and `ITradeItem` does not — every document references `ITradeItem`
+  through an array. The tag is on `ITradeItem` anyway, to record the intent.
+- **It cannot reach an external package.** The mode map is not propagated back from the forked
+  context in which a dependency's `.d.ts` is parsed, so tagging a UNECE interface has no effect. The
+  root `allOf: [{$ref: .../unece/UneceHeaderTradeAgreement}]` cannot be embedded.
+- **`inline` corrupts the model.** It merges the base's properties over the derived ones, so
+  `buyerParty`/`sellerParty` revert from the narrowed `ITradeParty` to the wide `IUneceTradeParty`.
+  Under `allOf` both constraints apply; after flattening only the wide one survives. Do not use it.
+
+So a fully self-contained `TradeAgreement.json` is **not achievable with this toolchain today**.
+`embedded:defs` on `ITradeParty` is the whole of what is available, and it is applied.
+
+### 7.3 Should the child types be in `ts-to-schema.json`?
+
+They look like they should not — only `ITradeAgreement` and `IPurchaseOrder` are documents, and
+`ITradeParty` / `ITradeItem` are their children. But **removing them breaks the output silently**:
+
+- Removed from `types`, the tool still exits 0 with no warning, still emits
+  `$ref: .../trade-document/TradeParty` and `.../TradeItem` — now pointing at files it never writes.
+  Six dangling refs. (The URL is minted from the type name; nothing checks that a target exists.
+  Truncating the source files to zero bytes produces the same refs.)
+- With `embedded:defs`, removing `ITradeParty.ts` becomes safe. Removing `ITradeItem.ts` does not,
+  because of the array gap above.
+
+**Keep all four entries.** Conceptual hierarchy is expressed by the `embedded` tag, not by the
+`types` array.
+
+### 7.4 Upstream issues worth filing against `@twin.org/tools-core`
+
+1. `inlineEmbeddedSchemasInNode` never visits schema-valued keywords, so `embedded` is ignored for
+   any type referenced through an array.
+2. `embeddedSchemaModes` is not propagated back from forked external contexts, so the tag is
+   unreachable in a dependency's `.d.ts`.
+3. `flattenInlineAllOfBranches` lets base properties overwrite derived ones, silently widening
+   narrowed types.
+4. `@json-schema embedded:` on a property is silently discarded instead of producing a diagnostic.
+
+## 8. Coverage proof — the buyer's purchase contract
+
+`.context/Document Samples/02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf` was read at
+its native resolution (a single 1654×2338 px JPEG at 200 dpi — rendering higher only interpolates)
+and decomposed into **106 atomic facts**, splitting every composite string into its parts:
+`FOB origin, N.S.W, 0.5% franchise, Actual Tare.` is four facts, `CWT, Tilbury, United Kingdom` is
+three, `$/50kg` is two.
+
+| | count |
+|---|---|
+| Atomic facts on the page | 106 |
+| **Data bearing** | **71** — 40 header level, 31 line level |
+| Page furniture | 35 — logo, `EST.1970`, 8 column captions, 7 terms labels, ruling, the empty EUDR box, scanner dust, the blank lower 55% of the page |
+
+**All 71 data-bearing facts are expressible.** The proof is executable, not asserted:
+
+- `tests/fixtures/buyerPurchaseContract.ts` transcribes the whole document into an `IPurchaseOrder`,
+  every fact tagged with its id. If a property path did not exist with the right type, `tspc` would
+  reject the file.
+- `tests/coverage/buyerPurchaseContract.spec.ts` validates the instance against the generated schema
+  and then asserts each of the 71 facts individually, plus that the covered id set is *exactly* the
+  inventory's data-bearing set. 83 tests, all green.
+
+### 8.1 Where the harder facts landed
+
+| fact | value | path |
+|---|---|---|
+| `FOB` + named place | `FOB origin` | `applicableDeliveryTerms.deliveryTermsDeliveryTypeCode` = `#FOB`, `.relevantLocation.name` |
+| `N.S.W` | nett shipped weights | `…specifiedLineTradeDelivery[].quantityCalculationMethodCode` |
+| `0.5% franchise` | claims tolerance | `…specifiedTradeProduct[].applicableProductCharacteristic[].valueTolerance[].minusValuePercent` |
+| `Actual Tare` | tare method | `…applicableProductCharacteristic[].valueMethod[].name` |
+| `November 2024` | shipment month | `shippingPeriod.name` + `.startDateTime` / `.endDateTime` |
+| `Nett Cash Against Documentation` | payment method | `applicablePaymentTerms.paymentTermsTypeCode` = `PaymentTermsTypeCodeList#72` |
+| `on first presentation` | payment trigger | `applicablePaymentTerms.paymentTermsEventTimeReferenceFromEventCode` = `TimeReferenceCodeList#71` |
+| `in London` | place of presentation | a second `applicableLocation[]` entry with `locationFunctionTypeCode` = `PlaceOfPayment` |
+| `Subject to approval of preshipment sample` | condition precedent | `purchaseConditionsDocument[].processCondition` |
+| `EUDR Compliant` | regulatory assertion | `applicableRegulatoryProcedure[].certificationBasis` |
+| `European Standard Contract for Coffee` / `latest edition` | governing terms | `contractDocument[].name` + `.versionId` |
+| `D.R Wakefield suppliers code of conduct` | second governing doc | `purchaseConditionsDocument[].name` |
+| `Shipping instructions to follow.` | deferred instructions | `supplyInstructionDocument[].remarks` |
+| the Jowam stamp + signature | acceptance | `sellerParty.confirmedAuthentication[]` — `.signatory`, `.actualDateTime`, `.statement` |
+| `Exporter/Shipper` + `Seller` | two roles, one block | `sellerParty.partyRoleCode` = `[#SE, #EX]` |
+| `P .O. Box 58513- 00200` | seller address | `sellerParty.postalAddress.postOfficeBox` + `.postcodeCode` |
+| `SE1 0UQ` / `Thompson House` | buyer address | `buyerParty.postalAddress.postcodeCode` + `.buildingName` |
+
+### 8.2 The six facts that needed `includedNote`
+
+`IUneceHeaderTradeAgreement` is a pure association hub: of its 69 properties only three carry free
+text (`buyerReference`, `sellerReference`, `reference`), so contractual prose has nowhere to go.
+`includedNote?: IUneceNote[]` was lifted onto both document models — the term is UN/CEFACT's own,
+declared on `Document` and echoed as `additionalInformationNote` / `informationNote` /
+`statementNote` on three other classes, so nothing is invented. Each note is discriminated by
+`subject`:
+
+| fact | subject | why no typed slot exists |
+|---|---|---|
+| `We have bought the following coffee from you :` | `Trade direction` | direction is structural, but the operative sentence itself is prose |
+| `Buyer to nominate vessel.` | `Vessel nomination` | `carrierParty` names a carrier once known; nothing expresses an obligation to name one. `grep -i nominat` over all 394 interfaces returns zero hits |
+| `For buyer's account.` | `Insurance` | no insurance property on any header class; the only insurance text in reach hangs off a physical `Consignment` |
+| `which override all others` | `Precedence` | no precedence vocabulary; array order is not significant in JSON-LD |
+| `London Arbitration.` | `Dispute resolution` | `grep -i arbitration` over all interfaces and code lists returns zero hits |
+| `Please sign and return.` | `Countersignature instruction` | would otherwise need `buyerOrderDocument` used as a self-reference |
+
+### 8.3 Two residual limitations, both upstream
+
+1. **Quantities cannot carry their unit.** `IUneceQuantityCode` declares no value property — only
+   `@context` and `type` — so `IUneceQuantityType` stores `60` but not `kg`, and `200` but not
+   `bags`. This affects every quantity in the package, not just this document.
+2. **Three low-confidence readings in the source**, flagged in the fixture: the buyer's postcode
+   `SE1 0UQ` (below the recovery threshold of the 200 dpi scan; the outward code `SE1` is reliable,
+   the inward code is provisional), whether `D.R Wakefield` has a second full stop, and whether
+   `Please sign and return` ends in a comma or a full stop.
+
+### 8.4 Nothing is derived
+
+The rule is absolute: **a value the page does not state is left absent**, never synthesised to
+satisfy a schema. A test asserts it. Three things are consequently missing from the fixture and that
+is correct:
+
+- **`identifier`** — the contract numbers each line (`46690`/`46691`/`46692`) and carries no
+  document-level order number. UNVTD requires one; a range like `46690-46692` appears nowhere on the
+  paper, so it is not written and `identifier` was demoted to optional (§2.4).
+- **`buyerParty.partyRoleCode`** — the page has no "Buyer" label at all. The seller's roles *are*
+  printed (`Exporter/Shipper` over `Seller`), so only the seller carries one.
+- **the content of the manuscript signature** — fact 93 is an illegible blue ballpoint scrawl. Its
+  presence is recorded by the `confirmedAuthentication` object existing, not by prose describing it.
+
+Deterministic *format* normalisation is not derivation and is expected: `10 September 2024` →
+`2024-09-10T00:00:00.000Z`, and the stated shipment month `November 2024` → its first and last day.
+Both values are on the page; only their encoding changes.

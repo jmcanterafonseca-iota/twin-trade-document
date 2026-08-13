@@ -144,6 +144,10 @@ vite.config.ts.timestamp-*
 .vite/
 
 # Claude Code
-.claude/
+.claude/*
+!.claude/skills/
 .context/
 CLAUDE.md
+
+# Simulated OCR output, regenerated on demand by the trade-document-model skill
+.ocr-preview/
