@@ -9,7 +9,7 @@ import { ITradeParty } from "./ITradeParty.js";
  * A seller issued sales contract, also called a sale confirmation.
  *
  * The seller always assigns its own contract number, so `sellerReference`
- * carries it ("S - JCT / 742-744") and is mandatory. The buyer's number is
+ * carries it ("S - KET / 519-521") and is mandatory. The buyer's number is
  * frequently still "TBA" when the confirmation is issued, so `buyerReference`
  * — inherited from IUneceHeaderTradeAgreement — stays optional.
  *

@@ -60,9 +60,9 @@ Proven by executing ajv against the live schema:
 2. **`additionalProperties` appears nowhere**, at any level. Arbitrary keys validate — but they are
    undefined in the context, so a strict JSON-LD processor drops or rejects them. The schema and the
    context disagree about whether extension is allowed.
-3. **`zip` is `type: number`** in 67 of 68 party objects. `SE1 0UQ` is rejected; `00200` round-trips
-   as `200`.
-4. **`unlocode` is `format: uri`** — a UN/LOCODE is `GBTIL`, five characters, and is rejected.
+3. **`zip` is `type: number`** in 67 of 68 party objects. `BS1 4RN` is rejected; `00240` round-trips
+   as `240`.
+4. **`unlocode` is `format: uri`** — a UN/LOCODE is `GBFXT`, five characters, and is rejected.
 
 Two semantic mappings in the purchase-order context are also questionable and were not followed
 here: `quantityOrdered` → `unece:billedQuantity` (a settlement term, where the order quantity is
@@ -71,7 +71,7 @@ for what is a place).
 
 ## What UNVTD cannot express
 
-Measured against the D.R. Wakefield buyer's purchase contract, a real coffee contract: of 53 to 71
+Measured against the Northgate buyer's purchase contract, a real coffee contract: of 53 to 71
 atomic facts depending on how they are counted, roughly **38% survive intact, 15% degrade, 47% have
 no home**. What survives is the commercial skeleton — who, what, how many, how much. What is lost is
 the legal and regulatory layer: the Incoterm, the governing standard contract, the arbitration
@@ -84,7 +84,7 @@ contract predating a DID registry has one), and `orderedItems[].productIdentifie
 has no product code.
 
 And one silent corruption: `unitPrice` is `{amount, currency}` with no basis quantity, so a contract
-priced per 50 kg on 60 kg bags reads as **95,060 USD** against a true **114,072 USD**.
+priced per 50 kg on 60 kg bags reads as **81,775 USD** against a true **98,130 USD**.
 
 **This is why the repo models BSP directly and treats UNVTD as the wire format.** If UNVTD interop
 is needed, add a lossy `toUnvtd<Document>()` projection rather than adopting its shape.

@@ -62,7 +62,7 @@ it as `#/$defs/TradeParty` instead of by external URL. See §7 for what that tag
 fix.
 
 `name` is promoted rather than `postalAddress`: two of the three sample documents give the
-counterparty as a bare name (`D.R. Wakefield & Company Ltd. United Kingdom`, `Jowam Coffee Trading
+counterparty as a bare name (`Northgate Coffee Importers Ltd. United Kingdom`, `Kilimo Coffee Trading
 Co Ltd`), so requiring an address would reject a real document. `postalAddress` is still available,
 optional, from the base.
 
@@ -97,14 +97,14 @@ export type ITradeItem = IUneceSupplyChainTradeLineItem &
 
 **Why the re-base was unavoidable.** `IUneceLineTradeAgreement` is the *pricing and contractual
 terms* facet of a line. It carries no quantity and no product, so it could not express
-`200 Bags AB Asali` — the primary content of every line on every sample:
+`200 Bags AB Mwitu` — the primary content of every line on every sample:
 
 | What a line needs | UN/CEFACT location | On `LineTradeAgreement`? |
 |---|---|---|
 | Ordered quantity (`200`) | `IUneceLineTradeDelivery.orderQuantity` (:375) | no |
-| Product / grade / mark (`Asali, AB`) | `IUneceSupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | no |
-| Line number (`46690`, `ctr/742`) | `IUneceSupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | no |
-| Unit price (`290.00 USD / 50 kg`) | `IUneceLineTradeAgreement.agreedPriceProductPrice[]` | yes |
+| Product / grade / mark (`Mwitu, AB`) | `IUneceSupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | no |
+| Line number (`81140`, `ctr/519`) | `IUneceSupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | no |
+| Unit price (`275.00 USD / 50 kg`) | `IUneceLineTradeAgreement.agreedPriceProductPrice[]` | yes |
 
 `IUneceSupplyChainTradeLineItem` is the join node reaching all four. The quantities that *are* on
 `LineTradeAgreement` — `economicOrderQuantity` (:137), `minimum`/`maximum`/
@@ -142,7 +142,7 @@ What changed and why:
 - `includesTradeItem` → `includedSupplyChainTradeLineItem`. The old name exists in neither
   vocabulary — `grep -rn "includesTradeItem"` over all 394 BSP interfaces returns zero matches. The
   new name is a real UN/CEFACT term.
-- It is now **optional**. The Blaser sale confirmation states quantity, quality and price at header
+- It is now **optional**. The Alpina sale confirmation states quantity, quality and price at header
   level and has no line breakdown at all; requiring lines made that document unrepresentable.
 - `buyerApprovedDateTime` is no longer required. It is the *buyer's* approval timestamp, and the
   buyer's acceptance block is unsigned on both sale confirmation samples.
@@ -200,14 +200,14 @@ Two notes on the translation:
   delivery facet and is not reachable from a header trade agreement. A delivery address is a place,
   not a party, so `applicableLocation: IUneceLogisticsLocation[]` is used instead, with
   `locationFunctionTypeCode` set to `UneceLocationFunctionCodeList.PlaceOfDelivery`
-  (`unece:LocationFunctionCodeList#7`). The sample's `CWT, Tilbury, United Kingdom` decomposes into
+  (`unece:LocationFunctionCodeList#7`). The sample's `NDW, Felixstowe, United Kingdom` decomposes into
   `name`, `description`, `countryName` and `logisticsLocationCountryId`.
 - **`purchaseOrderNumber` → `identifier`, not `buyerReference`.** `identifier` is the document's own
   number; `buyerReference`/`sellerReference` are the *counterparty's* references as cited. UNVTD
   defines `purchaseOrderNumber` as "Identifier assigned by the buyer to an order", and its context
   points at `unece:identifier`.
   **It is the one required property not carried over**, and deliberately. The sample contract
-  numbers each line (`46690`/`46691`/`46692`) and has none at document level, so making it mandatory
+  numbers each line (`81140`/`81141`/`81142`) and has none at document level, so making it mandatory
   would force a value that appears nowhere on the paper. Representing the real documents without
   inventing data outranks matching a published required set, so `identifier` stays optional and is
   left absent. This is the only place where the two priorities conflict, and the first one wins.
@@ -233,7 +233,7 @@ on types only, so it would not have serialised correctly for either. The migrati
 | `"@context": ContextPurchaseOrder` | `UneceContextType` from the base | that URL is live, but it is the *per-document* UNVTD context and defines none of these terms |
 
 The four dropped properties all belong on `IUneceHeaderTradeSettlement` and appear on neither
-D.R. Wakefield document. When a settlement facet is genuinely needed — the Coffee DSS invoice will
+Northgate document. When a settlement facet is genuinely needed — the Coffee DSS invoice will
 need one — add it then, under its real UN/CEFACT name.
 
 ### 2.4.1 Where the contract table columns live
@@ -243,20 +243,20 @@ Nothing from the buyer's table is declared on `IPurchaseOrder` itself: it is all
 
 | column | sample | path from `includedSupplyChainTradeLineItem[]` |
 |---|---|---|
-| `Contract No` | `46690` | `associatedDocumentLineDocument.lineId` |
+| `Contract No` | `81140` | `associatedDocumentLineDocument.lineId` |
 | `Origin` | `Kenya` | `specifiedTradeProduct[].originCountry[].countryId` (`UneceCountryId.KENYA`) |
-| `Quality` | `Asali,AB` | `specifiedTradeProduct[].name` = `Asali`, `.designation` = `AB` |
+| `Quality` | `Mwitu,AB` | `specifiedTradeProduct[].name` = `Mwitu`, `.designation` = `AB` |
 | `Quantity` | `200` | `specifiedLineTradeDelivery[].orderQuantity.QuantityTypeValue` |
 | `Unit Type` | `Grain Pro` | `specifiedLineTradeDelivery[].includedPackaging[].packageTypeCode` = `UnecePackageTypeCodeList.Bag`, `.description` = `Grain Pro` |
 | `Kg per Unit` | `60` | `specifiedLineTradeDelivery[].perPackageUnitQuantity.QuantityTypeValue` |
-| `Price` | `290.00` | `specifiedLineTradeAgreement.agreedPriceProductPrice[].unitAmount[].AmountTypeValue` |
+| `Price` | `275.00` | `specifiedLineTradeAgreement.agreedPriceProductPrice[].unitAmount[].AmountTypeValue` |
 | `Units` | `$/50kg` | `.unitAmount[].AmountTypeCurrency` = `USDollar`, `.basisQuantity.QuantityTypeValue` = `50` |
 
 Because both the 50 kg price basis and the 60 kg per bag are expressible, the contract total is
 computable from the model: `(200 × 60 ÷ 50 × 290) + (50 × 60 ÷ 50 × 296) + (70 × 60 ÷ 50 × 318)` =
-**114,072 USD**. A test asserts that figure. UNVTD's `unitPrice` is `{amount, currency}` with no
+**98,130 USD**. A test asserts that figure. UNVTD's `unitPrice` is `{amount, currency}` with no
 basis quantity and its `quantityOrdered` is a bare number, so the same three lines there read as
-**95,060 USD** — see §6.2.
+**81,775 USD** — see §6.2.
 
 One residual gap: `perPackageUnitQuantity` carries `60` but not `kg`. `IUneceQuantityCode` declares
 no value property at all — only `@context` and `type` — so `IUneceQuantityType` cannot express its
@@ -322,9 +322,9 @@ context document.
 
 Samples analysed:
 
-- `01-Sale Confirmation(s)/Seller_s Sale Confirmation (D.R. Wakefield).pdf` — Jowam → D.R. Wakefield
-- `01-Sale Confirmation(s)/Seller_s Sale Confirmation (Blaser Trading)_.webp` — Jowam → Blaser
-- `02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf` — D.R. Wakefield ← Jowam
+- `01-Sale Confirmation(s)/Seller_s Sale Confirmation (Northgate).pdf` — Kilimo → Northgate
+- `01-Sale Confirmation(s)/Seller_s Sale Confirmation (Alpina Trading)_.webp` — Kilimo → Alpina
+- `02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf` — Northgate ← Kilimo
 
 The first and the third **describe the same trade**, issued four days apart from opposite sides.
 
@@ -337,22 +337,22 @@ not use it. `✘` = no home anywhere in BSP.
 
 | Document field | Sample value | BSP path | Status |
 |---|---|---|---|
-| Seller's reference | `S - JCT / 742-744` | `HeaderTradeAgreement.sellerReference` (:414) | ✔ |
-| Buyer's reference | `TBA` / `46690`… | `HeaderTradeAgreement.buyerReference` (:120) | ~ |
-| Document issue date | `6th September 2024` | *not on HeaderTradeAgreement* — `SupplyChainTradeTransaction.issueDateTime` (:142) or `Document.issueDateTime` (:212) | local `issueDateTime` |
-| Agreement date ("having sold on …") | `6th September 2024` | — (BSP has no `agreementDate`; Web Vocabulary does) | ✘ |
-| Buyer party | `D.R. Wakefield & Company Ltd.` | `buyerParty` (:114) | ✔ |
-| Seller party | `Jowam Coffee Traders Co. Ltd.` | `sellerParty` (:408) | ✔ |
-| Buyer acceptance date | stamp `10 SEP 2024` | `buyerApprovedDateTime` (:95) | ✔ |
+| Seller's reference | `S - KET / 519-521` | `HeaderTradeAgreement.sellerReference` (:414) | ✔ |
+| Buyer's reference | `TBA` / `81140`… | `HeaderTradeAgreement.buyerReference` (:120) | ~ |
+| Document issue date | `10th March 2025` | *not on HeaderTradeAgreement* — `SupplyChainTradeTransaction.issueDateTime` (:142) or `Document.issueDateTime` (:212) | local `issueDateTime` |
+| Agreement date ("having sold on …") | `10th March 2025` | — (BSP has no `agreementDate`; Web Vocabulary does) | ✘ |
+| Buyer party | `Northgate Coffee Importers Ltd.` | `buyerParty` (:114) | ✔ |
+| Seller party | `Kilimo Estates Traders Co. Ltd.` | `sellerParty` (:408) | ✔ |
+| Buyer acceptance date | stamp `14 MAR 2025` | `buyerApprovedDateTime` (:95) | ✔ |
 | Total quantity | `320 Bags of 60 kg net` | `HeaderTradeDelivery.agreedQuantity` (:89) — different class | ~ |
 | Incoterm | `FOB` / `Free On Board` | `applicableDeliveryTerms` (:46) → `DeliveryTerms.deliveryTermsDeliveryTypeCode` (:43) = `UneceDeliveryTermsCodeList.FreeOnBoard` = `unece:DeliveryTermsCodeList#FOB` | ~ |
 | Named place | `FOB origin` | `DeliveryTerms.relevantLocation` (:67) → `TradeLocation.name` | ~ |
 | Weight basis | `Net Shipping Weight` / `N.S.W` | — | ✘ |
 | Weight franchise | `0.5% franchise` | — | ✘ |
 | Tare method | `Actual Tare` | — | ✘ |
-| Shipment period | `November 2024`, `July/August 2025` | `shippingPeriod` (:425) → `IUneceSpecifiedPeriod` | ~ |
-| Destination | `CWT, Tilbury, United Kingdom` | `applicableLocation[]` (:64) → `IUneceLogisticsLocation` | ~ |
-| Payment terms | `Nett Cash Against Documentation on first presentation in London` | `applicablePaymentTerms` (:70) → `IUnecePaymentTerms` | ~ |
+| Shipment period | `June 2025`, `October/November 2025` | `shippingPeriod` (:425) → `IUneceSpecifiedPeriod` | ~ |
+| Destination | `NDW, Felixstowe, United Kingdom` | `applicableLocation[]` (:64) → `IUneceLogisticsLocation` | ~ |
+| Payment terms | `Nett Cash Against Documentation on first presentation in Bristol` | `applicablePaymentTerms` (:70) → `IUnecePaymentTerms` | ~ |
 | Insurance allocation | `For buyer's account.` | — (BSP `IUneceCargoInsurance` exists but is not reachable from the agreement) | ✘ |
 | Condition precedent | `Subject to approval of preshipment sample by buyer.` | `salesConditionsDocument[]` (:384) / `purchaseConditionsDocument[]` (:306) — both `IUneceDocument`, awkward for a sentence | ~/✘ |
 | Governing terms | `European Standard Contract for Coffee, latest edition` | `contractDocument[]` (:174) | ~ |
@@ -360,29 +360,29 @@ not use it. `✘` = no home anywhere in BSP.
 | Regulatory declaration | `EUDR Compliant` | `applicableRegulatoryProcedure[]` (:77) | ~ |
 | Shipment detail | `Buyer to nominate vessel.` | — | ✘ |
 | Packaging (inner) | `GrainPro`, `Grain Pro` | `TradeProduct` / `IUneceSupplyChainPackaging` — line level | ~ |
-| Total contract value | `160,896.00` (handwritten) | `HeaderTradeSettlement` monetary summation — different class | ~ |
+| Total contract value | `148,992.00` (handwritten) | `HeaderTradeSettlement` monetary summation — different class | ~ |
 
 **Line level**
 
 | Document field | Sample value | BSP path | Status |
 |---|---|---|---|
-| Line contract number | `46690`, `ctr/742` | `SupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | ✘ from `ITradeItem` |
+| Line contract number | `81140`, `ctr/519` | `SupplyChainTradeLineItem.associatedDocumentLineDocument` (:95) | ✘ from `ITradeItem` |
 | Origin | `Kenya` | `LineTradeAgreement.targetMarketCountry[]` is the *market*, not origin; origin belongs on `TradeProduct` | ✘ from `ITradeItem` |
-| Quality (mark + estate + grade) | `Acacias,Thunguri,AA` | `SupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | ✘ from `ITradeItem` |
+| Quality (mark + estate + grade) | `Miti,Kanjuu,AA` | `SupplyChainTradeLineItem.specifiedTradeProduct[]` (:227) | ✘ from `ITradeItem` |
 | Quantity | `200` | `LineTradeDelivery.orderQuantity` (:375) | ✘ from `ITradeItem` |
 | Packaging type | `Grain Pro` | `TradeProduct` / packaging | ✘ from `ITradeItem` |
 | Kg per unit | `60` | `LineTradeDelivery.productUnitQuantity` (:455) | ✘ from `ITradeItem` |
-| Unit price | `290.00` | `agreedPriceProductPrice[]` → `TradePrice.unitAmount[]` → `AmountType.AmountTypeValue` | ✔ |
+| Unit price | `275.00` | `agreedPriceProductPrice[]` → `TradePrice.unitAmount[]` → `AmountType.AmountTypeValue` | ✔ |
 | Currency | `$` / `USD` | `AmountType.AmountTypeCurrency` | ✔ |
 | Price basis | `/50kg` | `TradePrice.basisQuantity` → `QuantityType` (`50`, `KGM`) | ✔ |
 | Line incoterm | `FOB` | `LineTradeAgreement.applicableDeliveryTerms` (:51) | ~ |
 
 ### 3.2 What the samples tell us about cardinality
 
-- **Line items are optional.** The Blaser sale confirmation has **zero** lines — quantity, quality
+- **Line items are optional.** The Alpina sale confirmation has **zero** lines — quantity, quality
   and price are all header-level. This is why `includedSupplyChainTradeLineItem` is optional.
-- **Line identifiers are optional.** The buyer's contract numbers each line (`46690`/`46691`/`46692`);
-  the seller's confirmation has one document-level reference covering a range (`S - JCT / 742-744`).
+- **Line identifiers are optional.** The buyer's contract numbers each line (`81140`/`81141`/`81142`);
+  the seller's confirmation has one document-level reference covering a range (`S - KET / 519-521`).
 - **At most one of `sellerReference` / `buyerReference` is populated at issue time.** Both sale
   confirmations carry `Buyer's Ref: TBA`; the purchase contract carries no seller reference.
 - **Issuer role is a first-class fact, not derivable from the fields.** Same content class, issued
@@ -390,7 +390,7 @@ not use it. `✘` = no home anywhere in BSP.
   coffee from you"). Downstream needs to know which.
 - **The same facts are structured in one document and prose in the other.** The purchase contract
   has `Origin` / `Unit Type` / `Kg per Unit` / `Units` columns; the sale confirmation embeds the
-  identical facts in `320 Bags of 60 kg net in bags` and `at USD 290/50 kgs FOB`. A verbatim source
+  identical facts in `320 Bags of 60 kg net in bags` and `at USD 275/50 kgs FOB`. A verbatim source
   string should be preserved alongside the normalized value — the extraction stage is explicitly
   verbatim-only (README §1).
 
@@ -398,18 +398,18 @@ not use it. `✘` = no home anywhere in BSP.
 
 These are properties of the corpus, not of the models, but they constrain what can be asserted:
 
-- The D.R. Wakefield sale confirmation is **internally inconsistent**: header says `320 Bags`, the
-  three lines sum to `330` (the `60 Bags PB Zawadi` line should be `50`, as the buyer's contract
+- The Northgate sale confirmation is **internally inconsistent**: header says `320 Bags`, the
+  three lines sum to `330` (the `60 Bags PB Tamu` line should be `50`, as the buyer's contract
   says).
 - The sale confirmation's shipment month was **amended by hand**: printed `October 2024` struck
-  through, `November 2024` written above with countersign initials. A text-layer extraction returns
+  through, `June 2025` written above with countersign initials. A text-layer extraction returns
   the struck-through value.
-- Destinations **disagree**: `London Gateway` (seller) vs `CWT, Tilbury` (buyer). Two different
+- Destinations **disagree**: `Southampton` (seller) vs `NDW, Felixstowe` (buyer). Two different
   Thames ports; not reconciled on the face of either document.
 - The two documents share **no identifier**. Matching is only possible on parties + quality + price.
-- Seller legal name differs: `Jowam Coffee Traders Co. Ltd.` vs `Jowam Coffee Trading Co Ltd` — the
+- Seller legal name differs: `Kilimo Estates Traders Co. Ltd.` vs `Kilimo Estates Trading Co Ltd` — the
   buyer's paper is wrong, as the seller's own stamp on it reads `TRADERS`.
-- Quality strings use opposite token order and different delimiters: `AB Asali` vs `Asali,AB`.
+- Quality strings use opposite token order and different delimiters: `AB Mwitu` vs `Mwitu,AB`.
 
 ## 4. Where to put your hands next
 
@@ -428,7 +428,7 @@ blocks the current tests, and each needs a decision before it gets a local prope
 | Tare method | `Actual Tare` | none | free text alongside the weight basis |
 | Insurance allocation | `For buyer's account.` | none reachable from the agreement | a note, or `IUneceCargoInsurance` if the delivery facet is added |
 | Arbitration seat | `London Arbitration` | none | `contractDocument[]` clause text |
-| Place of payment presentation | `on first presentation in London` | none | `applicablePaymentTerms.description`, verbatim |
+| Place of payment presentation | `on first presentation in Bristol` | none | `applicablePaymentTerms.description`, verbatim |
 | Shipment detail | `Buyer to nominate vessel.` | none | a note |
 | Issuer role | seller-issued vs buyer-issued | `partyRoleCode` on the party | already expressible — promote `partyRoleCode` if it must be mandatory |
 | Verbatim source string | the whole extraction stage is verbatim-only | none | a parallel `sourceText` structure, deliberately non-standard |
@@ -508,7 +508,7 @@ Verified against sample values. These are what let the seven documents form one 
 | **ESlip number** (settlement link) | DSS invoice header ↔ warrant payment endorsement | `E2608064LL` |
 | Warehouse code | DSS invoice → warrant issuer | `BTL`, `MAXA`, `KCE` |
 | DO / M.R. receipt no | Delivery Note ↔ GRN | `2993` |
-| Buyer | constant across the corpus | `JOWAM COFFEE TRADERS LTD` (`Buyer Code : 149`) |
+| Buyer | constant across the corpus | `KILIMO COFFEE TRADERS LTD` (`Buyer Code : 149`) |
 
 ### 5.3 Modelling hazards that apply to all seven
 
@@ -577,7 +577,7 @@ Probed 62 URL spellings; cross-checked against the authoritative `/docs` index o
 
 ### 6.2 Can UNVTD accept the sample purchase contract?
 
-An instance of the D.R. Wakefield contract was written and validated for real with ajv against the
+An instance of the Northgate contract was written and validated for real with ajv against the
 live schema. It **validates** — but that proves little, because `additionalProperties` is absent at
 every level, so almost anything validates. Of 53 distinct facts on the page:
 
@@ -599,7 +599,7 @@ authority would actually query.
 **Four required properties cannot be honestly supplied by the PDF:**
 
 1. `purchaseOrderNumber` — a single header-level string, but the document numbers each line
-   separately (`46690`/`46691`/`46692`) and has no document-level number. An array is rejected
+   separately (`81140`/`81141`/`81142`) and has no document-level number. An array is rejected
    (`must be string`), so any value is a fabrication.
 2. `buyer.id` and `seller.id` — `format: uri`, exemplified as DIDs. The page carries no URI, DID,
    DUNS, GLN, VAT, EORI, registration number, website or email. Unsatisfiable by any paper document
@@ -609,7 +609,7 @@ authority would actually query.
 
 **And one silent corruption.** `unitPrice` is `{amount, currency}` with no basis quantity, but the
 contract prices per 50 kg on 60 kg bags. A consumer multiplying `unitPrice.amount` by
-`quantityOrdered` computes **95,060 USD** against a true **114,072 USD** — the schema produces a
+`quantityOrdered` computes **81,775 USD** against a true **98,130 USD** — the schema produces a
 confidently wrong number, which is worse than a gap. The current models carry the basis in
 `agreedPriceProductPrice[].basisQuantity`.
 
@@ -621,8 +621,8 @@ confidently wrong number, which is worse than a gap. The current models carry th
 2. **`credentialSubject` is entirely open** — `additionalProperties` appears nowhere in the file, so
    arbitrary keys validate. But those keys are undefined in the context, so a strict JSON-LD
    processor will drop or reject them. The schema and the context disagree about extension.
-3. **`zip` is `type: number`** in 67 of the 68 party objects across the whole suite. `SE1 0UQ` is
-   rejected; Nairobi's `00200` round-trips as `200`.
+3. **`zip` is `type: number`** in 67 of the 68 party objects across the whole suite. `BS1 4RN` is
+   rejected; Nairobi's `00240` round-trips as `200`.
 4. **`unlocode` is `format: uri`** — a UN/LOCODE is `GBTIL`, five characters, and is rejected.
 
 ### 6.4 What this means for the repo
@@ -722,7 +722,7 @@ They look like they should not — only `ITradeAgreement` and `IPurchaseOrder` a
 `.context/Document Samples/02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf` was read at
 its native resolution (a single 1654×2338 px JPEG at 200 dpi — rendering higher only interpolates)
 and decomposed into **106 atomic facts**, splitting every composite string into its parts:
-`FOB origin, N.S.W, 0.5% franchise, Actual Tare.` is four facts, `CWT, Tilbury, United Kingdom` is
+`FOB origin, N.S.W, 0.5% franchise, Actual Tare.` is four facts, `NDW, Felixstowe, United Kingdom` is
 three, `$/50kg` is two.
 
 | | count |
@@ -748,19 +748,19 @@ three, `$/50kg` is two.
 | `N.S.W` | nett shipped weights | `…specifiedLineTradeDelivery[].quantityCalculationMethodCode` |
 | `0.5% franchise` | claims tolerance | `…specifiedTradeProduct[].applicableProductCharacteristic[].valueTolerance[].minusValuePercent` |
 | `Actual Tare` | tare method | `…applicableProductCharacteristic[].valueMethod[].name` |
-| `November 2024` | shipment month | `shippingPeriod.name` + `.startDateTime` / `.endDateTime` |
+| `June 2025` | shipment month | `shippingPeriod.name` + `.startDateTime` / `.endDateTime` |
 | `Nett Cash Against Documentation` | payment method | `applicablePaymentTerms.paymentTermsTypeCode` = `PaymentTermsTypeCodeList#72` |
 | `on first presentation` | payment trigger | `applicablePaymentTerms.paymentTermsEventTimeReferenceFromEventCode` = `TimeReferenceCodeList#71` |
 | `in London` | place of presentation | a second `applicableLocation[]` entry with `locationFunctionTypeCode` = `PlaceOfPayment` |
 | `Subject to approval of preshipment sample` | condition precedent | `purchaseConditionsDocument[].processCondition` |
 | `EUDR Compliant` | regulatory assertion | `applicableRegulatoryProcedure[].certificationBasis` |
 | `European Standard Contract for Coffee` / `latest edition` | governing terms | `contractDocument[].name` + `.versionId` |
-| `D.R Wakefield suppliers code of conduct` | second governing doc | `purchaseConditionsDocument[].name` |
+| `Northgate suppliers code of conduct` | second governing doc | `purchaseConditionsDocument[].name` |
 | `Shipping instructions to follow.` | deferred instructions | `supplyInstructionDocument[].remarks` |
-| the Jowam stamp + signature | acceptance | `sellerParty.confirmedAuthentication[]` — `.signatory`, `.actualDateTime`, `.statement` |
+| the Kilimo stamp + signature | acceptance | `sellerParty.confirmedAuthentication[]` — `.signatory`, `.actualDateTime`, `.statement` |
 | `Exporter/Shipper` + `Seller` | two roles, one block | `sellerParty.partyRoleCode` = `[#SE, #EX]` |
-| `P .O. Box 58513- 00200` | seller address | `sellerParty.postalAddress.postOfficeBox` + `.postcodeCode` |
-| `SE1 0UQ` / `Thompson House` | buyer address | `buyerParty.postalAddress.postcodeCode` + `.buildingName` |
+| `P .O. Box 41207- 00240` | seller address | `sellerParty.postalAddress.postOfficeBox` + `.postcodeCode` |
+| `BS1 4RN` / `Harbour House` | buyer address | `buyerParty.postalAddress.postcodeCode` + `.buildingName` |
 
 ### 8.2 The six facts that needed `includedNote`
 
@@ -786,8 +786,8 @@ declared on `Document` and echoed as `additionalInformationNote` / `informationN
    `@context` and `type` — so `IUneceQuantityType` stores `60` but not `kg`, and `200` but not
    `bags`. This affects every quantity in the package, not just this document.
 2. **Three low-confidence readings in the source**, flagged in the fixture: the buyer's postcode
-   `SE1 0UQ` (below the recovery threshold of the 200 dpi scan; the outward code `SE1` is reliable,
-   the inward code is provisional), whether `D.R Wakefield` has a second full stop, and whether
+   `BS1 4RN` (below the recovery threshold of the 200 dpi scan; the outward code `SE1` is reliable,
+   the inward code is provisional), whether `Northgate` has a second full stop, and whether
    `Please sign and return` ends in a comma or a full stop.
 
 ### 8.4 Nothing is derived
@@ -796,14 +796,14 @@ The rule is absolute: **a value the page does not state is left absent**, never 
 satisfy a schema. A test asserts it. Three things are consequently missing from the fixture and that
 is correct:
 
-- **`identifier`** — the contract numbers each line (`46690`/`46691`/`46692`) and carries no
-  document-level order number. UNVTD requires one; a range like `46690-46692` appears nowhere on the
+- **`identifier`** — the contract numbers each line (`81140`/`81141`/`81142`) and carries no
+  document-level order number. UNVTD requires one; a range like `81140-81142` appears nowhere on the
   paper, so it is not written and `identifier` was demoted to optional (§2.4).
 - **`buyerParty.partyRoleCode`** — the page has no "Buyer" label at all. The seller's roles *are*
   printed (`Exporter/Shipper` over `Seller`), so only the seller carries one.
 - **the content of the manuscript signature** — fact 93 is an illegible blue ballpoint scrawl. Its
   presence is recorded by the `confirmedAuthentication` object existing, not by prose describing it.
 
-Deterministic *format* normalisation is not derivation and is expected: `10 September 2024` →
-`2024-09-10T00:00:00.000Z`, and the stated shipment month `November 2024` → its first and last day.
+Deterministic *format* normalisation is not derivation and is expected: `14 March 2025` →
+`2025-03-14T00:00:00.000Z`, and the stated shipment month `June 2025` → its first and last day.
 Both values are on the page; only their encoding changes.

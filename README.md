@@ -289,8 +289,8 @@ Bootstrapped from the `twin-auditable-item-graph` template; the port is still in
 - `npm run dist` — the full gate: clean, build, validate-locales, test:build, test — exits 0.
 - Four models generate four schemas: `TradeAgreement`, `PurchaseOrder`, `TradeItem`, `TradeParty`.
   All are registered, all are exported from `src/index.ts`.
-- The test suite validates payloads transcribed from the real sample documents: the D.R. Wakefield
-  sale confirmation (3 lots), the Blaser sale confirmation (no lots), and the D.R. Wakefield
+- The test suite validates payloads transcribed from the real sample documents: the Northgate
+  sale confirmation (3 lots), the Alpina sale confirmation (no lots), and the Northgate
   purchase contract (3 lots), plus the negative cases.
 - **The buyer purchase contract is transcribed in full and proven expressible.** Its page carries
   106 atomic facts, 71 of them data bearing; all 71 are carried by the model and asserted

@@ -7,8 +7,8 @@ import { IUneceTradeParty } from "@twin.org/standards-unece";
  * A party taking a role in a trade document, such as the buyer or the seller.
  *
  * Only the name is promoted to mandatory. The sample documents identify their
- * counterparties by name alone ("Jowam Coffee Trading Co Ltd"), or by name and
- * country ("D.R. Wakefield & Company Ltd. United Kingdom"); only one of the
+ * counterparties by name alone ("Kilimo Estates Trading Co Ltd"), or by name and
+ * country ("Northgate Coffee Importers Ltd. United Kingdom"); only one of the
  * three carries a street address. Requiring `postalAddress` would make a real
  * document unrepresentable.
  *

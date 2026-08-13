@@ -32,17 +32,17 @@ function note(subject: string): string | undefined {
  */
 const FACTS: [number, string, unknown, unknown][] = [
   // --- header identity ---
-  [2, "buyer wordmark", doc.buyerParty.name, "DR Wakefield Company Limited"],
-  [4, "contract date", doc.issueDateTime, "2024-09-10T00:00:00.000Z"],
-  [7, "seller name as typed", doc.sellerParty.name, "Jowam Coffee Trading Co Ltd"],
+  [2, "buyer wordmark", doc.buyerParty.name, "Northgate Coffee Importers Ltd"],
+  [4, "contract date", doc.issueDateTime, "2025-03-14T00:00:00.000Z"],
+  [7, "seller name as typed", doc.sellerParty.name, "Kilimo Estates Trading Co Ltd"],
   [8, "trade direction", note("Trade direction"), "We have bought the following coffee from you :"],
 
-  // --- line 1, contract 46690 ---
-  [17, "contract no", line1.associatedDocumentLineDocument.lineId, "46690"],
+  // --- line 1, contract 81140 ---
+  [17, "contract no", line1.associatedDocumentLineDocument.lineId, "81140"],
   [18, "origin", line1.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
-  [19, "mark", line1.specifiedTradeProduct[0].name, "Asali"],
+  [19, "mark", line1.specifiedTradeProduct[0].name, "Mwitu"],
   [20, "grade", line1.specifiedTradeProduct[0].designation, "AB"],
-  [21, "quantity", line1.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "200"],
+  [21, "quantity", line1.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "180"],
   [
     22,
     "unit type",
@@ -59,7 +59,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     24,
     "price",
     line1.specifiedLineTradeAgreement.agreedPriceProductPrice[0].unitAmount?.[0].AmountTypeValue,
-    "290.00",
+    "275.00",
   ],
   [
     25,
@@ -74,12 +74,12 @@ const FACTS: [number, string, unknown, unknown][] = [
     "50",
   ],
 
-  // --- line 2, contract 46691 ---
-  [27, "contract no", line2.associatedDocumentLineDocument.lineId, "46691"],
+  // --- line 2, contract 81141 ---
+  [27, "contract no", line2.associatedDocumentLineDocument.lineId, "81141"],
   [28, "origin", line2.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
-  [29, "mark", line2.specifiedTradeProduct[0].name, "Zawadi"],
+  [29, "mark", line2.specifiedTradeProduct[0].name, "Tamu"],
   [30, "grade", line2.specifiedTradeProduct[0].designation, "PB"],
-  [31, "quantity", line2.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "50"],
+  [31, "quantity", line2.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "45"],
   [
     32,
     "unit type",
@@ -96,7 +96,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     34,
     "price",
     line2.specifiedLineTradeAgreement.agreedPriceProductPrice[0].unitAmount?.[0].AmountTypeValue,
-    "296.00",
+    "281.00",
   ],
   [
     35,
@@ -111,13 +111,13 @@ const FACTS: [number, string, unknown, unknown][] = [
     "50",
   ],
 
-  // --- line 3, contract 46692 ---
-  [37, "contract no", line3.associatedDocumentLineDocument.lineId, "46692"],
+  // --- line 3, contract 81142 ---
+  [37, "contract no", line3.associatedDocumentLineDocument.lineId, "81142"],
   [38, "origin", line3.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
-  [39, "mark", line3.specifiedTradeProduct[0].name, "Acacias"],
-  [40, "washing station", line3.specifiedTradeProduct[0].tradeName, "Thunguri"],
+  [39, "mark", line3.specifiedTradeProduct[0].name, "Miti"],
+  [40, "washing station", line3.specifiedTradeProduct[0].tradeName, "Kanjuu"],
   [41, "grade", line3.specifiedTradeProduct[0].designation, "AA"],
-  [42, "quantity", line3.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "70"],
+  [42, "quantity", line3.specifiedLineTradeDelivery[0].orderQuantity?.QuantityTypeValue, "65"],
   [
     43,
     "unit type",
@@ -134,7 +134,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     45,
     "price",
     line3.specifiedLineTradeAgreement.agreedPriceProductPrice[0].unitAmount?.[0].AmountTypeValue,
-    "318.00",
+    "302.00",
   ],
   [
     46,
@@ -178,9 +178,9 @@ const FACTS: [number, string, unknown, unknown][] = [
   ],
 
   // --- remaining terms rows ---
-  [59, "shipment month", doc.shippingPeriod?.name, "November 2024"],
-  [60, "destination warehouse", doc.applicableLocation[0].description, "CWT"],
-  [61, "destination town", doc.applicableLocation[0].name, "Tilbury"],
+  [59, "shipment month", doc.shippingPeriod?.name, "June 2025"],
+  [60, "destination warehouse", doc.applicableLocation[0].description, "NDW"],
+  [61, "destination town", doc.applicableLocation[0].name, "Felixstowe"],
   [62, "destination country", doc.applicableLocation[0].countryName, "United Kingdom"],
   [63, "vessel nomination", note("Vessel nomination"), "Buyer to nominate vessel."],
   [64, "shipping instructions", doc.supplyInstructionDocument?.[0].remarks, "Shipping instructions to follow."],
@@ -196,7 +196,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     doc.applicablePaymentTerms?.paymentTermsEventTimeReferenceFromEventCode,
     "unece:TimeReferenceCodeList#71",
   ],
-  [67, "place of presentation", doc.applicableLocation[1].name, "London"],
+  [67, "place of presentation", doc.applicableLocation[1].name, "Bristol"],
   [68, "insurance allocation", note("Insurance"), "For buyer's account."],
   [
     69,
@@ -213,7 +213,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     73,
     "code of conduct",
     doc.purchaseConditionsDocument?.[1].name,
-    "D.R Wakefield suppliers code of conduct",
+    "Northgate suppliers code of conduct",
   ],
   [
     74,
@@ -224,10 +224,10 @@ const FACTS: [number, string, unknown, unknown][] = [
   [75, "arbitration forum", note("Dispute resolution"), "London Arbitration."],
 
   // --- buyer address block ---
-  [80, "buyer legal name", doc.buyerParty.name, "DR Wakefield Company Limited"],
-  [81, "buyer building", doc.buyerParty.postalAddress?.buildingName, "Thompson House"],
-  [82, "buyer city", doc.buyerParty.postalAddress?.cityName, "London"],
-  [83, "buyer postcode", doc.buyerParty.postalAddress?.postcodeCode, "SE1 0UQ"],
+  [80, "buyer legal name", doc.buyerParty.name, "Northgate Coffee Importers Ltd"],
+  [81, "buyer building", doc.buyerParty.postalAddress?.buildingName, "Harbour House"],
+  [82, "buyer city", doc.buyerParty.postalAddress?.cityName, "Bristol"],
+  [83, "buyer postcode", doc.buyerParty.postalAddress?.postcodeCode, "BS1 4RN"],
   [84, "buyer country", doc.buyerParty.postalAddress?.countryName, "United Kingdom"],
 
   // --- stamp and signature ---
@@ -235,16 +235,16 @@ const FACTS: [number, string, unknown, unknown][] = [
     86,
     "seller name as stamped",
     doc.sellerParty.confirmedAuthentication?.[0].signatory,
-    "JOWAM COFFEE TRADERS LTD.",
+    "KILIMO ESTATES TRADERS LTD.",
   ],
   [
     87,
     "stamp date",
     doc.sellerParty.confirmedAuthentication?.[0].actualDateTime,
-    "2024-09-10T00:00:00.000Z",
+    "2025-03-14T00:00:00.000Z",
   ],
-  [88, "seller PO box", doc.sellerParty.postalAddress?.postOfficeBox, "58513"],
-  [89, "seller postcode", doc.sellerParty.postalAddress?.postcodeCode, "00200"],
+  [88, "seller PO box", doc.sellerParty.postalAddress?.postOfficeBox, "41207"],
+  [89, "seller postcode", doc.sellerParty.postalAddress?.postcodeCode, "00240"],
   [90, "seller city", doc.sellerParty.postalAddress?.cityName, "NAIROBI"],
   [91, "seller country", doc.sellerParty.postalAddress?.countryName, "KENYA"],
   // The scrawl itself is illegible and has no transcribable value; what the

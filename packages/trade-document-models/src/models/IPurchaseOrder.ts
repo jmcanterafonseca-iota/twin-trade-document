@@ -28,7 +28,7 @@ import { ITradeParty } from "./ITradeParty.js";
  *
  * `identifier` is the one departure, and it is deliberate. UNVTD requires a
  * single header-level order number, but a real buyer's contract may number each
- * line and carry none at document level — the D.R. Wakefield sample does
+ * line and carry none at document level — the Northgate sample does
  * exactly that. Making it mandatory would force a value that appears nowhere on
  * the paper. Representing the real documents without inventing data outranks
  * matching the published required set, so `identifier` stays optional and is

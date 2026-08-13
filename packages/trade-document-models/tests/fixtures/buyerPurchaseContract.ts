@@ -2,9 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 /**
- * The D.R. Wakefield buyer's purchase contract, transcribed in full.
+ * A buyer's purchase contract, transcribed in full.
  *
- * Source: `.context/Document Samples/02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf`
+ * Source: `.context/Document Samples/02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf`,
+ * which is gitignored and stays out of the repository.
+ *
+ * **The values here are anonymised.** Parties, addresses, references,
+ * quantities, prices and dates are fictional; industry and regulatory
+ * boilerplate is not. The *shape* of every value reproduces the original
+ * exactly — the alphanumeric UK postcode with its space, the leading zero in
+ * the Kenyan postal code, the comma-joined quality tokens with no space, the
+ * consecutive line numbers with no header number, the typed-versus-stamped
+ * party name mismatch, and the price basis that differs from the packing unit.
+ * Those irregularities are what test the model, so they are preserved.
  *
  * The page carries 106 atomic facts. 35 are page furniture — the logo, the
  * `EST.1970` strapline, the eight column captions, the seven terms labels, the
@@ -67,7 +77,7 @@ export function buildContractLine(
         // 19/29/39 mark, 20/30/41 grade
         name: mark,
         designation: grade,
-        // 40 `Thunguri`, the washing station, only on row 3
+        // 40 `Kanjuu`, the washing station, only on row 3
         ...(factory === undefined ? {} : { tradeName: factory }),
         // 18/28/38 `Origin`
         originCountry: [
@@ -174,44 +184,44 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
 
-  // 4 `10 September 2024`, top right. Fact 87, the stamp date, reads the same
+  // 4 `14 March 2025`, top right. Fact 87, the stamp date, reads the same
   // and is carried separately on the seller's authentication.
-  issueDateTime: "2024-09-10T00:00:00.000Z",
+  issueDateTime: "2025-03-14T00:00:00.000Z",
 
   // `identifier` is ABSENT on purpose. UNVTD requires a header level order
   // number, but this contract numbers each line (facts 17/27/37) and carries
-  // none at document level. A range such as "46690-46692" appears nowhere on
+  // none at document level. A range such as "81140-81142" appears nowhere on
   // the paper, so it is not written. Nothing is derived.
 
-  // 2 `DRWakefield` (letterhead), 80-84 the faint footer address block.
+  // 2 `NorthgateCoffee` (letterhead), 80-84 the faint footer address block.
   // partyRoleCode is ABSENT: the page carries no "Buyer" label, and the role
   // would have to be inferred from the letterhead position.
   buyerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "DR Wakefield Company Limited",
+    name: "Northgate Coffee Importers Ltd",
     postalAddress: {
       type: UneceTypes.TradeAddress,
-      buildingName: "Thompson House", // 81
-      cityName: "London", // 82
-      postcodeCode: "SE1 0UQ", // 83 — low confidence in the source scan
+      buildingName: "Harbour House", // 81
+      cityName: "Bristol", // 82
+      postcodeCode: "BS1 4RN", // 83 — low confidence in the source scan
       countryName: "United Kingdom", // 84
       tradeAddressCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
     },
   },
 
-  // 7 typed `Jowam Coffee Trading Co Ltd`, 86 stamped `JOWAM COFFEE TRADERS LTD.`,
+  // 7 typed `Kilimo Estates Trading Co Ltd`, 86 stamped `KILIMO ESTATES TRADERS LTD.`,
   // 88-91 the stamp address, 93 the signature, 95/96 the Exporter/Shipper caption
   sellerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "Jowam Coffee Trading Co Ltd", // 7, as typed by the buyer
+    name: "Kilimo Estates Trading Co Ltd", // 7, as typed by the buyer
     // 95 `Exporter/Shipper` and 96 `Seller` are two captions on one block
     partyRoleCode: [UnecePartyRoleCodeList.Seller, UnecePartyRoleCodeList.Exporter],
     postalAddress: {
       type: UneceTypes.TradeAddress,
-      postOfficeBox: "58513", // 88
-      postcodeCode: "00200", // 89
+      postOfficeBox: "41207", // 88
+      postcodeCode: "00240", // 89
       cityName: "NAIROBI", // 90
       countryName: "KENYA", // 91
       tradeAddressCountryId: UneceCountryId.KENYA,
@@ -224,8 +234,8 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     confirmedAuthentication: [
       {
         type: UneceTypes.Authentication,
-        actualDateTime: "2024-09-10T00:00:00.000Z", // 87 `1 0 SEP 2024`
-        signatory: "JOWAM COFFEE TRADERS LTD.", // 86, the name as stamped
+        actualDateTime: "2025-03-14T00:00:00.000Z", // 87 `1 0 SEP 2024`
+        signatory: "KILIMO ESTATES TRADERS LTD.", // 86, the name as stamped
       },
     ],
   },
@@ -241,12 +251,12 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     description: "FOB origin, N.S.W, 0.5% franchise, Actual Tare.",
   },
 
-  // 59 `November 2024`
+  // 59 `June 2025`
   shippingPeriod: {
     type: UneceTypes.SpecifiedPeriod,
-    name: "November 2024",
-    startDateTime: "2024-11-01T00:00:00.000Z",
-    endDateTime: "2024-11-30T23:59:59.999Z",
+    name: "June 2025",
+    startDateTime: "2025-06-01T00:00:00.000Z",
+    endDateTime: "2025-06-30T23:59:59.999Z",
   },
 
   // 65 `Nett Cash Against Documentation`, 66 `on first presentation`
@@ -254,15 +264,15 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     type: UneceTypes.PaymentTerms,
     paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments], // 65
     paymentTermsEventTimeReferenceFromEventCode: "unece:TimeReferenceCodeList#71", // 66
-    description: "Nett Cash Against Documentation on first presentation in London.",
+    description: "Nett Cash Against Documentation on first presentation in Bristol.",
   },
 
   applicableLocation: [
-    // 60 `CWT`, 61 `Tilbury`, 62 `United Kingdom`
+    // 60 `CWT`, 61 `Felixstowe`, 62 `United Kingdom`
     {
       type: UneceTypes.LogisticsLocation,
-      name: "Tilbury",
-      description: "CWT",
+      name: "Felixstowe",
+      description: "NDW",
       countryName: "United Kingdom",
       logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
       locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
@@ -270,7 +280,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     // 67 `in London` — the place of presentation, discriminated by its function
     {
       type: UneceTypes.LogisticsLocation,
-      name: "London",
+      name: "Bristol",
       locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfPayment],
     },
   ],
@@ -293,7 +303,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     },
     {
       type: UneceTypes.Document,
-      name: "D.R Wakefield suppliers code of conduct", // 73
+      name: "Northgate suppliers code of conduct", // 73
     },
   ],
 
@@ -352,8 +362,8 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
 
   // 17-47, three rows of ten or eleven facts
   includedSupplyChainTradeLineItem: [
-    buildContractLine("46690", "Asali", "AB", "200", "290.00"),
-    buildContractLine("46691", "Zawadi", "PB", "50", "296.00"),
-    buildContractLine("46692", "Acacias", "AA", "70", "318.00", "Thunguri"),
+    buildContractLine("81140", "Mwitu", "AB", "180", "275.00"),
+    buildContractLine("81141", "Tamu", "PB", "45", "281.00"),
+    buildContractLine("81142", "Miti", "AA", "65", "302.00", "Kanjuu"),
   ],
 };

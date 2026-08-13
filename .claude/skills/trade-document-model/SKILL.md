@@ -18,13 +18,48 @@ proof that the document round-trips without losing data.
    point. The context is the valuable part: it maps UNVTD's friendly wire names onto UN/CEFACT BSP
    D23B IRIs, which is exactly what this repository models.
 
-And one rule that follows from the first:
+And two rules that follow from the first:
 
 3. **Never derive, infer or synthesise a value.** If the page does not state it, leave the property
    absent. A composite invented to satisfy a `required` list — a range of line numbers standing in
    for a missing document number, a role code inferred from a letterhead — is data corruption, not
    completeness. Deterministic *format* normalisation of a value that IS on the page (a written date
    to ISO 8601, a stated month to its first and last day) is not derivation and is expected.
+
+4. **Nothing committed carries real counterparty data.** The sample PDFs live under `.context/`,
+   which is gitignored on purpose — they were deliberately kept out of the repository, and a
+   verbatim transcription of one puts the same content back in, in a form that is structured and
+   searchable. See "Anonymisation" below for how to anonymise without weakening the proof.
+
+## Anonymisation
+
+Everything committed — fixture, spec, model TSDoc (which is copied verbatim into the published
+schema `description`), model guide, README — uses **fictional** parties, addresses, references,
+quantities, prices and dates. The verbatim reading of the real page lives only in the fact
+inventory you work from and in the gitignored `.ocr-preview/` artefact.
+
+This costs the proof nothing: it demonstrates that every *field* is carried, and field coverage does
+not depend on the literal values.
+
+**Replace the shape, not just the string.** The awkwardness of a real document is exactly what
+tests the model, so every fictional value must reproduce the format, length and irregularity of the
+one it replaces:
+
+| keep | because |
+|---|---|
+| a UK postcode alphanumeric, with the space (`SE1 0UQ` → `BS1 4RN`) | UNVTD's `zip: number` rejects it — that is a finding |
+| leading zeros in postal codes (`00200` → `00240`) | they get eaten by numeric types |
+| comma-joined tokens with no space (`Asali,AB` → `Mwitu,AB`) | it is what the parser must split |
+| consecutive line numbers with no header number | it is why `identifier` is optional |
+| the typed-vs-stamped party name mismatch | a real contradiction the model must be able to hold |
+| a price basis that differs from the packing unit (per 50 kg on 60 kg bags) | the factor that UNVTD loses |
+| industry and regulatory boilerplate — Incoterms, `N.S.W`, `Actual Tare`, `Grain Pro`, `EUDR`, the European Standard Contract for Coffee, arbitration seats, grades, origin country | public terms, not counterparty data |
+
+Recompute anything derived from the changed numbers — line totals, contract totals, the figures
+quoted in the docs — and check the diff: a bulk find-and-replace will silently hit values it should
+not. In this repo it turned the 50 kg price basis into 45.
+
+State in the fixture header that the values are anonymised and that the shape is preserved.
 
 ## Step 0 — Collect the inputs
 
@@ -63,7 +98,7 @@ Produce a numbered **atomic fact inventory** — one row per indivisible fact:
 Splitting rules, learned the hard way:
 
 - Split every composite string into its atoms. `FOB origin, N.S.W, 0.5% franchise, Actual Tare.` is
-  **four** facts. `CWT, Tilbury, United Kingdom` is **three**. `$/50kg` is **two**. `Asali,AB` is
+  **four** facts. `NDW, Felixstowe, United Kingdom` is **three**. `$/50kg` is **two**. `Mwitu,AB` is
   **two**.
 - Classify each fact as **data bearing** or **page furniture**. Furniture — logos, straplines,
   column captions, field labels, ruling, empty boxes, scanner dust, blank page area — needs no home

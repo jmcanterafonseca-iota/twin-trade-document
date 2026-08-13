@@ -23,7 +23,7 @@ const PURCHASE_ORDER_TYPE = `${TradeDocumentContexts.Namespace}${TradeDocumentTy
 
 /**
  * Build one contracted lot, populating every column of the buyer's contract table.
- * @param lineId The lot reference: `Contract No` "46690" on the buyer's paper, "ctr/742" on the seller's.
+ * @param lineId The lot reference: `Contract No` "81140" on the buyer's paper, "ctr/519" on the seller's.
  * @param mark The coffee mark or estate, the first token of `Quality`.
  * @param grade The coffee grade, the last token of `Quality`.
  * @param bags The `Quantity` column, a number of bags.
@@ -109,58 +109,58 @@ function buildLot(
 }
 
 /**
- * The seller's sale confirmation, Jowam to D.R. Wakefield, ref S - JCT / 742-744.
- * `.context/Document Samples/01-Sale Confirmation(s)/Seller_s Sale Confirmation (D.R. Wakefield).pdf`
+ * The seller's sale confirmation, Kilimo to Northgate, ref S - KET / 519-521.
+ * `.context/Document Samples/01-Sale Confirmation(s)/Seller_s Sale Confirmation (Northgate).pdf`
  */
 const SALE_CONFIRMATION: ITradeAgreement = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2024-09-06T00:00:00.000Z",
-  sellerReference: "S - JCT / 742-744",
+  issueDateTime: "2025-03-10T00:00:00.000Z",
+  sellerReference: "S - KET / 519-521",
   buyerReference: "TBA",
   buyerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "D.R. Wakefield & Company Ltd.",
+    name: "Northgate Coffee Importers Ltd.",
   },
   sellerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "Jowam Coffee Traders Co. Ltd.",
+    name: "Kilimo Estates Traders Co. Ltd.",
   },
   includedSupplyChainTradeLineItem: [
-    buildLot("ctr/742", "Asali", "AB", "200", "290.00"),
-    buildLot("ctr/743", "Zawadi", "PB", "50", "296.00"),
-    buildLot("ctr/744", "Acacias Thunguri", "AA", "70", "318.00"),
+    buildLot("ctr/519", "Mwitu", "AB", "180", "275.00"),
+    buildLot("ctr/520", "Tamu", "PB", "45", "281.00"),
+    buildLot("ctr/521", "Miti Kanjuu", "AA", "65", "302.00"),
   ],
 };
 
 /**
- * The seller's sale confirmation, Jowam to Blaser Trading, ref S - JCT / 807.
+ * The seller's sale confirmation, Kilimo to Alpina Trading, ref S - KET / 566.
  * A single lot contract: quantity, quality and price are stated at header
  * level and the document has no line breakdown at all.
- * `.context/Document Samples/01-Sale Confirmation(s)/Seller_s Sale Confirmation (Blaser Trading)_.webp`
+ * `.context/Document Samples/01-Sale Confirmation(s)/Seller_s Sale Confirmation (Alpina Trading)_.webp`
  */
 const SALE_CONFIRMATION_NO_LINES: ITradeAgreement = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2025-05-16T00:00:00.000Z",
-  sellerReference: "S - JCT / 807",
+  issueDateTime: "2025-08-22T00:00:00.000Z",
+  sellerReference: "S - KET / 566",
   buyerReference: "TBA",
   buyerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "Blaser Trading AG.",
+    name: "Alpina Kaffee AG.",
   },
   sellerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "Jowam Coffee Traders Co. Ltd.",
+    name: "Kilimo Estates Traders Co. Ltd.",
   },
 };
 
 /**
- * The buyer's purchase contract, D.R. Wakefield to Jowam, contracts 46690-46692.
+ * The buyer's purchase contract, Northgate to Kilimo, contracts 81140-81142.
  * The mirror of SALE_CONFIRMATION, issued four days later; it cites no seller
  * reference anywhere.
  * `.context/Document Samples/02-Buyer Purchase Contract(s)/Buyer_s Purchase Contract.pdf`
@@ -168,15 +168,15 @@ const SALE_CONFIRMATION_NO_LINES: ITradeAgreement = {
 const PURCHASE_CONTRACT: IPurchaseOrder = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2024-09-10T00:00:00.000Z",
+  issueDateTime: "2025-03-14T00:00:00.000Z",
   // `identifier` is absent on purpose: the document numbers each line and has
   // no header level order number. Nothing is derived to fill it.
-  // `Destination`: CWT, Tilbury, United Kingdom
+  // `Destination`: NDW, Felixstowe, United Kingdom
   applicableLocation: [
     {
       type: UneceTypes.LogisticsLocation,
-      name: "Tilbury",
-      description: "CWT",
+      name: "Felixstowe",
+      description: "NDW",
       countryName: "United Kingdom",
       logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
       locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
@@ -185,17 +185,17 @@ const PURCHASE_CONTRACT: IPurchaseOrder = {
   buyerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "DR Wakefield Company Limited",
+    name: "Northgate Coffee Importers Ltd",
   },
   sellerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
-    name: "Jowam Coffee Trading Co Ltd",
+    name: "Kilimo Estates Trading Co Ltd",
   },
   includedSupplyChainTradeLineItem: [
-    buildLot("46690", "Asali", "AB", "200", "290.00"),
-    buildLot("46691", "Zawadi", "PB", "50", "296.00"),
-    buildLot("46692", "Acacias,Thunguri", "AA", "70", "318.00"),
+    buildLot("81140", "Mwitu", "AB", "180", "275.00"),
+    buildLot("81141", "Tamu", "PB", "45", "281.00"),
+    buildLot("81142", "Miti,Kanjuu", "AA", "65", "302.00"),
   ],
 };
 
@@ -230,7 +230,7 @@ describe("TradeDocumentDataTypes", () => {
     );
   });
 
-  test("Can validate the D.R. Wakefield sale confirmation", async () => {
+  test("Can validate the Northgate sale confirmation", async () => {
     const validationFailures: IValidationFailure[] = [];
     const isValid = await DataTypeHelper.validate(
       "",
@@ -269,7 +269,7 @@ describe("TradeDocumentDataTypes", () => {
     ]);
   });
 
-  test("Can validate the D.R. Wakefield purchase contract", async () => {
+  test("Can validate the Northgate purchase contract", async () => {
     const validationFailures: IValidationFailure[] = [];
     const isValid = await DataTypeHelper.validate(
       "",
@@ -318,21 +318,21 @@ describe("TradeDocumentDataTypes", () => {
     const [price] = firstLot.specifiedLineTradeAgreement.agreedPriceProductPrice;
 
     // Contract No | Origin | Quality | Quantity | Unit Type | Kg per Unit | Price | Units
-    expect(firstLot.associatedDocumentLineDocument.lineId).toEqual("46690");
+    expect(firstLot.associatedDocumentLineDocument.lineId).toEqual("81140");
     expect(product.originCountry?.[0].countryId).toEqual(UneceCountryId.KENYA);
-    expect(product.name).toEqual("Asali");
+    expect(product.name).toEqual("Mwitu");
     expect(product.designation).toEqual("AB");
-    expect(delivery.orderQuantity?.QuantityTypeValue).toEqual("200");
+    expect(delivery.orderQuantity?.QuantityTypeValue).toEqual("180");
     expect(delivery.includedPackaging?.[0].packageTypeCode).toEqual(UnecePackageTypeCodeList.Bag);
     expect(delivery.includedPackaging?.[0].description).toEqual("Grain Pro");
     expect(delivery.perPackageUnitQuantity?.QuantityTypeValue).toEqual("60");
-    expect(price.unitAmount?.[0].AmountTypeValue).toEqual("290.00");
+    expect(price.unitAmount?.[0].AmountTypeValue).toEqual("275.00");
     expect(price.unitAmount?.[0].AmountTypeCurrency).toEqual(UneceAmountCurrency.USDollar);
     expect(price.basisQuantity?.QuantityTypeValue).toEqual("50");
 
     // The contract total is only computable because the 50 kg price basis and
     // the 60 kg per bag are both expressible. UNVTD's unitPrice has neither, so
-    // the same three lines there read as 95,060 USD instead of 114,072.
+    // the same three lines there read as 81,775 USD instead of 98,130.
     const total = PURCHASE_CONTRACT.includedSupplyChainTradeLineItem.reduce((sum, lot) => {
       const [lotDelivery] = lot.specifiedLineTradeDelivery;
       const [lotPrice] = lot.specifiedLineTradeAgreement.agreedPriceProductPrice;
@@ -342,12 +342,12 @@ describe("TradeDocumentDataTypes", () => {
       const perBasis = Number(lotPrice.unitAmount?.[0].AmountTypeValue);
       return sum + ((bags * kgPerBag) / basisKg) * perBasis;
     }, 0);
-    expect(total).toEqual(114072);
+    expect(total).toEqual(98130);
   });
 
   test("Can fail to validate a lot that has no agreed price", async () => {
     const validationFailures: IValidationFailure[] = [];
-    const lot = buildLot("ctr/742", "Asali", "AB", "200", "290.00");
+    const lot = buildLot("ctr/519", "Mwitu", "AB", "180", "275.00");
     const { agreedPriceProductPrice, ...agreementWithoutPrice } =
       lot.specifiedLineTradeAgreement;
 

@@ -9,17 +9,17 @@ import { IUneceLineTradeAgreement, IUneceSupplyChainTradeLineItem } from "@twin.
  * Re-based from IUneceLineTradeAgreement onto IUneceSupplyChainTradeLineItem.
  * The line agreement carries prices and ordering constraints only: it has no
  * property for the ordered quantity and none for the product, so it cannot
- * express "200 Bags AB Asali". UN/CEFACT puts those on the line item, which is
+ * express "200 Bags AB Mwitu". UN/CEFACT puts those on the line item, which is
  * the only class reaching all four facets a coffee lot needs:
  *
- * - `associatedDocumentLineDocument.lineId` — the lot reference, "ctr/742" on
- *   the seller's confirmation or "46690" on the buyer's contract.
+ * - `associatedDocumentLineDocument.lineId` — the lot reference, "ctr/519" on
+ *   the seller's confirmation or "81140" on the buyer's contract.
  * - `specifiedTradeProduct[]` — the mark, grade and origin, such as
- *   "Acacias,Thunguri,AA" from "Kenya".
- * - `specifiedLineTradeDelivery[].orderQuantity` — the number of bags, "200";
+ *   "Miti,Kanjuu,AA" from "Kenya".
+ * - `specifiedLineTradeDelivery[].orderQuantity` — the number of bags, "180";
  *   `perPackageUnitQuantity` carries the "60 kg per bag".
  * - `specifiedLineTradeAgreement.agreedPriceProductPrice[]` — the unit price,
- *   "USD 290 per 50 kgs": `unitAmount[]` for the amount and currency,
+ *   "USD 275 per 50 kgs": `unitAmount[]` for the amount and currency,
  *   `basisQuantity` for the 50 kg basis.
  *
  * The mandatory price of the previous model is preserved one level down, by
