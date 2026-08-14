@@ -9,26 +9,16 @@ import { UneceContexts } from "@twin.org/standards-unece";
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TradeDocumentContexts = {
 	/**
-	 * The canonical RDF namespace URI for trade documents.
-	 * Used as the prefix of every data type registration key, and as the
-	 * `baseUrl` from which the generated schemas take their `$id`.
+	 * The canonical RDF namespace URI for trade documents. Prefixes every data
+	 * type registration key and every generated schema `$id`.
 	 */
 	Namespace: "https://schema.twindev.org/trade-document/",
 
 	/**
-	 * The value to use in `@context`.
-	 *
-	 * Every property of every model in this package comes from UN/CEFACT
-	 * Buy-Ship-Pay D23B, via `@twin.org/standards-unece`, so the D23B context
-	 * is the one that resolves them.
-	 *
-	 * The previous values pointed at `https://unvtd.unece.org/` and
-	 * `https://unvtd.unece.org/purchase-order-context.json`. Both are live: that
-	 * is the UN/CEFACT Verifiable Trade Documents project, which publishes 21
-	 * document schemas as Verifiable Credentials. Its contexts are not wrong,
-	 * they are a different layer — each maps one document's shorthand wire names
-	 * onto D23B IRIs, so `purchase-order-context.json` only defines terms for a
-	 * purchase order and would leave every property of these models undefined.
+	 * The value to use in `@context`. Every property comes from UN/CEFACT
+	 * Buy-Ship-Pay D23B, so the D23B context is the one that resolves them.
+	 * Properties named after UNVTD wire names resolve only under that document's
+	 * own context; see docs/model-guide.md §6.
 	 */
 	Context: `${UneceContexts.Context}`,
 

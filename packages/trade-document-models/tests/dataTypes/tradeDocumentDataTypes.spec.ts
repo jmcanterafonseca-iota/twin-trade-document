@@ -172,16 +172,14 @@ const PURCHASE_CONTRACT: IPurchaseOrder = {
   // `identifier` is absent on purpose: the document numbers each line and has
   // no header level order number. Nothing is derived to fill it.
   // `Destination`: NDW, Felixstowe, United Kingdom
-  applicableLocation: [
-    {
-      type: UneceTypes.LogisticsLocation,
-      name: "Felixstowe",
-      description: "NDW",
-      countryName: "United Kingdom",
-      logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
-      locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
-    },
-  ],
+  deliveryLocation: {
+    type: UneceTypes.LogisticsLocation,
+    name: "Felixstowe",
+    description: "NDW",
+    countryName: "United Kingdom",
+    logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
+    locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
+  },
   buyerParty: {
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.TradeParty,
@@ -291,7 +289,7 @@ describe("TradeDocumentDataTypes", () => {
       ["orderDate", "issueDateTime"],
       ["buyer", "buyerParty"],
       ["seller", "sellerParty"],
-      ["deliveryLocation", "applicableLocation"],
+      ["deliveryLocation", "deliveryLocation"],
       ["orderedItems", "includedSupplyChainTradeLineItem"],
     ];
 

@@ -3,22 +3,11 @@
 
 /**
  * The types of trade document data.
- *
- * These are local profile names, not UN/CEFACT class names, and they are what
- * `DataTypeHelper` is keyed on: the registration key is
- * `TradeDocumentContexts.Namespace + TradeDocumentTypes.X`. Deriving them from
- * `UneceTypes` is no longer possible, because a sale confirmation and a
- * purchase order are the same UN/CEFACT class — both would resolve to
- * `HeaderTradeAgreement` and the second registration would silently overwrite
- * the first.
- *
- * Each value matches the `$id` of the schema generated for it, so that a
- * `$ref` between the generated schemas resolves against the local factory
- * instead of being fetched over HTTP.
- *
- * The JSON-LD `type` carried inside a payload is a different thing: it stays
- * the UN/CEFACT class name that the model's base interface pins it to, for
- * example `UneceTypes.HeaderTradeAgreement` for both document types.
+ * These are local profile names, used as the data type registration key
+ * (`Namespace + type`) and matching each generated schema's `$id`. They are not
+ * UN/CEFACT class names: two documents can share one class, so deriving them
+ * from `UneceTypes` would collide. A payload's JSON-LD `type` stays the
+ * UN/CEFACT class name its base interface pins it to.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TradeDocumentTypes = {

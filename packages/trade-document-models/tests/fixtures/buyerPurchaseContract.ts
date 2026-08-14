@@ -259,25 +259,28 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     endDateTime: "2025-06-30T23:59:59.999Z",
   },
 
-  // 65 `Nett Cash Against Documentation`, 66 `on first presentation`
-  applicablePaymentTerms: {
+  // 65 `Nett Cash Against Documentation`, 66 `on first presentation` —
+  // UNVTD `paymentTerms`
+  paymentTerms: {
     type: UneceTypes.PaymentTerms,
     paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments], // 65
     paymentTermsEventTimeReferenceFromEventCode: "unece:TimeReferenceCodeList#71", // 66
     description: "Nett Cash Against Documentation on first presentation in Bristol.",
   },
 
+  // 60 `NDW`, 61 `Felixstowe`, 62 `United Kingdom` — UNVTD `deliveryLocation`
+  deliveryLocation: {
+    type: UneceTypes.LogisticsLocation,
+    name: "Felixstowe",
+    description: "NDW",
+    countryName: "United Kingdom",
+    logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
+    locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
+  },
+
+  // 67 `in Bristol` — the place of document presentation. A different kind of
+  // place, so it stays in the inherited applicableLocation[].
   applicableLocation: [
-    // 60 `CWT`, 61 `Felixstowe`, 62 `United Kingdom`
-    {
-      type: UneceTypes.LogisticsLocation,
-      name: "Felixstowe",
-      description: "NDW",
-      countryName: "United Kingdom",
-      logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
-      locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
-    },
-    // 67 `in London` — the place of presentation, discriminated by its function
     {
       type: UneceTypes.LogisticsLocation,
       name: "Bristol",
@@ -316,11 +319,33 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     },
   ],
 
-  // 64 `Shipping instructions to follow.`
-  supplyInstructionDocument: [
+  // The shipping details. UN/CEFACT puts these on the delivery facet, which is
+  // lifted onto the model as applicableHeaderTradeDelivery.
+  applicableHeaderTradeDelivery: [
     {
-      type: UneceTypes.Document,
-      remarks: "Shipping instructions to follow.",
+      type: UneceTypes.HeaderTradeDelivery,
+      // 64 `Shipping instructions to follow.`
+      specifiedDeliveryInstructions: [
+        {
+          type: UneceTypes.DeliveryInstructions,
+          description: "Shipping instructions to follow.",
+        },
+      ],
+      // 59 `June 2025` — the shipment month, as the period of the requested
+      // despatch. Also kept in the inherited shippingPeriod.
+      requestedDespatchEvent: [
+        {
+          type: UneceTypes.SupplyChainEvent,
+          occurrencePeriod: [
+            {
+              type: UneceTypes.SpecifiedPeriod,
+              name: "June 2025",
+              startDateTime: "2025-06-01T00:00:00.000Z",
+              endDateTime: "2025-06-30T23:59:59.999Z",
+            },
+          ],
+        },
+      ],
     },
   ],
 

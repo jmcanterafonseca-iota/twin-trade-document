@@ -173,7 +173,7 @@ Follow the house idiom exactly — see `packages/trade-document-models/docs/mode
 ```ts
 export type IFoo = IUneceBar &
   Required<Pick<IUneceBar, "@context" | "type" | "alwaysPresentField">> & {
-    /** TSDoc — this becomes the schema description, so keep it short. */
+    /** One line. This becomes the schema description, verbatim. */
     localField: string;
   };
 ```
@@ -194,6 +194,11 @@ export type IFoo = IUneceBar &
 - **Prose with no typed slot goes in `includedNote[]`**, each note discriminated by `subject`. This
   is the escape hatch for governing terms, precedence rules, arbitration forums, allocations and
   instructions — all things BSP has no property for.
+- **Keep TSDoc to one or two lines per property, four or five for the type.** The comment is copied
+  **verbatim** into the published schema's `description`, so prose written for a reader of the source
+  ships to every consumer of the schema. State what the property is and, where it matters, the
+  standard term it corresponds to. Rationale, mapping tables, trade-offs and the history of a
+  decision belong in `docs/model-guide.md` — link to the section instead of restating it.
 
 ## Step 5 — Wire it, all four places
 

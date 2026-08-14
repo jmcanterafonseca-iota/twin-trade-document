@@ -16,13 +16,8 @@ import TradePartySchema from "../schemas/TradeParty.json" with { type: "json" };
 export class TradeDocumentDataTypes {
   /**
    * Register all the data types.
-   *
-   * Consumers should also call `UneceDataTypes.registerTypes()` from
-   * `@twin.org/standards-unece` before validating. Every schema generated here
-   * keeps its UN/CEFACT base behind a `$ref` to
-   * `https://schema.twindev.org/unece/Unece*`; without the UNECE registrations
-   * those refs are fetched over HTTP on first compile, which takes over a
-   * minute and degrades to an empty schema when offline.
+   * Call `UneceDataTypes.registerTypes()` first, otherwise every UN/CEFACT
+   * `$ref` is fetched over HTTP on first validation.
    */
   public static registerTypes(): void {
     const types = [

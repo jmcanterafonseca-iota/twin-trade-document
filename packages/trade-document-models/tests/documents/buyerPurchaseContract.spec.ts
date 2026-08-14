@@ -179,24 +179,29 @@ const FACTS: [number, string, unknown, unknown][] = [
 
   // --- remaining terms rows ---
   [59, "shipment month", doc.shippingPeriod?.name, "June 2025"],
-  [60, "destination warehouse", doc.applicableLocation[0].description, "NDW"],
-  [61, "destination town", doc.applicableLocation[0].name, "Felixstowe"],
-  [62, "destination country", doc.applicableLocation[0].countryName, "United Kingdom"],
+  [60, "destination warehouse", doc.deliveryLocation.description, "NDW"],
+  [61, "destination town", doc.deliveryLocation.name, "Felixstowe"],
+  [62, "destination country", doc.deliveryLocation.countryName, "United Kingdom"],
   [63, "vessel nomination", note("Vessel nomination"), "Buyer to nominate vessel."],
-  [64, "shipping instructions", doc.supplyInstructionDocument?.[0].remarks, "Shipping instructions to follow."],
+  [
+    64,
+    "shipping instructions",
+    doc.applicableHeaderTradeDelivery?.[0].specifiedDeliveryInstructions?.[0].description,
+    "Shipping instructions to follow.",
+  ],
   [
     65,
     "payment method",
-    doc.applicablePaymentTerms?.paymentTermsTypeCode?.[0],
+    doc.paymentTerms?.paymentTermsTypeCode?.[0],
     "unece:PaymentTermsTypeCodeList#72",
   ],
   [
     66,
     "payment trigger",
-    doc.applicablePaymentTerms?.paymentTermsEventTimeReferenceFromEventCode,
+    doc.paymentTerms?.paymentTermsEventTimeReferenceFromEventCode,
     "unece:TimeReferenceCodeList#71",
   ],
-  [67, "place of presentation", doc.applicableLocation[1].name, "Bristol"],
+  [67, "place of presentation", doc.applicableLocation?.[0].name, "Bristol"],
   [68, "insurance allocation", note("Insurance"), "For buyer's account."],
   [
     69,
@@ -306,7 +311,11 @@ describe("Buyer purchase contract coverage", () => {
 
     // The document states no total, no invoicee, no payment means and no
     // allowance or charge. None is fabricated.
-    expect(doc.applicablePaymentTerms?.instructedAmount).toBeUndefined();
+    expect(doc.paymentTerms?.instructedAmount).toBeUndefined();
+    expect(doc.totalOrderAmount).toBeUndefined();
+    expect(doc.paymentMethod).toBeUndefined();
+    expect(doc.allowanceCharge).toBeUndefined();
+    expect(doc.invoiceeParty).toBeUndefined();
   });
 
   test("Every data-bearing fact on the page is accounted for", () => {

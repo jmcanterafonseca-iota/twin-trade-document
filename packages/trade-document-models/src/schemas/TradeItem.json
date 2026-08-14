@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "A single contracted lot of coffee, carried as one line of a trade document.\n\nRe-based from IUneceLineTradeAgreement onto IUneceSupplyChainTradeLineItem.\nThe line agreement carries prices and ordering constraints only: it has no\nproperty for the ordered quantity and none for the product, so it cannot\nexpress \"200 Bags AB Mwitu\". UN/CEFACT puts those on the line item, which is\nthe only class reaching all four facets a coffee lot needs:\n\n- `associatedDocumentLineDocument.lineId` — the lot reference, \"ctr/519\" on\nthe seller's confirmation or \"81140\" on the buyer's contract.\n- `specifiedTradeProduct[]` — the mark, grade and origin, such as\n\"Miti,Kanjuu,AA\" from \"Kenya\".\n- `specifiedLineTradeDelivery[].orderQuantity` — the number of bags, \"180\";\n`perPackageUnitQuantity` carries the \"60 kg per bag\".\n- `specifiedLineTradeAgreement.agreedPriceProductPrice[]` — the unit price,\n\"USD 275 per 50 kgs\": `unitAmount[]` for the amount and currency,\n`basisQuantity` for the 50 kg basis.\n\nThe mandatory price of the previous model is preserved one level down, by\nnarrowing `specifiedLineTradeAgreement` to require `agreedPriceProductPrice`.\n\nLike ITradeParty this is a child type and asks to be hoisted into the\nreferencing document's `$defs`. The tag is a no-op today: ts-to-schema only\nvisits direct property references, never array `items`, and every document\nreferences this type through an array. It is kept to record the intent and\nwill start working if that traversal gap is fixed upstream.",
+	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in\n`associatedDocumentLineDocument.lineId`, the mark, grade and origin in\n`specifiedTradeProduct`, the quantity and packaging in\n`specifiedLineTradeDelivery`, the price in `specifiedLineTradeAgreement`.\nSee docs/model-guide.md §2.2.",
 	"type": "object",
 	"properties": {
 		"@context": {
@@ -49,7 +49,8 @@
 				{
 					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
 				}
-			]
+			],
+			"description": "The pricing facet of this line, narrowed to require an agreed price."
 		}
 	},
 	"required": [

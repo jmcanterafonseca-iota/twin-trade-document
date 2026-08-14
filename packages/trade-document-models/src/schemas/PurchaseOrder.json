@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/PurchaseOrder",
 	"title": "PurchaseOrder",
-	"description": "A buyer issued purchase contract, also called a purchase order.\n\nStructurally this is the same UN/CEFACT class as {@link ITradeAgreement}:\nthe buyer's purchase contract and the seller's sale confirmation are mirror\nimages of one trade, issued days apart, each stamped and signed by both\nparties. Only the issuing side differs.\n\nThe mandatory set is the required set of the UN/CEFACT Verifiable Trade\nDocuments purchase order (https://unvtd.unece.org/purchase-order-schema.yaml),\ntranslated into the D23B terms its own context expands those wire names into:\n\n| UNVTD `credentialSubject` (required) | here | mandatory |\n| --- | --- | --- |\n| `purchaseOrderNumber` → `unece:identifier` | `identifier` | **no** — see below |\n| `orderDate` → `unece:issueDateTime` | `issueDateTime` | yes |\n| `buyer` → `unece:buyerParty` | `buyerParty` | yes |\n| `seller` → `unece:sellerParty` | `sellerParty` | yes |\n| `deliveryLocation` | `applicableLocation` | yes |\n| `orderedItems` → `unece:includedSupplyChainTradeLineItem` | `includedSupplyChainTradeLineItem` | yes |\n\n`identifier` is the one departure, and it is deliberate. UNVTD requires a\nsingle header-level order number, but a real buyer's contract may number each\nline and carry none at document level — the Northgate sample does\nexactly that. Making it mandatory would force a value that appears nowhere on\nthe paper. Representing the real documents without inventing data outranks\nmatching the published required set, so `identifier` stays optional and is\nleft absent when the document has none.\n\nUNVTD maps `deliveryLocation` onto `unece:shipToParty`, which is a Party class\non the delivery facet and is not reachable from a header trade agreement. A\ndelivery address is a place, not a party, so `applicableLocation` is used\ninstead, with `locationFunctionTypeCode` set to\n`UneceLocationFunctionCodeList.PlaceOfDelivery`.\n\nEverything the sample purchase contract states beyond the required set is\ninherited from the base and needs no local declaration: the `Basis` line goes\nin `applicableDeliveryTerms` (Incoterm in `deliveryTermsDeliveryTypeCode`,\nthe rest in `description`), `Shipment Month` in `shippingPeriod`, `Payment` in\n`applicablePaymentTerms`, `Conditions` in `purchaseConditionsDocument`, the\nEuropean Standard Contract for Coffee in `contractDocument`, and\n`EUDR Compliant` in `applicableRegulatoryProcedure`.\n\nSee docs/model-guide.md §6 for the measured UNVTD coverage of the sample\ndocument, and for the four UNVTD required properties a paper contract cannot\nhonestly supply.",
+	"description": "A buyer issued purchase contract, also called a purchase order.\nCarries all eleven `credentialSubject` properties of the UNVTD purchase order\n(https://unvtd.unece.org/docs/purchase-order/#schema). The seller issued\nmirror of this document is {@link ITradeAgreement}.\nSee docs/model-guide.md §2.4 for the property mapping and its trade-offs.",
 	"type": "object",
 	"properties": {
 		"@context": {
@@ -13,48 +13,72 @@
 			"const": "HeaderTradeAgreement",
 			"description": "JSON-LD Type."
 		},
-		"applicableLocation": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation"
-			},
-			"description": "A logistics location or place applicable to this header trade agreement."
-		},
 		"issueDateTime": {
 			"type": "string",
-			"description": "The date, time or date time the order was issued.\nUN/CEFACT declares issueDateTime on SupplyChainTradeTransaction and on\nDocument, not on HeaderTradeAgreement, which carries no date of its own;\nthe UNVTD purchase order context makes the same choice for `orderDate`.",
+			"description": "The date the order was issued. UNVTD `orderDate`.",
 			"format": "date-time"
 		},
 		"buyerParty": {
 			"$ref": "#/$defs/TradeParty",
-			"description": "The buyer party placing this order."
+			"description": "The buyer party placing this order. UNVTD `buyer`."
 		},
 		"sellerParty": {
 			"$ref": "#/$defs/TradeParty",
-			"description": "The seller party the order is placed with."
+			"description": "The seller party the order is placed with. UNVTD `seller`."
+		},
+		"deliveryLocation": {
+			"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation",
+			"description": "Where the goods are to be delivered. UNVTD `deliveryLocation`.\nUN/CEFACT declares no DeliveryLocation class; other places, such as a\nplace of payment presentation, go in the inherited `applicableLocation`."
 		},
 		"includedSupplyChainTradeLineItem": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
 			},
-			"description": "An ordered lot within this purchase order.\n\nMandatory, and at least one: UNVTD requires `orderedItems` with\n`minItems: 1`, and a purchase contract with no lines states nothing.\nEach column of the sample contract's table maps as follows, all of it on\n{@link ITradeItem}:\n\n| column | path |\n| --- | --- |\n| `Contract No` | `associatedDocumentLineDocument.lineId` |\n| `Origin` | `specifiedTradeProduct[].originCountry[].countryId` |\n| `Quality` | `specifiedTradeProduct[].name` and `.designation` |\n| `Quantity` | `specifiedLineTradeDelivery[].orderQuantity` |\n| `Unit Type` | `specifiedLineTradeDelivery[].includedPackaging[].packageTypeCode` and `.description` |\n| `Kg per Unit` | `specifiedLineTradeDelivery[].perPackageUnitQuantity` |\n| `Price` | `specifiedLineTradeAgreement.agreedPriceProductPrice[].unitAmount[].AmountTypeValue` |\n| `Units` | `.unitAmount[].AmountTypeCurrency` and `.basisQuantity` for the per 50 kg basis |"
+			"description": "An ordered lot. UNVTD `orderedItems`, minimum one."
+		},
+		"paymentTerms": {
+			"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms",
+			"description": "The terms of payment. UNVTD `paymentTerms`."
+		},
+		"paymentMethod": {
+			"$ref": "https://schema.twindev.org/unece/UnecePaymentMeans",
+			"description": "The means by which payment is to be made. UNVTD `paymentMethod`."
+		},
+		"allowanceCharge": {
+			"$ref": "https://schema.twindev.org/unece/UneceTradeAllowanceCharge",
+			"description": "An allowance or charge applied to this order. UNVTD `allowanceCharge`."
+		},
+		"totalOrderAmount": {
+			"$ref": "https://schema.twindev.org/unece/UneceAmountType",
+			"description": "The total amount of this order. UNVTD `totalOrderAmount`."
+		},
+		"invoiceeParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`."
+		},
+		"applicableHeaderTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeDelivery"
+			},
+			"description": "The shipping details: instructions, despatch and delivery events, ship-to\nand ship-from parties, consignments, packaging and transport equipment."
 		},
 		"includedNote": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/unece/UneceNote"
 			},
-			"description": "A note on this order, discriminated by its `subject` or `noteSubjectCode`.\n\nHeaderTradeAgreement is a pure association hub: of its 69 properties only\nthree carry free text, so contractual prose has nowhere to go. UN/CEFACT\ndeclares `includedNote` on Document and the same shape appears as\n`additionalInformationNote` on SupplyChainTradeLineItem,\n`informationNote` on LineTradeDelivery and `statementNote` on\nRegulatoryProcedure, so the term is lifted here rather than invented.\n\nIt is the home of the sample contract's prose that D23B has no typed slot\nfor: the insurance allocation, the vessel nomination undertaking, the\nprecedence rule between term sets, the arbitration forum and the\ncountersignature instruction."
+			"description": "Contractual prose with no typed UN/CEFACT slot, such as an insurance\nallocation or an arbitration forum, discriminated by `subject`."
 		}
 	},
 	"required": [
 		"@context",
 		"type",
-		"applicableLocation",
 		"issueDateTime",
 		"buyerParty",
 		"sellerParty",
+		"deliveryLocation",
 		"includedSupplyChainTradeLineItem"
 	],
 	"allOf": [
@@ -65,7 +89,7 @@
 	"$defs": {
 		"TradeParty": {
 			"title": "TradeParty",
-			"description": "A party taking a role in a trade document, such as the buyer or the seller.\n\nOnly the name is promoted to mandatory. The sample documents identify their\ncounterparties by name alone (\"Kilimo Estates Trading Co Ltd\"), or by name and\ncountry (\"Northgate Coffee Importers Ltd. United Kingdom\"); only one of the\nthree carries a street address. Requiring `postalAddress` would make a real\ndocument unrepresentable.\n\nEverything else UN/CEFACT offers stays optional and is inherited from\nIUneceTradeParty, notably `postalAddress`, `partyRoleCode` (Buyer, Seller,\nExporter), `identifier`, `definedContact` and the communication properties.\n\nThis is a child type, never a document in its own right, so it is hoisted\ninto the `$defs` of whichever document schema references it rather than\nbeing left as an external `$ref`.",
+			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
 			"type": "object",
 			"properties": {
 				"@context": {
