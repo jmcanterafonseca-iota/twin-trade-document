@@ -16,12 +16,17 @@
 		"name": {
 			"type": "string",
 			"description": "A name, expressed as text, of this logistics related location."
+		},
+		"postalAddress": {
+			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+			"description": "The postal trade address information for this logistics related location."
 		}
 	},
 	"required": [
 		"@context",
 		"type",
-		"name"
+		"name",
+		"postalAddress"
 	],
 	"allOf": [
 		{

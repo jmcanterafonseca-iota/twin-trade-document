@@ -13,15 +13,25 @@
 			"const": "PaymentTerms",
 			"description": "JSON-LD Type."
 		},
-		"description": {
+		"information": {
 			"type": "string",
-			"description": "A textual description of these trade payment terms."
+			"description": "Information, expressed as text, for these trade payment terms."
+		},
+		"billStartDateTime": {
+			"type": "string",
+			"description": "The date, time, date time, or other date time value of the bill start specified by these trade payment terms.",
+			"format": "date-time"
+		},
+		"dueDateTime": {
+			"type": "string",
+			"description": "The date, time, date time, or other date time value of the due date specified by these trade payment terms.",
+			"format": "date-time"
 		}
 	},
 	"required": [
 		"@context",
 		"type",
-		"description"
+		"information"
 	],
 	"allOf": [
 		{

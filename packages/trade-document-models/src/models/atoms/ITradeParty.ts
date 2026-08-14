@@ -16,4 +16,6 @@ export type ITradeParty = IUneceTradeParty &
     | "name"
   >>
   & Partial<Pick<IUneceTradeParty, "postalAddress"
-    | "brandName">>;
+    | "brandName"
+    | "emailURICommunication"
+    | "telephoneCommunication">>;

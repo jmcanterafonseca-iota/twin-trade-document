@@ -166,9 +166,20 @@
 					"type": "string",
 					"description": "A brand name, expressed as text, for this trade party."
 				},
+				"emailURICommunication": {
+					"$ref": "https://schema.twindev.org/unece/UneceCommunication",
+					"description": "The email communication for this trade party."
+				},
 				"postalAddress": {
 					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
 					"description": "The postal address for this trade party."
+				},
+				"telephoneCommunication": {
+					"type": "array",
+					"items": {
+						"$ref": "https://schema.twindev.org/unece/UneceCommunication"
+					},
+					"description": "A telephone communication for this trade party."
 				}
 			},
 			"required": [
@@ -198,12 +209,17 @@
 				"name": {
 					"type": "string",
 					"description": "A name, expressed as text, of this logistics related location."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal trade address information for this logistics related location."
 				}
 			},
 			"required": [
 				"@context",
 				"type",
-				"name"
+				"name",
+				"postalAddress"
 			],
 			"allOf": [
 				{
@@ -272,15 +288,25 @@
 					"const": "PaymentTerms",
 					"description": "JSON-LD Type."
 				},
-				"description": {
+				"information": {
 					"type": "string",
-					"description": "A textual description of these trade payment terms."
+					"description": "Information, expressed as text, for these trade payment terms."
+				},
+				"billStartDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the bill start specified by these trade payment terms.",
+					"format": "date-time"
+				},
+				"dueDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the due date specified by these trade payment terms.",
+					"format": "date-time"
 				}
 			},
 			"required": [
 				"@context",
 				"type",
-				"description"
+				"information"
 			],
 			"allOf": [
 				{
