@@ -89,6 +89,7 @@
 		"type",
 		"sellerReference",
 		"issueDateTime",
+		"saleDate",
 		"buyerParty",
 		"sellerParty",
 		"includedSupplyChainTradeLineItem",

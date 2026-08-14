@@ -37,34 +37,41 @@ table before creating anything new, and widen rather than fork.**
 | Atom | Base | Promoted to mandatory | Use for |
 |---|---|---|---|
 | `ITradeParty` | `IUneceTradeParty` | `name` | any party: buyer, seller, invoicee, shipper, warehouse keeper |
-| `ITradeItem` | `IUneceSupplyChainTradeLineItem` | line document, product, delivery, agreement | one line of any document with a goods table |
-| `ILocation` | `IUneceLogisticsLocation` | `name` | any place; discriminate with `locationFunctionTypeCode` |
+| `ITradeItem` | `IUneceSupplyChainTradeLineItem` | `identifier`, product, delivery, agreement | one line of any document with a goods table |
+| `IProduct` | `IUneceTradeProduct` | `description` | the goods on a line: mark, grade, origin |
+| `ILineDelivery` | `IUneceLineTradeDelivery` | `orderQuantity`, `perPackageUnitQuantity`, `includedPackaging` | how much, packed how, how much per package |
+| `ILineAgreement` | `IUneceLineTradeAgreement` | `agreedPriceProductPrice` | the pricing facet of a line |
+| `IPrice` | `IUneceTradePrice` | `unitAmount`, `basisQuantity` | a unit price and the quantity it is quoted against |
+| `IPackaging` | `IUneceSupplyChainPackaging` | `packageTypeCode` | how goods are packed |
+| `IQuantity` | `IUneceQuantityType` | `QuantityTypeValue` | any counted or measured quantity |
 | `IAmount` | `IUneceAmountType` | `AmountTypeValue`, `AmountTypeCurrency` | any monetary amount |
+| `ILocation` | `IUneceLogisticsLocation` | `name` | any place; discriminate with `locationFunctionTypeCode` |
 | `IPaymentTerms` | `IUnecePaymentTerms` | — | terms of payment |
 | `IPaymentMeans` | `IUnecePaymentMeans` | — | how payment is made |
 | `IAllowanceCharge` | `IUneceTradeAllowanceCharge` | `chargeIndicator` | an allowance or a charge |
 | `INote` | `IUneceNote` | `content`, `subject` | prose with no typed slot |
-| `ITradeDelivery` | `IUneceHeaderTradeDelivery` | — | shipping details: instructions, despatch and delivery events, ship-to/from, consignments, transport equipment |
+| `ITradeDelivery` | `IUneceHeaderTradeDelivery` | — | shipping details at document level |
 | `IDeliveryTerms` | `IUneceDeliveryTerms` | — | Incoterm plus named place |
 | `IReferencedDocument` | `IUneceDocument` | — | another document referenced by this one |
 | `IBasis` | *(local)* | `BasisValue` | the verbatim `Basis` row |
 | `IInsurance` | *(local)* | `InsuranceValue` | the verbatim `Insurance` row |
 | `IConditions` | *(local)* | `ConditionsValue` | the verbatim `Conditions` row |
+| `IDate` | *(local)* | `DateValue` | any date; no `format` asserted yet |
 
-All fourteen promote `@context` and `type` as well, and carry `@json-schema embedded:defs`.
+All twenty-one promote `@context` and `type` as well, and carry `@json-schema embedded:defs`.
 
-The three local ones exist because UN/CEFACT has no class for what the row says. Insurance is the
+The four local ones exist because UN/CEFACT has no class for what they carry. Insurance is the
 clearest case: `grep -i insurance` over the three header classes returns zero hits, and
 `IUneceCargoInsurance` hangs off a physical `IUneceConsignment`, not off an agreement.
 
 ### Atoms worth adding when a document needs them
 
 None of these exists yet; each has an obvious base if a future document calls for it:
-`IUneceConsignment` for a consignment, `IUneceTradeProduct` for a product referenced outside a line,
-`IUneceQuantityType` for a standalone quantity, `IUneceAuthentication` for a signature or stamp
-carried at document level, `IUneceSpecifiedPeriod` for a standalone period,
-`IUneceRegulatoryProcedure` for a compliance assertion, `IUneceSpecifiedCertificate` for a
-certificate, `IUneceExchangedDocument` for a document envelope with a signature workflow.
+`IUneceConsignment` for a consignment, `IUneceAuthentication` for a signature or stamp carried at
+document level, `IUneceSpecifiedPeriod` for a standalone period, `IUneceRegulatoryProcedure` for a
+compliance assertion, `IUneceSpecifiedCertificate` for a certificate, `IUneceExchangedDocument` for
+a document envelope with a signature workflow, `IUneceHeaderTradeSettlement` for a settlement facet
+(totals, payment means, invoicee).
 
 ## 2. The header/line structure
 

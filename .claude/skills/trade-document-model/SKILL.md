@@ -179,18 +179,25 @@ src/models/                 documents — one file per trade document
 ├── IPurchaseOrder.ts
 ├── ITradeAgreement.ts
 └── atoms/                  child types — the pieces documents are made of
-    ├── ITradeParty.ts  ITradeItem.ts  ILocation.ts  IAmount.ts
+    ├── ITradeParty.ts  ITradeItem.ts  ILocation.ts
+    ├── IProduct.ts  ILineDelivery.ts  ILineAgreement.ts  IPackaging.ts
+    ├── IAmount.ts  IQuantity.ts  IPrice.ts
     ├── IPaymentTerms.ts  IPaymentMeans.ts  IAllowanceCharge.ts
     ├── INote.ts  ITradeDelivery.ts  IDeliveryTerms.ts  IReferencedDocument.ts
-    └── IBasis.ts  IInsurance.ts  IConditions.ts
+    └── IBasis.ts  IInsurance.ts  IConditions.ts  IDate.ts
 ```
+
+Twenty-one atoms today, and every one of them generates and registers a schema — 23 in total with
+the two documents.
 
 ### Atoms are the decoupling layer
 
 **A document model should not name an `IUnece*` type in its own properties.** Every child type goes
 through an atom, so the document depends on the atom and only the atom depends on UN/CEFACT.
 `ITradeItem` wraps `IUneceSupplyChainTradeLineItem`, `ITradeParty` wraps `IUneceTradeParty`,
-`ILocation` wraps `IUneceLogisticsLocation`, and so on. That buys three things:
+`ILocation` wraps `IUneceLogisticsLocation`, and so on. It nests: `ITradeItem` references
+`IProduct`, `ILineDelivery` and `ILineAgreement`, which in turn reference `IQuantity`, `IPackaging`
+and `IPrice`, which references `IAmount` and `IQuantity` again. That buys three things:
 
 - **one place to change** when the vocabulary moves under us — every `@twin.org/*` dependency is
   pinned to the `next` dist-tag, so it does move;
@@ -238,7 +245,9 @@ export interface IBasis {
 ```
 
 `ts-to-schema` resolves the local const and emits `"const": "Basis"`, exactly as it does for
-`UneceTypes` members. Growing such an atom later — a coded Incoterm, a numeric franchise — adds
+`UneceTypes` members. `IDate` follows the same shape and deliberately asserts **no**
+`format: date-time`, so `DateValue` accepts the document's own wording until the representation is
+settled. Growing such an atom later — a coded Incoterm, a numeric franchise — adds
 properties beside `<Name>Value` without changing the documents that use it.
 
 ### Rules for both layers
@@ -254,6 +263,15 @@ properties beside `<Name>Value` without changing the documents that use it.
   by matching semantics to a BSP class. `references/unece-property-map.md §1` lists what each class
   in use can and cannot hold.
 - **Never end a type with `& { }`** — it silently degrades the generated schema.
+- **Never narrow an inherited array property to a single object.** `specifiedTradeProduct` is
+  declared `IUneceTradeProduct[]` upstream, so `specifiedTradeProduct: IProduct` produces
+  `IUneceTradeProduct[] & IProduct` — a type nothing can satisfy, which TypeScript accepts at the
+  declaration and rejects at every use. Keep the array, or use a one-tuple `[IProduct]` if exactly
+  one is intended.
+- **Do not promote a field the samples leave empty.** Each promotion propagates: making
+  `postalAddress` mandatory on `ILocation` made the sample's destination unrepresentable, and
+  requiring `description` on `IDeliveryTerms` forced the verbatim `Basis` text to be written twice.
+  Promote, regenerate, run the gate, and read what breaks.
 - **Never name a type you have not verified exists.** `IUneceDeliveryLocation` reads like it should
   exist and does not; the vocabulary's location classes are `IUneceLocation`,
   `IUneceLogisticsLocation`, `IUneceSpecifiedLocation`, `IUneceTradeLocation`,

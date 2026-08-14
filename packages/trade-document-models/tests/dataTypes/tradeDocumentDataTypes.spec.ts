@@ -129,6 +129,12 @@ const SALE_CONFIRMATION: ITradeAgreement = {
     type: TradeDocumentTypes.Date,
     DateValue: "2025-03-10T00:00:00.000Z",
   },
+  // "We hereby confirm having sold on ..." — the date the sale was struck
+  saleDate: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-03-10T00:00:00.000Z",
+  },
   sellerReference: "S - KET / 519-521",
   buyerReference: "TBA",
   buyerParty: {
@@ -182,6 +188,12 @@ const SALE_CONFIRMATION_SINGLE_LOT: ITradeAgreement = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
   issueDateTime: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-08-22T00:00:00.000Z",
+  },
+  // "We hereby confirm having sold on ..." — the date the sale was struck
+  saleDate: {
     "@context": TradeDocumentContexts.Context,
     type: TradeDocumentTypes.Date,
     DateValue: "2025-08-22T00:00:00.000Z",
