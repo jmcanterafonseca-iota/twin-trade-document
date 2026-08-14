@@ -7,6 +7,9 @@ import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
 
 import BasisSchema from "../schemas/Basis.json" with { type: "json" };
 import DateSchema from "../schemas/Date.json" with { type: "json" };
+import CommercialInvoiceSchema from "../schemas/CommercialInvoice.json" with { type: "json" };
+import MeasureSchema from "../schemas/Measure.json" with { type: "json" };
+import QualitySchema from "../schemas/Quality.json" with { type: "json" };
 import ConditionsSchema from "../schemas/Conditions.json" with { type: "json" };
 import InsuranceSchema from "../schemas/Insurance.json" with { type: "json" };
 import QuantitySchema from "../schemas/Quantity.json" with { type: "json" };
@@ -42,6 +45,7 @@ export class TradeDocumentDataTypes {
     const types = [
       { type: TradeDocumentTypes.TradeAgreement, schema: TradeAgreementSchema },
       { type: TradeDocumentTypes.PurchaseOrder, schema: PurchaseOrderSchema },
+      { type: TradeDocumentTypes.CommercialInvoice, schema: CommercialInvoiceSchema },
       { type: TradeDocumentTypes.TradeParty, schema: TradePartySchema },
       { type: TradeDocumentTypes.TradeItem, schema: TradeItemSchema },
       { type: TradeDocumentTypes.Location, schema: LocationSchema },
@@ -57,6 +61,8 @@ export class TradeDocumentDataTypes {
       { type: TradeDocumentTypes.Insurance, schema: InsuranceSchema },
       { type: TradeDocumentTypes.Conditions, schema: ConditionsSchema },
       { type: TradeDocumentTypes.Date, schema: DateSchema },
+      { type: TradeDocumentTypes.Measure, schema: MeasureSchema },
+      { type: TradeDocumentTypes.Quality, schema: QualitySchema },
       { type: TradeDocumentTypes.Quantity, schema: QuantitySchema },
       { type: TradeDocumentTypes.Packaging, schema: PackagingSchema },
       { type: TradeDocumentTypes.Product, schema: ProductSchema },

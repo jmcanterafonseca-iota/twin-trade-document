@@ -3,6 +3,7 @@
 	"types": [
 		"./src/models/ITradeAgreement.ts",
 		"./src/models/IPurchaseOrder.ts",
+		"./src/models/ICommercialInvoice.ts",
 		"./src/models/atoms/ITradeParty.ts",
 		"./src/models/atoms/ITradeItem.ts",
 		"./src/models/atoms/ILocation.ts",
@@ -23,7 +24,9 @@
 		"./src/models/atoms/IPrice.ts",
 		"./src/models/atoms/ILineDelivery.ts",
 		"./src/models/atoms/ILineAgreement.ts",
-		"./src/models/atoms/IDate.ts"
+		"./src/models/atoms/IDate.ts",
+		"./src/models/atoms/IMeasure.ts",
+		"./src/models/atoms/IQuality.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",

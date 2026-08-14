@@ -52,6 +52,7 @@ Seven coffee trade documents are in scope. Sample PDFs for each live in `.contex
 | 1 | Sales contract / Sale confirmation | `01-Sale Confirmation(s)` | `ITradeAgreement` | validates the samples |
 | 2 | Buyer purchase order | `02-Buyer Purchase Contract(s)` | `IPurchaseOrder` | validates the samples |
 | 3 | Auction purchase confirmation (Coffee DSS invoice) | `12- Auction Purchase Confirmation(s)` | `IAuctionPurchaseConfirmation` | not started |
+| — | Commercial invoice | `04-Commercial Invoice(s)` | `ICommercialInvoice` | validates the samples |
 | 4 | Coffee warrant | `03-Storage Warrant(s)-…` | `IWarrant` | not started |
 | 5 | Warehouse delivery note | `13- Warehouse Delivery Note(s)` | `IDeliveryNote` | not started |
 | 6 | Transfer note | — (no sample yet) | `ITransferNote` | not started |

@@ -97,6 +97,21 @@ export const TradeDocumentTypes = {
 	Date: "Date",
 
 	/**
+	 * A commercial invoice: goods delivered together with a demand for payment.
+	 */
+	CommercialInvoice: "CommercialInvoice",
+
+	/**
+	 * A measured value such as a weight.
+	 */
+	Measure: "Measure",
+
+	/**
+	 * The quality of the goods, verbatim.
+	 */
+	Quality: "Quality",
+
+	/**
 	 * A counted or measured quantity.
 	 */
 	Quantity: "Quantity",

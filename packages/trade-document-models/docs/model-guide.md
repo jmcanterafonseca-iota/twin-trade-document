@@ -807,3 +807,72 @@ is correct:
 Deterministic *format* normalisation is not derivation and is expected: `14 March 2025` →
 `2025-03-14T00:00:00.000Z`, and the stated shipment month `June 2025` → its first and last day.
 Both values are on the page; only their encoding changes.
+
+## 9. Commercial invoice — `ICommercialInvoice`
+
+Modelled from `.context/Document Samples/04-Commercial Invoice(s)/Commercial Invoice.pdf` (primary,
+scanned at 400 dpi native, no text layer) with `Commercial Invoice Example 2.pdf` as the second
+sample. Aligned to the UNVTD commercial invoice, whose context assigns the document **no UN/CEFACT
+class** — `"CommercialInvoice": "schema:Invoice"` — so the base was chosen by semantics:
+**`IUneceHeaderTradeSettlement`**, the settlement facet, which natively carries almost everything
+the page states.
+
+| | count |
+|---|---|
+| Atomic facts on the page (primary sample) | 46 |
+| **Data bearing** | **40** |
+| Page furniture | 6 — logo, cherry photo, green rule, row labels, punch holes, the cut-off footer edge |
+
+All 40 are carried; `tests/fixtures/commercialInvoice.ts` transcribes them with fact ids and
+`tests/documents/commercialInvoice.spec.ts` asserts each one.
+
+### 9.1 Where the facts landed
+
+Native on the base (no lift needed): `invoiceIssuerReference` (OUR REF), `payerReference`
+(YOUR REF), `invoicerParty`, `invoiceeParty`, `payeeParty`, `totalInvoiceAmount` (the VALUE row),
+`duePayableAmount` (the PLEASE TRANSFER row), `specifiedPaymentMeans` (the bank block).
+
+The bank block decomposes entirely into existing UN/CEFACT classes reachable from `IPaymentMeans`:
+institution name and SWIFT in `payeeSpecifiedFinancialInstitution.name`/`.bICId`, the local bank
+code in `.additionalClearingSystemId`, branch number and name in
+`.subDivisionFinancialInstitution.identifier`/`.name`, account name and number in
+`payeePartyFinancialAccount[].accountName`/`.proprietaryId`.
+
+Lifted with real IRIs: `issueDateTime`, `specifiedTradeProduct` (goods row + grade),
+`packageQuantity` (total bags — the IRI lives on LineTradeDelivery:393), `finalDestinationLocation`
+(Consignment:517), `grossWeightMeasure`/`tareWeightMeasure`/`netWeightMeasure` (TradeProduct:590,
+AssociatedTransportEquipment:177, TradeProduct:796), `includedPackaging`, `includedNote`.
+
+Local: `invoiceNumber` (UNVTD wire name), `notifyParty` (BSP declares **no** notify-party property
+on any settlement or agreement class — the only hits are dangerous-goods and transport-event
+parties), and the `quality` row as a new `IQuality` atom.
+
+New atoms: **`IMeasure`** (`IUneceMeasureType`, requiring `MeasureTypeValue`) and **`IQuality`**
+(local, `QualityValue`). 23 atoms, 26 schemas in total.
+
+### 9.2 What the page itself gets wrong, and how it is carried
+
+- **The invoice asks for less than its own stated value.** The VALUE row and the PLEASE TRANSFER
+  row print two different figures, the request being a round-thousands amount below the value.
+  Carried as printed in `totalInvoiceAmount` versus `duePayableAmount`; a test asserts they stay
+  unequal. Sample 2 has no such gap — its BALANCE DUE equals its VALUE.
+- **The seller's name is printed three ways on one page**: letterhead `… Co. Ltd`, signature line
+  `… LIMITED`, stamp and bank account `… LTD`. All three are carried (name, `statement`,
+  `signatory`).
+- **The notify row's casing disagrees with the address block** for the same party. Both spellings
+  are carried.
+- The stamp date's day-of-month is illegible in the scan — low confidence, flagged in the fixture.
+
+### 9.3 Judgment calls and residual limits
+
+- `DIRECTOR` (the signatory's printed capacity) is carried in the authentication's `information`
+  and the signature line in `statement` — both real free-text slots on `IUneceAuthentication`, but
+  neither is a dedicated "capacity" property; BSP has none.
+- Weights are in kgs and bags are counted in BAGS, but neither unit is storable:
+  `IUneceMeasureCode` and `IUneceQuantityCode` declare no value property. Same package-wide gap as
+  §4.2.
+- Sample 2 additionally carries a packaging statement (`JUTE BAGS` —
+  `UnecePackageTypeCodeList.Jutebag` `#JT` exists), a named payee line, phone/fax in the address
+  block and the full letterhead footer; these are why `includedPackaging` and `payeeParty` are
+  optional. Its title also names the same reference three times (`INVOICE NUMBER`, `OUR REF`,
+  `ACCOUNT SALE NO.`) where sample 1 prints it twice.
