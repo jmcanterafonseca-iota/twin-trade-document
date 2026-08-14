@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeAgreement",
 	"title": "TradeAgreement",
-	"description": "A seller issued sales contract, also called a sale confirmation.\nThe buyer issued mirror of this document is {@link IPurchaseOrder}; the\nseller assigns the contract number, so `sellerReference` is mandatory here.\nIncoterms, payment terms, shipment period, destination and governing terms\nare all inherited. See docs/model-guide.md §2.3.",
+	"description": "A seller issued sales contract, also called a sale confirmation.\nThe buyer issued mirror of this document is {@link IPurchaseOrder}; the\nseller assigns the contract number, so `sellerReference` is mandatory here.\nSee docs/model-guide.md §2.3.",
 	"type": "object",
 	"properties": {
 		"@context": {
@@ -37,10 +37,46 @@
 			},
 			"description": "A contracted lot. Optional: a single lot contract states quantity,\nquality and price at header level and has no line breakdown."
 		},
+		"applicableDeliveryTerms": {
+			"$ref": "#/$defs/DeliveryTerms",
+			"description": "The delivery terms: the Incoterm and its named place, plus the weight\nbasis, tolerance and tare rules as verbatim text."
+		},
+		"applicableLocation": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Location"
+			},
+			"description": "A place named by this contract, such as the destination. Discriminate\nwith `locationFunctionTypeCode`."
+		},
+		"applicablePaymentTerms": {
+			"$ref": "#/$defs/PaymentTerms",
+			"description": "The terms of payment."
+		},
+		"salesConditionsDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "Conditions the contract is subject to, in `processCondition`."
+		},
+		"contractDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "A document whose terms govern this contract."
+		},
+		"applicableHeaderTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeDelivery"
+			},
+			"description": "The shipping details."
+		},
 		"includedNote": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/unece/UneceNote"
+				"$ref": "https://schema.twindev.org/trade-document/Note"
 			},
 			"description": "Contractual prose with no typed UN/CEFACT slot, discriminated by\n`subject`. See {@link IPurchaseOrder.includedNote}."
 		}
@@ -85,6 +121,54 @@
 			"allOf": [
 				{
 					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
+				}
+			]
+		},
+		"DeliveryTerms": {
+			"title": "DeliveryTerms",
+			"description": "The delivery terms of a trade document. The Incoterm goes in\n`deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;\nweight basis, tolerance and tare rules have no typed slot and go verbatim in\n`description`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "DeliveryTerms",
+					"description": "JSON-LD Type."
+				}
+			},
+			"required": [
+				"@context",
+				"type"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceDeliveryTerms"
+				}
+			]
+		},
+		"PaymentTerms": {
+			"title": "PaymentTerms",
+			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "PaymentTerms",
+					"description": "JSON-LD Type."
+				}
+			},
+			"required": [
+				"@context",
+				"type"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
 				}
 			]
 		}

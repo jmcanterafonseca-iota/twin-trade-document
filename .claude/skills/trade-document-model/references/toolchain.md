@@ -81,7 +81,9 @@ Hoists a referenced schema into the referencing file. Sharp constraints, all ver
   it is silently discarded — no error, no warning.
 - **It does not reach through arrays.** The generator visits direct property references but never
   `items`, `additionalProperties`, `not`, `contains`, `propertyNames` or `if`/`then`/`else`. This is
-  why `ITradeParty` embeds and `ITradeItem` does not.
+  why `ITradeParty` embeds and `ITradeItem` does not. `ILocation` shows both
+  behaviours at once: it embeds into `PurchaseOrder.json`, where `deliveryLocation` is a scalar
+  property, but not into `TradeAgreement.json`, where `applicableLocation` is an array.
 - **It cannot reach an external package.** The mode map is not propagated back from the forked
   context in which a dependency's `.d.ts` is parsed, so tagging a UNECE interface does nothing.
 - **`inline` corrupts the model** — it merges base properties over derived ones, silently widening
@@ -106,7 +108,7 @@ the type URL silently passes. Always build the key from the constants.
 
 **Call `UneceDataTypes.registerTypes()` before validating.** Without it every
 `https://schema.twindev.org/unece/*` `$ref` is fetched over HTTP at first compile: the suite goes
-from 9 s to 95 s and needs internet access.
+from about 19 s to 95 s and needs internet access.
 
 ## Other traps
 
@@ -120,6 +122,8 @@ from 9 s to 95 s and needs internet access.
 - All `@twin.org/*` deps are pinned to the `next` dist-tag. An unexplained type error after
   `npm install` may come from a dependency bump.
 - `UneceCountryId` members are SCREAMING CASE: `UneceCountryId.KENYA`, not `.Kenya`.
-- `ts-to-jsonld-context.json` still carries the `twin-aig` prefix and an empty `types` array, and
-  the generator only visits `interface` declarations — all four models are type aliases, so listing
-  them changes nothing.
+- `ts-to-jsonld-context.json` still carries the `twin-aig` prefix and an empty `types` array. The
+  generator only visits `interface` declarations, so listing a type alias changes nothing — most
+  models are aliases; the local scalar atoms (`IBasis`, `IInsurance`, `IConditions`) are interfaces
+  and would be visited, but would then throw `noJsonLdProps` until every property carries a
+  `@json-ld` tag.

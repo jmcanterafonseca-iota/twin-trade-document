@@ -29,7 +29,67 @@ export const TradeDocumentTypes = {
 	/**
 	 * A party taking a role in a trade document.
 	 */
-	TradeParty: "TradeParty"
+	TradeParty: "TradeParty",
+
+	/**
+	 * A place named by a trade document.
+	 */
+	Location: "Location",
+
+	/**
+	 * A monetary amount.
+	 */
+	Amount: "Amount",
+
+	/**
+	 * The terms of payment.
+	 */
+	PaymentTerms: "PaymentTerms",
+
+	/**
+	 * The means by which a payment is made.
+	 */
+	PaymentMeans: "PaymentMeans",
+
+	/**
+	 * An allowance or a charge.
+	 */
+	AllowanceCharge: "AllowanceCharge",
+
+	/**
+	 * Contractual prose with no typed UN/CEFACT slot.
+	 */
+	Note: "Note",
+
+	/**
+	 * The shipping details of a trade document.
+	 */
+	TradeDelivery: "TradeDelivery",
+
+	/**
+	 * The delivery terms of a trade document.
+	 */
+	DeliveryTerms: "DeliveryTerms",
+
+	/**
+	 * Another document referenced by a trade document.
+	 */
+	ReferencedDocument: "ReferencedDocument",
+
+	/**
+	 * The trading basis of a document, verbatim.
+	 */
+	Basis: "Basis",
+
+	/**
+	 * How insurance is allocated between the parties, verbatim.
+	 */
+	Insurance: "Insurance",
+
+	/**
+	 * Conditions the document is subject to, verbatim.
+	 */
+	Conditions: "Conditions",
 } as const;
 
 /**

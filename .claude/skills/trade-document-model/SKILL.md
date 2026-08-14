@@ -47,9 +47,9 @@ one it replaces:
 
 | keep | because |
 |---|---|
-| a UK postcode alphanumeric, with the space (`SE1 0UQ` → `BS1 4RN`) | UNVTD's `zip: number` rejects it — that is a finding |
-| leading zeros in postal codes (`00200` → `00240`) | they get eaten by numeric types |
-| comma-joined tokens with no space (`Asali,AB` → `Mwitu,AB`) | it is what the parser must split |
+| a UK postcode alphanumeric, with its space (`BS1 4RN`) | UNVTD's `zip: number` rejects it — that is a finding |
+| leading zeros in postal codes (`00240`) | they get eaten by numeric types |
+| comma-joined tokens with no space (`Mwitu,AB`) | it is what the parser must split |
 | consecutive line numbers with no header number | it is why `identifier` is optional |
 | the typed-vs-stamped party name mismatch | a real contradiction the model must be able to hold |
 | a price basis that differs from the packing unit (per 50 kg on 60 kg bags) | the factor that UNVTD loses |
@@ -60,6 +60,10 @@ quoted in the docs — and check the diff: a bulk find-and-replace will silently
 not. In this repo it turned the 50 kg price basis into 45.
 
 State in the fixture header that the values are anonymised and that the shape is preserved.
+
+**Do not record the substitution.** Writing `real → fictional` anywhere in a committed file puts the
+real value back in the repository, which is the thing rule 4 exists to prevent. Show the fictional
+value and describe the shape it preserves.
 
 ## Step 0 — Collect the inputs
 
@@ -168,48 +172,132 @@ carry a rubber stamp on paper.
 
 ## Step 4 — Write the model
 
-Follow the house idiom exactly — see `packages/trade-document-models/docs/model-guide.md §1`:
+The package has two layers, and the distinction is the point:
 
-```ts
-export type IFoo = IUneceBar &
-  Required<Pick<IUneceBar, "@context" | "type" | "alwaysPresentField">> & {
-    /** One line. This becomes the schema description, verbatim. */
-    localField: string;
-  };
+```
+src/models/                 documents — one file per trade document
+├── IPurchaseOrder.ts
+├── ITradeAgreement.ts
+└── atoms/                  child types — the pieces documents are made of
+    ├── ITradeParty.ts  ITradeItem.ts  ILocation.ts  IAmount.ts
+    ├── IPaymentTerms.ts  IPaymentMeans.ts  IAllowanceCharge.ts
+    ├── INote.ts  ITradeDelivery.ts  IDeliveryTerms.ts  IReferencedDocument.ts
+    └── IBasis.ts  IInsurance.ts  IConditions.ts
 ```
 
-- **Reuse before you add.** `ITradeParty` and `ITradeItem` already model a party and a contracted
-  lot; check whether they fit before writing a new supporting type. If they nearly fit, widen them
-  rather than forking — every model in the package should share one party type and one line type.
-- **Choose the base from the standard**, via the UNVTD context if there is one, otherwise by
-  matching the document's semantics to a BSP class. Check `references/unece-property-map.md §1` for
-  the classes already in use and what each can and cannot hold.
+### Atoms are the decoupling layer
+
+**A document model should not name an `IUnece*` type in its own properties.** Every child type goes
+through an atom, so the document depends on the atom and only the atom depends on UN/CEFACT.
+`ITradeItem` wraps `IUneceSupplyChainTradeLineItem`, `ITradeParty` wraps `IUneceTradeParty`,
+`ILocation` wraps `IUneceLogisticsLocation`, and so on. That buys three things:
+
+- **one place to change** when the vocabulary moves under us — every `@twin.org/*` dependency is
+  pinned to the `next` dist-tag, so it does move;
+- **one place to constrain** — an atom is where a field becomes mandatory for the whole package,
+  rather than being re-promoted in every document that uses it;
+- **a name the domain uses** — `ILocation` rather than `IUneceLogisticsLocation`.
+
+The document's *own* base is still a direct `IUnece*` intersection; only its child properties go
+through atoms.
+
+### Reuse before you create
+
+Check `src/models/atoms/` first. If an existing atom nearly fits, **widen it rather than fork it** —
+every document in the package should share one party type, one line type, one location type. A
+second party atom is almost always a mistake. Only create a new atom when the concept is genuinely
+absent, and prefer widening the base or relaxing a promoted field to duplicating.
+
+### The two atom shapes
+
+**Derived from UN/CEFACT** — the normal case:
+
+```ts
+/**
+ * One or two lines. This becomes the schema description, verbatim.
+ * @json-schema embedded:defs
+ */
+export type ILocation = IUneceLogisticsLocation &
+  Required<Pick<IUneceLogisticsLocation, "@context" | "type" | "name">>;
+```
+
+**Local, when UN/CEFACT has no class for it** — a document row that is only ever text. It is still
+an object, never a bare `export type IFoo = string`: a bare alias breaks coherence with every other
+type *and* is still emitted as a `$ref`, so it buys nothing. Follow UN/CEFACT's own convention for
+scalar values (`AmountTypeValue`, `QuantityTypeValue`) and name the field `<Name>Value`:
+
+```ts
+export interface IBasis {
+    /** JSON-LD Context. */
+    "@context": UneceContextType;
+    /** JSON-LD Type. */
+    type: typeof TradeDocumentTypes.Basis;
+    /** The verbatim text of the `Basis` row. */
+    BasisValue: string;
+}
+```
+
+`ts-to-schema` resolves the local const and emits `"const": "Basis"`, exactly as it does for
+`UneceTypes` members. Growing such an atom later — a coded Incoterm, a numeric franchise — adds
+properties beside `<Name>Value` without changing the documents that use it.
+
+### Rules for both layers
+
+- **Always promote `@context` and `type`.** Every object, at every depth, carries its own JSON-LD
+  scaffolding. Making `@context` mandatory on an atom means every nested instance must set it —
+  that is the intended cost.
+- **Tag every atom `@json-schema embedded:defs`** so it is hoisted into the referencing document's
+  `$defs` instead of an external URL. It is a no-op for atoms reached only through an array, which
+  is a tool limitation, not a reason to omit it.
 - **Promote to mandatory only what every sample carries.** Two samples disagreeing means optional.
-- **Promote `type` alongside `@context`** so the JSON-LD discriminator lands in the local schema.
-- **Never end the type with `& { }`** — it silently degrades the generated schema.
+- **Choose the document's base from the standard**, via the UNVTD context if there is one, otherwise
+  by matching semantics to a BSP class. `references/unece-property-map.md §1` lists what each class
+  in use can and cannot hold.
+- **Never end a type with `& { }`** — it silently degrades the generated schema.
+- **Never name a type you have not verified exists.** `IUneceDeliveryLocation` reads like it should
+  exist and does not; the vocabulary's location classes are `IUneceLocation`,
+  `IUneceLogisticsLocation`, `IUneceSpecifiedLocation`, `IUneceTradeLocation`,
+  `IUneceSubordinateLocation`, `IUneceTransportServiceLocation`, `IUneceTTLocation`.
 - **A local property must reuse a UN/CEFACT name that exists somewhere**, even if on another class,
   rather than inventing one. `includedNote`, `issueDateTime` and
-  `includedSupplyChainTradeLineItem` are all used off-domain here for exactly that reason, and
-  UNECE's own UNVTD context does the same. Document the lift in the TSDoc.
-- **Prose with no typed slot goes in `includedNote[]`**, each note discriminated by `subject`. This
-  is the escape hatch for governing terms, precedence rules, arbitration forums, allocations and
-  instructions — all things BSP has no property for.
+  `includedSupplyChainTradeLineItem` are all used off-domain here for that reason, and UNECE's own
+  UNVTD context does the same. The exception is a document row with no UN/CEFACT concept at all —
+  `basis`, `insurance`, `conditions` — where the paper's own label is the honest name.
+- **Mirror the document's fields.** If the paper has a labelled row, the model should have a
+  property a reader can find without tracing an inherited chain. Re-declaring an inherited property
+  to narrow it to an atom is the normal way to do that.
+- **Keep the verbatim text and the coded value both**, when a row carries more than the code can
+  express. `basis` holds `FOB origin, N.S.W, 0.5% franchise, Actual Tare.` while
+  `applicableDeliveryTerms` holds the coded Incoterm and its named place. This is the pipeline's
+  verbatim and normalized stages, not redundancy.
+- **Choose between a note and an atom deliberately.** A labelled row on the document — `Basis`,
+  `Insurance`, `Conditions` — is a field and deserves its own atom, even when the value is only
+  text. A stray remark with no row of its own — a precedence rule buried in a footer clause, an
+  arbitration seat, a vessel-nomination undertaking — goes in `includedNote[]`, discriminated by
+  `subject`.
 - **Keep TSDoc to one or two lines per property, four or five for the type.** The comment is copied
-  **verbatim** into the published schema's `description`, so prose written for a reader of the source
-  ships to every consumer of the schema. State what the property is and, where it matters, the
-  standard term it corresponds to. Rationale, mapping tables, trade-offs and the history of a
-  decision belong in `docs/model-guide.md` — link to the section instead of restating it.
+  **verbatim** into the published schema's `description`. Rationale, mapping tables and the history
+  of a decision belong in `docs/model-guide.md` — link to the section instead of restating it.
 
-## Step 5 — Wire it, all four places
+### Naming against a standard
 
-A model that misses any of these is invisible or broken:
+Where a published standard names a property differently from D23B, decide once per document and say
+so in the type's TSDoc. `IPurchaseOrder` uses UNVTD's wire names (`deliveryLocation`,
+`paymentTerms`, `paymentMethod`, `allowanceCharge`, `totalOrderAmount`) because that is the schema
+it is aligned to; the cost is that a payload expands under the UNVTD context but not under the plain
+D23B one. Record the trade-off rather than leaving it implicit.
+
+## Step 5 — Wire it, every place
+
+A model or atom that misses any of these is invisible or silently broken. **Atoms need all four too**:
 
 1. `src/models/tradeDocumentTypes.ts` — add a local profile name. It must equal the schema `$id`
-   segment, and it must be unique even when two documents share a UN/CEFACT class.
-2. `ts-to-schema.json` — add the file path to `types`. **Child types must stay listed too**;
-   removing them emits dangling `$ref`s silently.
+   segment, and be unique even when two documents share a UN/CEFACT class. A local atom also reads
+   its `type` const from here.
+2. `ts-to-schema.json` — add the file path to `types`. **Every atom must be listed**, including
+   primitive-looking ones: omitting one emits a dangling `$ref` with no warning and exit 0.
 3. `src/dataTypes/tradeDocumentDataTypes.ts` — import and register the generated schema.
-4. `src/index.ts` — re-export the model.
+4. `src/index.ts` — re-export it.
 
 See `references/toolchain.md` for what the generator does with the idiom and where it will surprise
 you.
@@ -230,8 +318,9 @@ the file, which is the point: the compiler does the verification.
 3. an assertion that the covered fact-id set is **exactly** the inventory's data-bearing set, and a
    "nothing is derived" test asserting that what the page does not state is absent.
 
-Do not put test files under `tests/coverage/` — `.gitignore` has a bare `coverage` rule and they
-will never be committed.
+Put them under `tests/documents/`. **Not** `tests/coverage/` — `.gitignore` has a bare `coverage`
+rule, so a spec there is silently never committed. If `docs/model-guide.md` says otherwise, the
+guide is stale; this file and `references/toolchain.md` are the authority on repository mechanics.
 
 Then run the gate and do not stop until it is green:
 
@@ -297,11 +386,13 @@ itself, report the contradiction; do not resolve it silently.
 
 | | committed |
 |---|---|
-| `src/models/I<Document>.ts` and any widened supporting type | yes |
-| the four wiring edits | yes |
-| `src/schemas/<Document>.json`, regenerated | yes |
+| `src/models/I<Document>.ts` | yes |
+| any new or widened atom under `src/models/atoms/` | yes |
+| the four wiring edits, for the document **and** for each new atom | yes |
+| `src/schemas/*.json`, regenerated — one per document and per atom | yes |
 | `tests/fixtures/<document>.ts` and `tests/documents/<document>.spec.ts` | yes |
 | a section in `docs/model-guide.md` and a row in the root `README.md` | yes |
+| the atom table in `references/unece-property-map.md §1`, if you added one | yes |
 | `.ocr-preview/<document>/` — the simulated conversion | **no**, gitignored, regenerate on demand |
 
 ## References

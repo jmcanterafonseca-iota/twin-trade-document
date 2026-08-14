@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Insurance",
+	"title": "Insurance",
+	"description": "How insurance is allocated between the parties, verbatim as printed on the\n`Insurance` row.\n\nUN/CEFACT has no insurance property on any header class —\n`IUneceCargoInsurance` hangs off a physical consignment — so there is no\nstructured alternative to grow into yet.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "Insurance",
+			"description": "JSON-LD Type."
+		},
+		"InsuranceValue": {
+			"type": "string",
+			"description": "The verbatim text of the `Insurance` row, for example\n`For buyer's account.`"
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"InsuranceValue"
+	]
+}

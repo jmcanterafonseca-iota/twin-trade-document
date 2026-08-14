@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Basis",
+	"title": "Basis",
+	"description": "The trading basis of a document, verbatim as printed on its `Basis` row: the\ndelivery term, the weight basis, any franchise and the tare method.\n\nThe coded Incoterm and its named place are carried separately in\n`applicableDeliveryTerms`; this is the verbatim source text.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "Basis",
+			"description": "JSON-LD Type."
+		},
+		"BasisValue": {
+			"type": "string",
+			"description": "The verbatim text of the `Basis` row, for example\n`FOB origin, N.S.W, 0.5% franchise, Actual Tare.`"
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"BasisValue"
+	]
+}

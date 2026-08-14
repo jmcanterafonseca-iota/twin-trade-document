@@ -157,6 +157,7 @@ const FACTS: [number, string, unknown, unknown][] = [
     "unece:DeliveryTermsCodeList#FOB",
   ],
   [55, "incoterm named place", doc.applicableDeliveryTerms?.relevantLocation?.name, "origin"],
+  [55, "basis row verbatim", doc.basis?.BasisValue, "FOB origin, N.S.W, 0.5% franchise, Actual Tare."],
   [
     56,
     "N.S.W weight basis",
@@ -202,11 +203,11 @@ const FACTS: [number, string, unknown, unknown][] = [
     "unece:TimeReferenceCodeList#71",
   ],
   [67, "place of presentation", doc.applicableLocation?.[0].name, "Bristol"],
-  [68, "insurance allocation", note("Insurance"), "For buyer's account."],
+  [68, "insurance allocation", doc.insurance?.InsuranceValue, "For buyer's account."],
   [
     69,
     "condition precedent",
-    doc.purchaseConditionsDocument?.[0].processCondition,
+    doc.conditions?.ConditionsValue,
     "Subject to approval of preshipment sample by buyer.",
   ],
   [70, "EUDR", doc.applicableRegulatoryProcedure?.[0].certificationBasis, "EUDR Compliant"],
@@ -217,7 +218,7 @@ const FACTS: [number, string, unknown, unknown][] = [
   [
     73,
     "code of conduct",
-    doc.purchaseConditionsDocument?.[1].name,
+    doc.purchaseConditionsDocument?.[0].name,
     "Northgate suppliers code of conduct",
   ],
   [

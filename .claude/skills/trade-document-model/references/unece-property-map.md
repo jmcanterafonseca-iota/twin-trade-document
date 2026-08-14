@@ -2,7 +2,7 @@
 
 Everything here was confirmed by grep against
 `.context/twin-standards/packages/standards-unece/src/models/`, which is byte-equivalent to the
-installed `@twin.org/standards-unece@0.9.2-next.1` (394 interfaces, 643 type constants). Line
+installed `@twin.org/standards-unece@0.9.2-next.1` (394 interfaces, 640 type constants). Line
 numbers are from that checkout and may drift by a line or two across versions — re-grep before
 relying on one.
 
@@ -10,25 +10,61 @@ Shorthand below: `BSP` = `.../src/models/bsp`, `LISTS` = `.../src/models/lists`.
 
 ---
 
-## 1. The classes already in use, and what each can hold
+## 1. What already exists — reuse this before writing anything
+
+### Documents — `src/models/`
 
 | Model | Base | Holds | Does **not** hold |
 |---|---|---|---|
-| `ITradeAgreement`, `IPurchaseOrder` | `IUneceHeaderTradeAgreement` | parties, references, delivery terms, payment terms, shipping period, locations, document references, regulatory procedures | any date except `buyerApprovedDateTime`, any quantity, any link to line items, any note |
-| `ITradeItem` | `IUneceSupplyChainTradeLineItem` | line number, product, quantity, packaging, price, per-line delivery terms | — |
-| `ITradeParty` | `IUneceTradeParty` | name, address, role codes, identifiers, contacts, authentications | — |
+| `ITradeAgreement` | `IUneceHeaderTradeAgreement` | seller issued sales contract / sale confirmation | — |
+| `IPurchaseOrder` | `IUneceHeaderTradeAgreement` | buyer issued purchase contract, aligned to UNVTD | — |
+
+Both root on the same class: UNVTD's context says `"PurchaseOrder": "unece:HeaderTradeAgreement"`,
+and a sale confirmation is the same class from the other side. Two models on one base cannot carry
+different `type` literals — the intersection collapses to `never` — so they are distinguished by
+their key in `TradeDocumentTypes`, not by their payload `type`.
 
 **`IUneceHeaderTradeAgreement` is an association hub.** Of its 69 properties only three carry free
-text (`buyerReference` :119, `sellerReference` :413, `reference` :347), two are bare code strings,
-two are identifiers, and exactly one is a date. Everything else is a reference to another class. Any
-prose on the paper must therefore go into a child object or a lifted local property.
+text (`buyerReference`, `sellerReference`, `reference`), two are bare code strings, two are
+identifiers, and exactly one is a date. Everything else references another class. Any prose on the
+paper must go into a child object or a lifted local property.
 
-**A purchase order and a sale confirmation are the same UN/CEFACT class.** UNVTD's own context says
-`"PurchaseOrder": "unece:HeaderTradeAgreement"`. Two models on one base cannot carry different
-`type` literals — the intersection collapses to `never` — so they are distinguished by their
-registration key in `TradeDocumentTypes`, not by their payload `type`.
+### Atoms — `src/models/atoms/`
 
----
+The decoupling layer: documents reference these, and only these reference `IUnece*`. **Check this
+table before creating anything new, and widen rather than fork.**
+
+| Atom | Base | Promoted to mandatory | Use for |
+|---|---|---|---|
+| `ITradeParty` | `IUneceTradeParty` | `name` | any party: buyer, seller, invoicee, shipper, warehouse keeper |
+| `ITradeItem` | `IUneceSupplyChainTradeLineItem` | line document, product, delivery, agreement | one line of any document with a goods table |
+| `ILocation` | `IUneceLogisticsLocation` | `name` | any place; discriminate with `locationFunctionTypeCode` |
+| `IAmount` | `IUneceAmountType` | `AmountTypeValue`, `AmountTypeCurrency` | any monetary amount |
+| `IPaymentTerms` | `IUnecePaymentTerms` | — | terms of payment |
+| `IPaymentMeans` | `IUnecePaymentMeans` | — | how payment is made |
+| `IAllowanceCharge` | `IUneceTradeAllowanceCharge` | `chargeIndicator` | an allowance or a charge |
+| `INote` | `IUneceNote` | `content`, `subject` | prose with no typed slot |
+| `ITradeDelivery` | `IUneceHeaderTradeDelivery` | — | shipping details: instructions, despatch and delivery events, ship-to/from, consignments, transport equipment |
+| `IDeliveryTerms` | `IUneceDeliveryTerms` | — | Incoterm plus named place |
+| `IReferencedDocument` | `IUneceDocument` | — | another document referenced by this one |
+| `IBasis` | *(local)* | `BasisValue` | the verbatim `Basis` row |
+| `IInsurance` | *(local)* | `InsuranceValue` | the verbatim `Insurance` row |
+| `IConditions` | *(local)* | `ConditionsValue` | the verbatim `Conditions` row |
+
+All fourteen promote `@context` and `type` as well, and carry `@json-schema embedded:defs`.
+
+The three local ones exist because UN/CEFACT has no class for what the row says. Insurance is the
+clearest case: `grep -i insurance` over the three header classes returns zero hits, and
+`IUneceCargoInsurance` hangs off a physical `IUneceConsignment`, not off an agreement.
+
+### Atoms worth adding when a document needs them
+
+None of these exists yet; each has an obvious base if a future document calls for it:
+`IUneceConsignment` for a consignment, `IUneceTradeProduct` for a product referenced outside a line,
+`IUneceQuantityType` for a standalone quantity, `IUneceAuthentication` for a signature or stamp
+carried at document level, `IUneceSpecifiedPeriod` for a standalone period,
+`IUneceRegulatoryProcedure` for a compliance assertion, `IUneceSpecifiedCertificate` for a
+certificate, `IUneceExchangedDocument` for a document envelope with a signature workflow.
 
 ## 2. The header/line structure
 
@@ -63,12 +99,12 @@ events, gross/net weights — that is the moment to reconsider rooting it on
 
 | what | property | line |
 |---|---|---|
-| name | `name?: string` | :1289 |
-| role | `partyRoleCode?: (UnecePartyRoleCodeList \| string)[]` | :1302 |
-| address | `postalAddress?: IUneceTradeAddress` | :1314 |
-| identifiers | `identifier`, `registeredId`, `gLNId`, `dUNSId`, `globalId` | :1266, :1344, :1254, :1212, :1260 |
-| legal entity | `specifiedLegalOrganization?: IUneceLegalOrganization` | :1452 |
-| contacts | `definedContact`, `emailURICommunication`, `telephoneCommunication`, `uRICommunication` | :1218, :1236, :1494, :1506 |
+| name | `name?: string` | :337 |
+| role | `partyRoleCode?: (UnecePartyRoleCodeList \| string)[]` | :349 |
+| address | `postalAddress?: IUneceTradeAddress` | :361 |
+| identifiers | `identifier`, `registeredId`, `gLNId`, `dUNSId`, `globalId` | :313, :391, :301, :259, :307 |
+| legal entity | `specifiedLegalOrganization?: IUneceLegalOrganization` | :499 |
+| contacts | `definedContact`, `emailURICommunication`, `telephoneCommunication`, `uRICommunication` | :265, :283, :541, :553 |
 | **stamp / signature** | `confirmedAuthentication?: IUneceAuthentication[]` | :241 |
 
 `IUneceTradeAddress`: `buildingName`, `streetName`, `cityName`, `postcodeCode`, `postOfficeBox`,
@@ -200,7 +236,9 @@ Each of these was searched across all 394 interfaces and all code lists, and ret
 | `includesTradeItem` | `-rn includesTradeItem` | 0 hits — it is not a UN/CEFACT term in any casing |
 | `orderedQuantity` | `-rn "orderedQuantity"` | 0 hits; the term is `orderQuantity`, on `LineTradeDelivery` only |
 
-All of these belong in `includedNote[]` with a discriminating `subject`.
+Vessel nomination, precedence and arbitration belong in `includedNote[]` with a discriminating
+`subject`. Insurance got its own atom, `IInsurance`, because the `Insurance` row is a document field
+in its own right rather than a stray remark.
 
 Also note: everything under `.../src/models/typeCodes/` is **not** a domain enumeration — those
 members are association-slot names. Every `typeCode` property is unioned with `| string`, so domain

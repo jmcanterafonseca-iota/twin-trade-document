@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/PaymentTerms",
+	"title": "PaymentTerms",
+	"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "PaymentTerms",
+			"description": "JSON-LD Type."
+		}
+	},
+	"required": [
+		"@context",
+		"type"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
+		}
+	]
+}

@@ -40,8 +40,9 @@ import {
   UneceTypes,
 } from "@twin.org/standards-unece";
 import type { IPurchaseOrder } from "../../src/models/IPurchaseOrder.js";
-import type { ITradeItem } from "../../src/models/ITradeItem.js";
+import type { ITradeItem } from "../../src/models/atoms/ITradeItem.js";
 import { TradeDocumentContexts } from "../../src/models/tradeDocumentContexts.js";
+import { TradeDocumentTypes } from "../../src/models/tradeDocumentTypes.js";
 
 /**
  * Build one row of the contract table. Facts 17-47, ten or eleven per row.
@@ -147,6 +148,7 @@ export function buildContractLine(
       type: UneceTypes.LineTradeAgreement,
       // 55 `FOB origin` repeated at line level, so each lot carries its term
       applicableDeliveryTerms: {
+        "@context": TradeDocumentContexts.Context,
         type: UneceTypes.DeliveryTerms,
         deliveryTermsDeliveryTypeCode: UneceDeliveryTermsCodeList.FreeOnBoard,
         relevantLocation: {
@@ -242,13 +244,34 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
 
   // 55 `FOB origin`, plus the parts of the Basis line that D23B has no slot for
   applicableDeliveryTerms: {
+    "@context": TradeDocumentContexts.Context,
     type: UneceTypes.DeliveryTerms,
     deliveryTermsDeliveryTypeCode: UneceDeliveryTermsCodeList.FreeOnBoard,
     relevantLocation: {
       type: UneceTypes.TradeLocation,
       name: "origin",
     },
-    description: "FOB origin, N.S.W, 0.5% franchise, Actual Tare.",
+  },
+
+  // 55-58 the `Basis` row, verbatim
+  basis: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Basis,
+    BasisValue: "FOB origin, N.S.W, 0.5% franchise, Actual Tare.",
+  },
+
+  // 68 the `Insurance` row, verbatim
+  insurance: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Insurance,
+    InsuranceValue: "For buyer's account.",
+  },
+
+  // 69 the `Conditions` row, verbatim
+  conditions: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Conditions,
+    ConditionsValue: "Subject to approval of preshipment sample by buyer.",
   },
 
   // 59 `June 2025`
@@ -262,6 +285,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   // 65 `Nett Cash Against Documentation`, 66 `on first presentation` —
   // UNVTD `paymentTerms`
   paymentTerms: {
+    "@context": TradeDocumentContexts.Context,
     type: UneceTypes.PaymentTerms,
     paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments], // 65
     paymentTermsEventTimeReferenceFromEventCode: "unece:TimeReferenceCodeList#71", // 66
@@ -270,6 +294,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
 
   // 60 `NDW`, 61 `Felixstowe`, 62 `United Kingdom` — UNVTD `deliveryLocation`
   deliveryLocation: {
+    "@context": TradeDocumentContexts.Context,
     type: UneceTypes.LogisticsLocation,
     name: "Felixstowe",
     description: "NDW",
@@ -282,6 +307,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   // place, so it stays in the inherited applicableLocation[].
   applicableLocation: [
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.LogisticsLocation,
       name: "Bristol",
       locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfPayment],
@@ -291,6 +317,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   // 71 `European Standard Contract for Coffee`, 72 `latest edition`
   contractDocument: [
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Document,
       name: "European Standard Contract for Coffee",
       versionId: "latest edition",
@@ -298,15 +325,12 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
     },
   ],
 
-  // 69 the sample condition, 73 the supplier code of conduct
+  // 73 the supplier code of conduct
   purchaseConditionsDocument: [
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Document,
-      processCondition: "Subject to approval of preshipment sample by buyer.", // 69
-    },
-    {
-      type: UneceTypes.Document,
-      name: "Northgate suppliers code of conduct", // 73
+      name: "Northgate suppliers code of conduct",
     },
   ],
 
@@ -323,6 +347,7 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   // lifted onto the model as applicableHeaderTradeDelivery.
   applicableHeaderTradeDelivery: [
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.HeaderTradeDelivery,
       // 64 `Shipping instructions to follow.`
       specifiedDeliveryInstructions: [
@@ -353,32 +378,32 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
   // subject so a consumer can find it without parsing free text.
   includedNote: [
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Note,
       subject: "Trade direction",
       content: "We have bought the following coffee from you :", // 8
     },
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Note,
       subject: "Vessel nomination",
       content: "Buyer to nominate vessel.", // 63
     },
     {
-      type: UneceTypes.Note,
-      subject: "Insurance",
-      content: "For buyer's account.", // 68
-    },
-    {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Note,
       subject: "Precedence",
       content:
         "and on the above particular conditions, which override all others", // 74
     },
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Note,
       subject: "Dispute resolution",
       content: "London Arbitration.", // 75
     },
     {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.Note,
       subject: "Countersignature instruction",
       content: "Please sign and return.", // 94

@@ -1,0 +1,31 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Location",
+	"title": "Location",
+	"description": "A place named by a trade document, such as a destination or a place of\npayment presentation. Use `locationFunctionTypeCode` to say which.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "LogisticsLocation",
+			"description": "JSON-LD Type."
+		},
+		"name": {
+			"type": "string",
+			"description": "A name, expressed as text, of this logistics related location."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"name"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation"
+		}
+	]
+}

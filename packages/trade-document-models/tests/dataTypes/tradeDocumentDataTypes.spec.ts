@@ -14,7 +14,7 @@ import {
 import { TradeDocumentDataTypes } from "../../src/dataTypes/tradeDocumentDataTypes.js";
 import type { IPurchaseOrder } from "../../src/models/IPurchaseOrder.js";
 import type { ITradeAgreement } from "../../src/models/ITradeAgreement.js";
-import type { ITradeItem } from "../../src/models/ITradeItem.js";
+import type { ITradeItem } from "../../src/models/atoms/ITradeItem.js";
 import { TradeDocumentContexts } from "../../src/models/tradeDocumentContexts.js";
 import { TradeDocumentTypes } from "../../src/models/tradeDocumentTypes.js";
 
@@ -173,6 +173,7 @@ const PURCHASE_CONTRACT: IPurchaseOrder = {
   // no header level order number. Nothing is derived to fill it.
   // `Destination`: NDW, Felixstowe, United Kingdom
   deliveryLocation: {
+    "@context": TradeDocumentContexts.Context,
     type: UneceTypes.LogisticsLocation,
     name: "Felixstowe",
     description: "NDW",
