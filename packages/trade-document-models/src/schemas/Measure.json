@@ -1,0 +1,36 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Measure",
+	"title": "Measure",
+	"description": "A measured value such as a weight. The unit itself has no home:\nIUneceMeasureCode declares no value property, so `MeasureTypeCode` cannot\ncarry \"kgs\".",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "MeasureType",
+			"description": "JSON-LD Type."
+		},
+		"MeasureTypeValue": {
+			"type": "string",
+			"description": "The numeric value."
+		},
+		"MeasureTypeCode": {
+			"$ref": "https://schema.twindev.org/unece/UneceMeasureCode",
+			"description": "The unit code."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"MeasureTypeValue",
+		"MeasureTypeCode"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceMeasureType"
+		}
+	]
+}
