@@ -11,4 +11,4 @@ import { IUneceDeliveryTerms } from "@twin.org/standards-unece";
  * @json-schema embedded:defs
  */
 export type IDeliveryTerms = IUneceDeliveryTerms &
-  Required<Pick<IUneceDeliveryTerms, "@context" | "type" | "description">>;
+  Required<Pick<IUneceDeliveryTerms, "@context" | "type">>;

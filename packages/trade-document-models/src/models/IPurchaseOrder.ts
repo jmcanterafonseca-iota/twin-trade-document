@@ -6,6 +6,7 @@ import { IAllowanceCharge } from "./atoms/IAllowanceCharge.js";
 import { IAmount } from "./atoms/IAmount.js";
 import { IBasis } from "./atoms/IBasis.js";
 import { IConditions } from "./atoms/IConditions.js";
+import { IDate } from "./atoms/IDate.js";
 import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
 import { IInsurance } from "./atoms/IInsurance.js";
 import { ILocation } from "./atoms/ILocation.js";
@@ -29,9 +30,8 @@ export type IPurchaseOrder = IUneceHeaderTradeAgreement &
     /**
      * The date the order was issued. UNVTD `orderDate`.
      * @see https://vocabulary.uncefact.org/issueDateTime
-     * @json-schema format:date-time
      */
-    issueDateTime: string;
+    issueDateTime: IDate;
 
     /**
      * The buyer party placing this order. UNVTD `buyer`.

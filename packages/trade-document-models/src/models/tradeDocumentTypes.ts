@@ -92,6 +92,11 @@ export const TradeDocumentTypes = {
 	Conditions: "Conditions",
 
 	/**
+	 * A date carried by a trade document.
+	 */
+	Date: "Date",
+
+	/**
 	 * A counted or measured quantity.
 	 */
 	Quantity: "Quantity",

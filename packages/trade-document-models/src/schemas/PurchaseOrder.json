@@ -14,9 +14,8 @@
 			"description": "JSON-LD Type."
 		},
 		"issueDateTime": {
-			"type": "string",
-			"description": "The date the order was issued. UNVTD `orderDate`.",
-			"format": "date-time"
+			"$ref": "#/$defs/Date",
+			"description": "The date the order was issued. UNVTD `orderDate`."
 		},
 		"buyerParty": {
 			"$ref": "#/$defs/TradeParty",
@@ -45,6 +44,10 @@
 			"$ref": "#/$defs/Insurance",
 			"description": "The `Insurance` row, verbatim."
 		},
+		"paymentTerms": {
+			"$ref": "#/$defs/PaymentTerms",
+			"description": "The terms of payment. UNVTD `paymentTerms`."
+		},
 		"conditions": {
 			"$ref": "#/$defs/Conditions",
 			"description": "The `Conditions` row, verbatim."
@@ -66,10 +69,6 @@
 				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
 			},
 			"description": "A document whose terms govern this order, such as a standard trade\ncontract or a supplier code of conduct."
-		},
-		"paymentTerms": {
-			"$ref": "#/$defs/PaymentTerms",
-			"description": "The terms of payment. UNVTD `paymentTerms`."
 		},
 		"paymentMethod": {
 			"$ref": "#/$defs/PaymentMeans",
@@ -109,7 +108,12 @@
 		"buyerParty",
 		"sellerParty",
 		"deliveryLocation",
-		"includedSupplyChainTradeLineItem"
+		"includedSupplyChainTradeLineItem",
+		"basis",
+		"insurance",
+		"paymentTerms",
+		"conditions",
+		"applicableDeliveryTerms"
 	],
 	"allOf": [
 		{
@@ -117,6 +121,30 @@
 		}
 	],
 	"$defs": {
+		"Date": {
+			"title": "Date",
+			"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Date",
+					"description": "JSON-LD Type."
+				},
+				"DateValue": {
+					"type": "string",
+					"description": "The date, as printed on the document or normalised."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"DateValue"
+			]
+		},
 		"TradeParty": {
 			"title": "TradeParty",
 			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
@@ -133,6 +161,14 @@
 				"name": {
 					"type": "string",
 					"description": "A name, expressed as text, for this trade party."
+				},
+				"brandName": {
+					"type": "string",
+					"description": "A brand name, expressed as text, for this trade party."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal address for this trade party."
 				}
 			},
 			"required": [
@@ -223,6 +259,35 @@
 				"InsuranceValue"
 			]
 		},
+		"PaymentTerms": {
+			"title": "PaymentTerms",
+			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "PaymentTerms",
+					"description": "JSON-LD Type."
+				},
+				"description": {
+					"type": "string",
+					"description": "A textual description of these trade payment terms."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"description"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
+				}
+			]
+		},
 		"Conditions": {
 			"title": "Conditions",
 			"description": "Conditions the document is subject to, verbatim as printed on its\n`Conditions` row.\n\nReferenced governing documents stay in `contractDocument` and\n`purchaseConditionsDocument`.",
@@ -268,30 +333,6 @@
 			"allOf": [
 				{
 					"$ref": "https://schema.twindev.org/unece/UneceDeliveryTerms"
-				}
-			]
-		},
-		"PaymentTerms": {
-			"title": "PaymentTerms",
-			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "PaymentTerms",
-					"description": "JSON-LD Type."
-				}
-			},
-			"required": [
-				"@context",
-				"type"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
 				}
 			]
 		},

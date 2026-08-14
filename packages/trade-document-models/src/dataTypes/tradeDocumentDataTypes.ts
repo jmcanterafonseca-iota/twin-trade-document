@@ -6,6 +6,7 @@ import { TradeDocumentContexts } from "../models/tradeDocumentContexts.js";
 import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
 
 import BasisSchema from "../schemas/Basis.json" with { type: "json" };
+import DateSchema from "../schemas/Date.json" with { type: "json" };
 import ConditionsSchema from "../schemas/Conditions.json" with { type: "json" };
 import InsuranceSchema from "../schemas/Insurance.json" with { type: "json" };
 import QuantitySchema from "../schemas/Quantity.json" with { type: "json" };
@@ -55,6 +56,7 @@ export class TradeDocumentDataTypes {
       { type: TradeDocumentTypes.Basis, schema: BasisSchema },
       { type: TradeDocumentTypes.Insurance, schema: InsuranceSchema },
       { type: TradeDocumentTypes.Conditions, schema: ConditionsSchema },
+      { type: TradeDocumentTypes.Date, schema: DateSchema },
       { type: TradeDocumentTypes.Quantity, schema: QuantitySchema },
       { type: TradeDocumentTypes.Packaging, schema: PackagingSchema },
       { type: TradeDocumentTypes.Product, schema: ProductSchema },

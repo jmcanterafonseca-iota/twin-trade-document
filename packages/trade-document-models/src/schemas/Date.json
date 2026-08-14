@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Date",
+	"title": "Date",
+	"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "Date",
+			"description": "JSON-LD Type."
+		},
+		"DateValue": {
+			"type": "string",
+			"description": "The date, as printed on the document or normalised."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"DateValue"
+	]
+}

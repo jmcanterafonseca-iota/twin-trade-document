@@ -16,6 +16,14 @@
 		"name": {
 			"type": "string",
 			"description": "A name, expressed as text, for this trade party."
+		},
+		"brandName": {
+			"type": "string",
+			"description": "A brand name, expressed as text, for this trade party."
+		},
+		"postalAddress": {
+			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+			"description": "The postal address for this trade party."
 		}
 	},
 	"required": [

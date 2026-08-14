@@ -18,9 +18,12 @@
 			"description": "A seller reference, expressed as text, for this header trade agreement."
 		},
 		"issueDateTime": {
-			"type": "string",
-			"description": "The date the document was issued.",
-			"format": "date-time"
+			"$ref": "#/$defs/Date",
+			"description": "The date the document was issued."
+		},
+		"saleDate": {
+			"$ref": "#/$defs/Date",
+			"description": "The date the sale was concluded, as stated in the confirmation sentence.\nDistinct from `issueDateTime`: a confirmation can be written up after the\nsale is struck."
 		},
 		"buyerParty": {
 			"$ref": "#/$defs/TradeParty",
@@ -87,7 +90,11 @@
 		"sellerReference",
 		"issueDateTime",
 		"buyerParty",
-		"sellerParty"
+		"sellerParty",
+		"includedSupplyChainTradeLineItem",
+		"applicableDeliveryTerms",
+		"applicableLocation",
+		"applicablePaymentTerms"
 	],
 	"allOf": [
 		{
@@ -95,6 +102,30 @@
 		}
 	],
 	"$defs": {
+		"Date": {
+			"title": "Date",
+			"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Date",
+					"description": "JSON-LD Type."
+				},
+				"DateValue": {
+					"type": "string",
+					"description": "The date, as printed on the document or normalised."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"DateValue"
+			]
+		},
 		"TradeParty": {
 			"title": "TradeParty",
 			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
@@ -111,6 +142,14 @@
 				"name": {
 					"type": "string",
 					"description": "A name, expressed as text, for this trade party."
+				},
+				"brandName": {
+					"type": "string",
+					"description": "A brand name, expressed as text, for this trade party."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal address for this trade party."
 				}
 			},
 			"required": [
@@ -160,11 +199,16 @@
 				"type": {
 					"const": "PaymentTerms",
 					"description": "JSON-LD Type."
+				},
+				"description": {
+					"type": "string",
+					"description": "A textual description of these trade payment terms."
 				}
 			},
 			"required": [
 				"@context",
-				"type"
+				"type",
+				"description"
 			],
 			"allOf": [
 				{

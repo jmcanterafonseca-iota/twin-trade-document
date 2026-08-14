@@ -195,7 +195,11 @@ export const BUYER_PURCHASE_CONTRACT: IPurchaseOrder = {
 
   // 4 `14 March 2025`, top right. Fact 87, the stamp date, reads the same
   // and is carried separately on the seller's authentication.
-  issueDateTime: "2025-03-14T00:00:00.000Z",
+  issueDateTime: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-03-14T00:00:00.000Z",
+  },
 
   // `identifier` is ABSENT on purpose. UNVTD requires a header level order
   // number, but this contract numbers each line (facts 17/27/37) and carries

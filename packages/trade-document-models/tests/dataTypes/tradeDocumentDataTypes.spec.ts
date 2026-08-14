@@ -6,6 +6,8 @@ import { JsonLdDataTypes } from "@twin.org/data-json-ld";
 import {
   UneceAmountCurrency,
   UneceCountryId,
+  UneceDeliveryTermsCodeList,
+  UnecePaymentTermsTypeCodeList,
   UneceDataTypes,
   UneceLocationFunctionCodeList,
   UnecePackageTypeCodeList,
@@ -122,7 +124,11 @@ function buildLot(
 const SALE_CONFIRMATION: ITradeAgreement = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2025-03-10T00:00:00.000Z",
+  issueDateTime: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-03-10T00:00:00.000Z",
+  },
   sellerReference: "S - KET / 519-521",
   buyerReference: "TBA",
   buyerParty: {
@@ -140,18 +146,46 @@ const SALE_CONFIRMATION: ITradeAgreement = {
     buildLot("ctr/520", "Tamu", "PB", "45", "281.00"),
     buildLot("ctr/521", "Miti Kanjuu", "AA", "65", "302.00"),
   ],
+  applicableDeliveryTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.DeliveryTerms,
+    deliveryTermsDeliveryTypeCode: UneceDeliveryTermsCodeList.FreeOnBoard,
+    relevantLocation: { type: UneceTypes.TradeLocation, name: "origin" },
+  },
+  applicableLocation: [
+    {
+      "@context": TradeDocumentContexts.Context,
+      type: UneceTypes.LogisticsLocation,
+      name: "Southampton",
+      countryName: "United Kingdom",
+      logisticsLocationCountryId: UneceCountryId.UNITEDKINGDOMOFGREATBRITAINANDNORTHERNIRELAND,
+      locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
+    },
+  ],
+  applicablePaymentTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.PaymentTerms,
+    paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments],
+    description: "Net Cash against Documents.",
+  },
 };
 
 /**
  * The seller's sale confirmation, Kilimo to Alpina Trading, ref S - KET / 566.
- * A single lot contract: quantity, quality and price are stated at header
- * level and the document has no line breakdown at all.
+ * A single lot contract. The document has no line table: it states its one
+ * lot in prose, "320 bags of 60 kg net, Kenya Washed AA FAQ at USD 388/50 KGS
+ * FOB". Modelled as a single line item, since every fact a line needs is
+ * present.
  * `.context/Document Samples/01-Sale Confirmation(s)/Seller_s Sale Confirmation (Alpina Trading)_.webp`
  */
-const SALE_CONFIRMATION_NO_LINES: ITradeAgreement = {
+const SALE_CONFIRMATION_SINGLE_LOT: ITradeAgreement = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2025-08-22T00:00:00.000Z",
+  issueDateTime: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-08-22T00:00:00.000Z",
+  },
   sellerReference: "S - KET / 566",
   buyerReference: "TBA",
   buyerParty: {
@@ -164,6 +198,29 @@ const SALE_CONFIRMATION_NO_LINES: ITradeAgreement = {
     type: UneceTypes.TradeParty,
     name: "Kilimo Estates Traders Co. Ltd.",
   },
+  includedSupplyChainTradeLineItem: [buildLot("S - KET / 566", "Kenya Washed", "AA FAQ", "320", "388.00")],
+  applicableDeliveryTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.DeliveryTerms,
+    deliveryTermsDeliveryTypeCode: UneceDeliveryTermsCodeList.FreeOnBoard,
+    relevantLocation: { type: UneceTypes.TradeLocation, name: "origin" },
+  },
+  applicableLocation: [
+    {
+      "@context": TradeDocumentContexts.Context,
+      type: UneceTypes.LogisticsLocation,
+      name: "Antwerp",
+      countryName: "Belgium",
+      logisticsLocationCountryId: UneceCountryId.BELGIUM,
+      locationFunctionTypeCode: [UneceLocationFunctionCodeList.PlaceOfDelivery],
+    },
+  ],
+  applicablePaymentTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.PaymentTerms,
+    paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments],
+    description: "Net Cash against Documents",
+  },
 };
 
 /**
@@ -175,7 +232,11 @@ const SALE_CONFIRMATION_NO_LINES: ITradeAgreement = {
 const PURCHASE_CONTRACT: IPurchaseOrder = {
   "@context": TradeDocumentContexts.Context,
   type: UneceTypes.HeaderTradeAgreement,
-  issueDateTime: "2025-03-14T00:00:00.000Z",
+  issueDateTime: {
+    "@context": TradeDocumentContexts.Context,
+    type: TradeDocumentTypes.Date,
+    DateValue: "2025-03-14T00:00:00.000Z",
+  },
   // `identifier` is absent on purpose: the document numbers each line and has
   // no header level order number. Nothing is derived to fill it.
   // `Destination`: NDW, Felixstowe, United Kingdom
@@ -203,6 +264,21 @@ const PURCHASE_CONTRACT: IPurchaseOrder = {
     buildLot("81141", "Tamu", "PB", "45", "281.00"),
     buildLot("81142", "Miti,Kanjuu", "AA", "65", "302.00"),
   ],
+  basis: { "@context": TradeDocumentContexts.Context, type: TradeDocumentTypes.Basis, BasisValue: "FOB origin, N.S.W, 0.5% franchise, Actual Tare." },
+  insurance: { "@context": TradeDocumentContexts.Context, type: TradeDocumentTypes.Insurance, InsuranceValue: "For buyer's account." },
+  conditions: { "@context": TradeDocumentContexts.Context, type: TradeDocumentTypes.Conditions, ConditionsValue: "Subject to approval of preshipment sample by buyer." },
+  applicableDeliveryTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.DeliveryTerms,
+    deliveryTermsDeliveryTypeCode: UneceDeliveryTermsCodeList.FreeOnBoard,
+    relevantLocation: { type: UneceTypes.TradeLocation, name: "origin" },
+  },
+  paymentTerms: {
+    "@context": TradeDocumentContexts.Context,
+    type: UneceTypes.PaymentTerms,
+    paymentTermsTypeCode: [UnecePaymentTermsTypeCodeList.CashAgainstDocuments],
+    description: "Nett Cash Against Documentation on first presentation in Bristol.",
+  },
 };
 
 describe("TradeDocumentDataTypes", () => {
@@ -248,12 +324,12 @@ describe("TradeDocumentDataTypes", () => {
     expect(isValid).toEqual(true);
   });
 
-  test("Can validate a sale confirmation that has no line items", async () => {
+  test("Can validate a single lot sale confirmation", async () => {
     const validationFailures: IValidationFailure[] = [];
     const isValid = await DataTypeHelper.validate(
       "",
       TRADE_AGREEMENT_TYPE,
-      SALE_CONFIRMATION_NO_LINES,
+      SALE_CONFIRMATION_SINGLE_LOT,
       validationFailures,
     );
     expect(validationFailures).toEqual([]);

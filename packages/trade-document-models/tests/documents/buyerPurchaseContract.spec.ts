@@ -33,7 +33,7 @@ function note(subject: string): string | undefined {
 const FACTS: [number, string, unknown, unknown][] = [
   // --- header identity ---
   [2, "buyer wordmark", doc.buyerParty.name, "Northgate Coffee Importers Ltd"],
-  [4, "contract date", doc.issueDateTime, "2025-03-14T00:00:00.000Z"],
+  [4, "contract date", doc.issueDateTime.DateValue, "2025-03-14T00:00:00.000Z"],
   [7, "seller name as typed", doc.sellerParty.name, "Kilimo Estates Trading Co Ltd"],
   [8, "trade direction", note("Trade direction"), "We have bought the following coffee from you :"],
 

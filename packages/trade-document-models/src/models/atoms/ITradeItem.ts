@@ -19,12 +19,12 @@ export type ITradeItem = IUneceSupplyChainTradeLineItem &
     /**
      * The goods on this line, including their description.
      */
-    specifiedTradeProduct: IProduct;
+    specifiedTradeProduct: IProduct[];
 
     /**
      * The quantity, the packaging and the content per package.
      */
-    specifiedLineTradeDelivery: ILineDelivery;
+    specifiedLineTradeDelivery: ILineDelivery[];
 
     /**
      * The price and the quantity it is quoted against.

@@ -7,6 +7,7 @@ export * from "./models/atoms/IAllowanceCharge.js";
 export * from "./models/atoms/IAmount.js";
 export * from "./models/atoms/IBasis.js";
 export * from "./models/atoms/IConditions.js";
+export * from "./models/atoms/IDate.js";
 export * from "./models/atoms/IDeliveryTerms.js";
 export * from "./models/atoms/IInsurance.js";
 export * from "./models/atoms/ILineAgreement.js";

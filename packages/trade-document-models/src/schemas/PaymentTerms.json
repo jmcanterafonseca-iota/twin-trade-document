@@ -12,11 +12,16 @@
 		"type": {
 			"const": "PaymentTerms",
 			"description": "JSON-LD Type."
+		},
+		"description": {
+			"type": "string",
+			"description": "A textual description of these trade payment terms."
 		}
 	},
 	"required": [
 		"@context",
-		"type"
+		"type",
+		"description"
 	],
 	"allOf": [
 		{

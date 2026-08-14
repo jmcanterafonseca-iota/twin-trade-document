@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import { IUneceHeaderTradeAgreement } from "@twin.org/standards-unece";
+import { IDate } from "./atoms/IDate.js";
 import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
 import { ILocation } from "./atoms/ILocation.js";
 import { INote } from "./atoms/INote.js";
@@ -22,9 +23,15 @@ export type ITradeAgreement = IUneceHeaderTradeAgreement &
     /**
      * The date the document was issued.
      * @see https://vocabulary.uncefact.org/issueDateTime
-     * @json-schema format:date-time
      */
-    issueDateTime: string;
+    issueDateTime: IDate;
+
+    /**
+     * The date the sale was concluded, as stated in the confirmation sentence.
+     * Distinct from `issueDateTime`: a confirmation can be written up after the
+     * sale is struck.
+     */
+    saleDate: IDate;
 
     /**
      * The buyer party for this sales contract.
@@ -41,24 +48,24 @@ export type ITradeAgreement = IUneceHeaderTradeAgreement &
      * quality and price at header level and has no line breakdown.
      * @see https://vocabulary.uncefact.org/includedSupplyChainTradeLineItem
      */
-    includedSupplyChainTradeLineItem?: ITradeItem[];
+    includedSupplyChainTradeLineItem: ITradeItem[];
 
     /**
      * The delivery terms: the Incoterm and its named place, plus the weight
      * basis, tolerance and tare rules as verbatim text.
      */
-    applicableDeliveryTerms?: IDeliveryTerms;
+    applicableDeliveryTerms: IDeliveryTerms;
 
     /**
      * A place named by this contract, such as the destination. Discriminate
      * with `locationFunctionTypeCode`.
      */
-    applicableLocation?: ILocation[];
+    applicableLocation: ILocation[];
 
     /**
      * The terms of payment.
      */
-    applicablePaymentTerms?: IPaymentTerms;
+    applicablePaymentTerms: IPaymentTerms;
 
     /**
      * Conditions the contract is subject to, in `processCondition`.
