@@ -38,7 +38,7 @@ const FACTS: [number, string, unknown, unknown][] = [
   [8, "trade direction", note("Trade direction"), "We have bought the following coffee from you :"],
 
   // --- line 1, contract 81140 ---
-  [17, "contract no", line1.associatedDocumentLineDocument.lineId, "81140"],
+  [17, "contract no", line1.identifier, "81140"],
   [18, "origin", line1.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
   [19, "mark", line1.specifiedTradeProduct[0].name, "Mwitu"],
   [20, "grade", line1.specifiedTradeProduct[0].designation, "AB"],
@@ -75,7 +75,7 @@ const FACTS: [number, string, unknown, unknown][] = [
   ],
 
   // --- line 2, contract 81141 ---
-  [27, "contract no", line2.associatedDocumentLineDocument.lineId, "81141"],
+  [27, "contract no", line2.identifier, "81141"],
   [28, "origin", line2.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
   [29, "mark", line2.specifiedTradeProduct[0].name, "Tamu"],
   [30, "grade", line2.specifiedTradeProduct[0].designation, "PB"],
@@ -112,7 +112,7 @@ const FACTS: [number, string, unknown, unknown][] = [
   ],
 
   // --- line 3, contract 81142 ---
-  [37, "contract no", line3.associatedDocumentLineDocument.lineId, "81142"],
+  [37, "contract no", line3.identifier, "81142"],
   [38, "origin", line3.specifiedTradeProduct[0].originCountry?.[0].name, "Kenya"],
   [39, "mark", line3.specifiedTradeProduct[0].name, "Miti"],
   [40, "washing station", line3.specifiedTradeProduct[0].tradeName, "Kanjuu"],

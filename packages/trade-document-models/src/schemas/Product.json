@@ -1,0 +1,31 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Product",
+	"title": "Product",
+	"description": "The goods on a line: `description` for the free text, `name` for the mark,\n`designation` for the grade, `originCountry` for the origin.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "TradeProduct",
+			"description": "JSON-LD Type."
+		},
+		"description": {
+			"type": "string",
+			"description": "A textual description for this trade product."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"description"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
+		}
+	]
+}

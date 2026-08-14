@@ -16,7 +16,13 @@
 		"./src/models/atoms/IReferencedDocument.ts",
 		"./src/models/atoms/IBasis.ts",
 		"./src/models/atoms/IInsurance.ts",
-		"./src/models/atoms/IConditions.ts"
+		"./src/models/atoms/IConditions.ts",
+		"./src/models/atoms/IQuantity.ts",
+		"./src/models/atoms/IPackaging.ts",
+		"./src/models/atoms/IProduct.ts",
+		"./src/models/atoms/IPrice.ts",
+		"./src/models/atoms/ILineDelivery.ts",
+		"./src/models/atoms/ILineAgreement.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",

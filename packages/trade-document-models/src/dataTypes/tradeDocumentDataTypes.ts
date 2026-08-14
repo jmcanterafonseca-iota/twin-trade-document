@@ -8,6 +8,12 @@ import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
 import BasisSchema from "../schemas/Basis.json" with { type: "json" };
 import ConditionsSchema from "../schemas/Conditions.json" with { type: "json" };
 import InsuranceSchema from "../schemas/Insurance.json" with { type: "json" };
+import QuantitySchema from "../schemas/Quantity.json" with { type: "json" };
+import PackagingSchema from "../schemas/Packaging.json" with { type: "json" };
+import ProductSchema from "../schemas/Product.json" with { type: "json" };
+import PriceSchema from "../schemas/Price.json" with { type: "json" };
+import LineDeliverySchema from "../schemas/LineDelivery.json" with { type: "json" };
+import LineAgreementSchema from "../schemas/LineAgreement.json" with { type: "json" };
 import AllowanceChargeSchema from "../schemas/AllowanceCharge.json" with { type: "json" };
 import AmountSchema from "../schemas/Amount.json" with { type: "json" };
 import DeliveryTermsSchema from "../schemas/DeliveryTerms.json" with { type: "json" };
@@ -49,6 +55,12 @@ export class TradeDocumentDataTypes {
       { type: TradeDocumentTypes.Basis, schema: BasisSchema },
       { type: TradeDocumentTypes.Insurance, schema: InsuranceSchema },
       { type: TradeDocumentTypes.Conditions, schema: ConditionsSchema },
+      { type: TradeDocumentTypes.Quantity, schema: QuantitySchema },
+      { type: TradeDocumentTypes.Packaging, schema: PackagingSchema },
+      { type: TradeDocumentTypes.Product, schema: ProductSchema },
+      { type: TradeDocumentTypes.Price, schema: PriceSchema },
+      { type: TradeDocumentTypes.LineDelivery, schema: LineDeliverySchema },
+      { type: TradeDocumentTypes.LineAgreement, schema: LineAgreementSchema },
     ];
 
     DataTypeHelper.registerTypes(

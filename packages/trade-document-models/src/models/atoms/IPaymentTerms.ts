@@ -9,4 +9,4 @@ import { IUnecePaymentTerms } from "@twin.org/standards-unece";
  * @json-schema embedded:defs
  */
 export type IPaymentTerms = IUnecePaymentTerms &
-  Required<Pick<IUnecePaymentTerms, "@context" | "type">>;
+  Required<Pick<IUnecePaymentTerms, "@context" | "type" | "description">>;

@@ -67,15 +67,14 @@ export function buildContractLine(
     type: UneceTypes.SupplyChainTradeLineItem,
 
     // 17/27/37 `Contract No`
-    associatedDocumentLineDocument: {
-      type: UneceTypes.DocumentLineDocument,
-      lineId: contractNo,
-    },
+    identifier: contractNo,
 
     specifiedTradeProduct: [
       {
+        "@context": TradeDocumentContexts.Context,
         type: UneceTypes.TradeProduct,
-        // 19/29/39 mark, 20/30/41 grade
+        // 19/29/39 mark, 20/30/41 grade — `description` keeps the column verbatim
+        description: factory === undefined ? `${mark},${grade}` : `${mark},${factory},${grade}`,
         name: mark,
         designation: grade,
         // 40 `Kanjuu`, the washing station, only on row 3
@@ -118,15 +117,18 @@ export function buildContractLine(
 
     specifiedLineTradeDelivery: [
       {
+        "@context": TradeDocumentContexts.Context,
         type: UneceTypes.LineTradeDelivery,
         // 21/31/42 `Quantity`
         orderQuantity: {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.QuantityType,
           QuantityTypeValue: bags,
         },
         // 23/33/44 `Kg per Unit`. IUneceQuantityCode declares no value
         // property, so the "kg" itself cannot be attached — see model-guide 4.2.
         perPackageUnitQuantity: {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.QuantityType,
           QuantityTypeValue: "60",
         },
@@ -134,6 +136,7 @@ export function buildContractLine(
         // UN/CEFACT package type, so the code says Bag and the brand is text.
         includedPackaging: [
           {
+            "@context": TradeDocumentContexts.Context,
             type: UneceTypes.SupplyChainPackaging,
             packageTypeCode: UnecePackageTypeCodeList.Bag,
             description: "Grain Pro",
@@ -145,6 +148,7 @@ export function buildContractLine(
     ],
 
     specifiedLineTradeAgreement: {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.LineTradeAgreement,
       // 55 `FOB origin` repeated at line level, so each lot carries its term
       applicableDeliveryTerms: {
@@ -158,10 +162,12 @@ export function buildContractLine(
       },
       agreedPriceProductPrice: [
         {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.TradePrice,
           // 24/34/45 `Price`, 25/35/46 `$`
           unitAmount: [
             {
+              "@context": TradeDocumentContexts.Context,
               type: UneceTypes.AmountType,
               AmountTypeValue: price,
               AmountTypeCurrency: UneceAmountCurrency.USDollar,
@@ -169,6 +175,7 @@ export function buildContractLine(
           ],
           // 26/36/47 `50kg` — the price basis, which is NOT the 60 kg packing unit
           basisQuantity: {
+            "@context": TradeDocumentContexts.Context,
             type: UneceTypes.QuantityType,
             QuantityTypeValue: "50",
           },

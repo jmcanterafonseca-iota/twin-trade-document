@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in\n`associatedDocumentLineDocument.lineId`, the mark, grade and origin in\n`specifiedTradeProduct`, the quantity and packaging in\n`specifiedLineTradeDelivery`, the price in `specifiedLineTradeAgreement`.\nSee docs/model-guide.md §2.2.",
+	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in `identifier` or\n`associatedDocumentLineDocument.lineId`.\nSee docs/model-guide.md §2.2.",
 	"type": "object",
 	"properties": {
 		"@context": {
@@ -13,57 +13,81 @@
 			"const": "SupplyChainTradeLineItem",
 			"description": "JSON-LD Type."
 		},
-		"associatedDocumentLineDocument": {
-			"$ref": "https://schema.twindev.org/unece/UneceDocumentLineDocument",
-			"description": "The document line associated with this trade line item."
-		},
-		"specifiedLineTradeDelivery": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/unece/UneceLineTradeDelivery"
-			},
-			"description": "A line trade delivery specified for this supply chain trade line item."
+		"identifier": {
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+				}
+			],
+			"description": "The unique identifier for this supply chain trade line item."
 		},
 		"specifiedTradeProduct": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
+				"$ref": "https://schema.twindev.org/trade-document/Product"
 			},
-			"description": "A product specified for this supply chain trade line item."
+			"description": "The goods on this line, including their description."
+		},
+		"specifiedLineTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/LineDelivery"
+			},
+			"description": "The quantity, the packaging and the content per package."
 		},
 		"specifiedLineTradeAgreement": {
-			"type": "object",
-			"properties": {
-				"agreedPriceProductPrice": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/unece/UneceTradePrice"
-					},
-					"description": "An agreed product price for this line trade agreement."
-				}
-			},
-			"required": [
-				"agreedPriceProductPrice"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
-				}
-			],
-			"description": "The pricing facet of this line, narrowed to require an agreed price."
+			"$ref": "#/$defs/LineAgreement",
+			"description": "The price and the quantity it is quoted against."
 		}
 	},
 	"required": [
 		"@context",
 		"type",
-		"associatedDocumentLineDocument",
-		"specifiedLineTradeDelivery",
+		"identifier",
 		"specifiedTradeProduct",
+		"specifiedLineTradeDelivery",
 		"specifiedLineTradeAgreement"
 	],
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceSupplyChainTradeLineItem"
 		}
-	]
+	],
+	"$defs": {
+		"LineAgreement": {
+			"title": "LineAgreement",
+			"description": "The pricing facet of a line.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "LineTradeAgreement",
+					"description": "JSON-LD Type."
+				},
+				"agreedPriceProductPrice": {
+					"type": "array",
+					"items": {
+						"$ref": "https://schema.twindev.org/trade-document/Price"
+					},
+					"description": "The agreed price for the goods on this line."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"agreedPriceProductPrice"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
+				}
+			]
+		}
+	}
 }

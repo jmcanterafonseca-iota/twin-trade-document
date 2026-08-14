@@ -90,6 +90,36 @@ export const TradeDocumentTypes = {
 	 * Conditions the document is subject to, verbatim.
 	 */
 	Conditions: "Conditions",
+
+	/**
+	 * A counted or measured quantity.
+	 */
+	Quantity: "Quantity",
+
+	/**
+	 * How goods are packed.
+	 */
+	Packaging: "Packaging",
+
+	/**
+	 * The goods on a line.
+	 */
+	Product: "Product",
+
+	/**
+	 * A unit price and the quantity it is quoted against.
+	 */
+	Price: "Price",
+
+	/**
+	 * The delivery facet of a line.
+	 */
+	LineDelivery: "LineDelivery",
+
+	/**
+	 * The pricing facet of a line.
+	 */
+	LineAgreement: "LineAgreement",
 } as const;
 
 /**

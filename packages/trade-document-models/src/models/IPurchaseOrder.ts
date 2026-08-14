@@ -59,23 +59,28 @@ export type IPurchaseOrder = IUneceHeaderTradeAgreement &
     /**
      * The `Basis` row, verbatim.
      */
-    basis?: IBasis;
+    basis: IBasis;
 
     /**
      * The `Insurance` row, verbatim.
      */
-    insurance?: IInsurance;
+    insurance: IInsurance;
+
+    /**
+     * The terms of payment. UNVTD `paymentTerms`.
+     */
+    paymentTerms: IPaymentTerms;
 
     /**
      * The `Conditions` row, verbatim.
      */
-    conditions?: IConditions;
+    conditions: IConditions;
 
     /**
      * The delivery terms in coded form: the Incoterm and its named place. The
      * verbatim source text of the same row is in `basis`.
      */
-    applicableDeliveryTerms?: IDeliveryTerms;
+    applicableDeliveryTerms: IDeliveryTerms;
 
     /**
      * A document setting conditions on this order, such as a supplier code of
@@ -88,11 +93,6 @@ export type IPurchaseOrder = IUneceHeaderTradeAgreement &
      * contract or a supplier code of conduct.
      */
     contractDocument?: IReferencedDocument[];
-
-    /**
-     * The terms of payment. UNVTD `paymentTerms`.
-     */
-    paymentTerms?: IPaymentTerms;
 
     /**
      * The means by which payment is to be made. UNVTD `paymentMethod`.

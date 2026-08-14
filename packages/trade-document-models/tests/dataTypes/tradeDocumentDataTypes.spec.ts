@@ -41,14 +41,13 @@ function buildLot(
     "@context": TradeDocumentContexts.Context,
     type: UneceTypes.SupplyChainTradeLineItem,
     // `Contract No`
-    associatedDocumentLineDocument: {
-      type: UneceTypes.DocumentLineDocument,
-      lineId,
-    },
+    identifier: lineId,
     specifiedTradeProduct: [
       {
+        "@context": TradeDocumentContexts.Context,
         type: UneceTypes.TradeProduct,
-        // `Quality`, split into its two tokens
+        // `Quality`
+        description: `${mark},${grade}`,
         name: mark,
         designation: grade,
         // `Origin`
@@ -63,15 +62,18 @@ function buildLot(
     ],
     specifiedLineTradeDelivery: [
       {
+        "@context": TradeDocumentContexts.Context,
         type: UneceTypes.LineTradeDelivery,
         // `Quantity`
         orderQuantity: {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.QuantityType,
           QuantityTypeValue: bags,
         },
         // `Kg per Unit`. The unit itself has no home: IUneceQuantityCode
         // declares no value property, so "KGM" cannot be attached.
         perPackageUnitQuantity: {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.QuantityType,
           QuantityTypeValue: "60",
         },
@@ -79,6 +81,7 @@ function buildLot(
         // package type, so the code says Bag and the brand goes in description.
         includedPackaging: [
           {
+            "@context": TradeDocumentContexts.Context,
             type: UneceTypes.SupplyChainPackaging,
             packageTypeCode: UnecePackageTypeCodeList.Bag,
             description: "Grain Pro",
@@ -87,18 +90,22 @@ function buildLot(
       },
     ],
     specifiedLineTradeAgreement: {
+      "@context": TradeDocumentContexts.Context,
       type: UneceTypes.LineTradeAgreement,
       agreedPriceProductPrice: [
         {
+          "@context": TradeDocumentContexts.Context,
           type: UneceTypes.TradePrice,
           unitAmount: [
             {
+              "@context": TradeDocumentContexts.Context,
               type: UneceTypes.AmountType,
               AmountTypeValue: unitPrice,
               AmountTypeCurrency: UneceAmountCurrency.USDollar,
             },
           ],
           basisQuantity: {
+            "@context": TradeDocumentContexts.Context,
             type: UneceTypes.QuantityType,
             QuantityTypeValue: "50",
           },
@@ -317,7 +324,7 @@ describe("TradeDocumentDataTypes", () => {
     const [price] = firstLot.specifiedLineTradeAgreement.agreedPriceProductPrice;
 
     // Contract No | Origin | Quality | Quantity | Unit Type | Kg per Unit | Price | Units
-    expect(firstLot.associatedDocumentLineDocument.lineId).toEqual("81140");
+    expect(firstLot.identifier).toEqual("81140");
     expect(product.originCountry?.[0].countryId).toEqual(UneceCountryId.KENYA);
     expect(product.name).toEqual("Mwitu");
     expect(product.designation).toEqual("AB");
