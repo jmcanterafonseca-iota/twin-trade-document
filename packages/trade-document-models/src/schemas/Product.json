@@ -5,27 +5,69 @@
 	"description": "The goods on a line: `description` for the free text, `name` for the mark,\n`designation` for the grade, `originCountry` for the origin.",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
-		},
-		"type": {
-			"const": "TradeProduct",
-			"description": "JSON-LD Type."
-		},
 		"description": {
 			"type": "string",
 			"description": "A textual description for this trade product."
+		},
+		"identifier": {
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+				}
+			],
+			"description": "A unique identifier for this trade product."
+		},
+		"name": {
+			"type": "string",
+			"description": "A name, expressed as text, for this trade product."
+		},
+		"itemNUmber": {
+			"type": "string",
+			"description": "The SKU"
+		},
+		"packaging": {
+			"$ref": "#/$defs/ProductPackage"
 		}
 	},
 	"required": [
-		"@context",
-		"type",
-		"description"
+		"description",
+		"identifier",
+		"name",
+		"itemNUmber",
+		"packaging"
 	],
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
 		}
-	]
+	],
+	"$defs": {
+		"ProductPackage": {
+			"title": "ProductPackage",
+			"description": "How the goods are packed: the coded package type, plus its trade name in\n`description` when the document names a brand such as a hermetic liner.",
+			"type": "object",
+			"properties": {
+				"capacityMeasure": {
+					"$ref": "https://schema.twindev.org/unece/UneceMeasureType",
+					"description": "The measure of the capacity of this supply chain packaging."
+				},
+				"packageTypeCode": {
+					"$ref": "https://schema.twindev.org/unece/UnecePackageTypeCodeList",
+					"description": "The code specifying the type of supply chain packaging."
+				}
+			},
+			"required": [
+				"capacityMeasure",
+				"packageTypeCode"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceSupplyChainPackaging"
+				}
+			]
+		}
+	}
 }

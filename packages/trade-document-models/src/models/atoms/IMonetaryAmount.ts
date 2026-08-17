@@ -8,5 +8,5 @@ import { IUneceAmountType } from "@twin.org/standards-unece";
  * without one of them cannot be acted on.
  * @json-schema embedded:defs
  */
-export type IAmount = IUneceAmountType &
-  Required<Pick<IUneceAmountType, "@context" | "type" | "AmountTypeValue" | "AmountTypeCurrency">>;
+export type IMonetaryAmount = IUneceAmountType &
+  Required<Pick<IUneceAmountType, "AmountTypeValue" | "AmountTypeCurrency">>;

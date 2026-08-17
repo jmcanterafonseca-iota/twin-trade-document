@@ -2,18 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import { IUneceHeaderTradeSettlement } from "@twin.org/standards-unece";
-import { IAmount } from "./atoms/IAmount.js";
-import { IDate } from "./atoms/IDate.js";
-import { ILocation } from "./atoms/ILocation.js";
+import { ILocation } from "./ILocation.js";
 import { IMeasure } from "./atoms/IMeasure.js";
-import { INote } from "./atoms/INote.js";
-import { IPackaging } from "./atoms/IPackaging.js";
-import { IPaymentMeans } from "./atoms/IPaymentMeans.js";
-import { IPrice } from "./atoms/IPrice.js";
-import { IProduct } from "./atoms/IProduct.js";
-import { IQuality } from "./atoms/IQuality.js";
+import { IProduct } from "./IProduct.js";
 import { IQuantity } from "./atoms/IQuantity.js";
-import { ITradeParty } from "./atoms/ITradeParty.js";
+import { ITradeParty } from "./ITradeParty.js";
+import { IProductPackage } from "./atoms/IProductPackage.js";
+import { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
 
 /**
  * A commercial invoice: an itemized account of goods delivered together with a
@@ -40,8 +35,9 @@ export type ICommercialInvoice = IUneceHeaderTradeSettlement &
     /**
      * The date the invoice was issued. UNVTD `invoiceDate`.
      * @see https://vocabulary.uncefact.org/issueDateTime
+     * @json-schema format:date-time
      */
-    issueDateTime: IDate;
+    issueDateTime: string;
 
     /**
      * The party issuing the invoice and to be paid.
@@ -67,11 +63,6 @@ export type ICommercialInvoice = IUneceHeaderTradeSettlement &
     specifiedTradeProduct: IProduct[];
 
     /**
-     * The `Quality` row, verbatim.
-     */
-    quality: IQuality;
-
-    /**
      * The number of packages invoiced, such as the total number of bags.
      * @see https://vocabulary.uncefact.org/packageQuantity
      */
@@ -81,7 +72,7 @@ export type ICommercialInvoice = IUneceHeaderTradeSettlement &
      * How the goods are packed, when the document states it.
      * @see https://vocabulary.uncefact.org/includedPackaging
      */
-    includedPackaging?: IPackaging[];
+    includedPackaging?: IProductPackage[];
 
     /**
      * The destination of the goods.
@@ -110,18 +101,18 @@ export type ICommercialInvoice = IUneceHeaderTradeSettlement &
     /**
      * The unit price and the quantity it is quoted against.
      */
-    price: IPrice;
+    price: IMonetaryAmount;
 
     /**
      * The total value of the invoice, as printed.
      */
-    totalInvoiceAmount: IAmount[];
+    totalInvoiceAmount: IMonetaryAmount[];
 
     /**
      * The amount the invoicee is asked to pay. Kept separate from
      * `totalInvoiceAmount`: a real invoice can print two different figures.
      */
-    duePayableAmount: IAmount[];
+    duePayableAmount: IMonetaryAmount[];
 
     /**
      * The party payment is due to, when the document names one.
@@ -131,11 +122,6 @@ export type ICommercialInvoice = IUneceHeaderTradeSettlement &
     /**
      * The bank details for payment: institution, account, branch and codes.
      */
-    specifiedPaymentMeans: IPaymentMeans[];
+    // specifiedPaymentMeans: IPaymentMeans[];
 
-    /**
-     * Prose with no typed UN/CEFACT slot, discriminated by `subject`.
-     * @see https://vocabulary.uncefact.org/includedNote
-     */
-    includedNote?: INote[];
   };

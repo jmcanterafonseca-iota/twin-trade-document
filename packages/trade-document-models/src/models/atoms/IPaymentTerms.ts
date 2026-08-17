@@ -9,5 +9,4 @@ import { IUnecePaymentTerms } from "@twin.org/standards-unece";
  * @json-schema embedded:defs
  */
 export type IPaymentTerms = IUnecePaymentTerms &
-  Required<Pick<IUnecePaymentTerms, "@context" | "type" | "information">> &
-  Partial<Pick<IUnecePaymentTerms, "dueDateTime" | "billStartDateTime">>;
+  Required<Pick<IUnecePaymentTerms, "paymentTermsTypeCode">>

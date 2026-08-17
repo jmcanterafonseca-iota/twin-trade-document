@@ -37,9 +37,9 @@ export const TradeDocumentTypes = {
 	Location: "Location",
 
 	/**
-	 * A monetary amount.
+	 * A monetary amount together with its currency.
 	 */
-	Amount: "Amount",
+	MonetaryAmount: "MonetaryAmount",
 
 	/**
 	 * The terms of payment.
@@ -57,44 +57,9 @@ export const TradeDocumentTypes = {
 	AllowanceCharge: "AllowanceCharge",
 
 	/**
-	 * Contractual prose with no typed UN/CEFACT slot.
-	 */
-	Note: "Note",
-
-	/**
-	 * The shipping details of a trade document.
-	 */
-	TradeDelivery: "TradeDelivery",
-
-	/**
 	 * The delivery terms of a trade document.
 	 */
 	DeliveryTerms: "DeliveryTerms",
-
-	/**
-	 * Another document referenced by a trade document.
-	 */
-	ReferencedDocument: "ReferencedDocument",
-
-	/**
-	 * The trading basis of a document, verbatim.
-	 */
-	Basis: "Basis",
-
-	/**
-	 * How insurance is allocated between the parties, verbatim.
-	 */
-	Insurance: "Insurance",
-
-	/**
-	 * Conditions the document is subject to, verbatim.
-	 */
-	Conditions: "Conditions",
-
-	/**
-	 * A date carried by a trade document.
-	 */
-	Date: "Date",
 
 	/**
 	 * A commercial invoice: goods delivered together with a demand for payment.
@@ -107,39 +72,24 @@ export const TradeDocumentTypes = {
 	Measure: "Measure",
 
 	/**
-	 * The quality of the goods, verbatim.
-	 */
-	Quality: "Quality",
-
-	/**
 	 * A counted or measured quantity.
 	 */
 	Quantity: "Quantity",
 
 	/**
+	 * A period of time delimited by start and end date times.
+	 */
+	Period: "Period",
+
+	/**
 	 * How goods are packed.
 	 */
-	Packaging: "Packaging",
+	ProductPackage: "ProductPackage",
 
 	/**
 	 * The goods on a line.
 	 */
 	Product: "Product",
-
-	/**
-	 * A unit price and the quantity it is quoted against.
-	 */
-	Price: "Price",
-
-	/**
-	 * The delivery facet of a line.
-	 */
-	LineDelivery: "LineDelivery",
-
-	/**
-	 * The pricing facet of a line.
-	 */
-	LineAgreement: "LineAgreement",
 } as const;
 
 /**

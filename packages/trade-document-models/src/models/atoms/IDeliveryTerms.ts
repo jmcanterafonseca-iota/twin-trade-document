@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import { IUneceDeliveryTerms } from "@twin.org/standards-unece";
+import { ILocation } from "../ILocation.js";
 
 /**
  * The delivery terms of a trade document. The Incoterm goes in
@@ -10,5 +11,14 @@ import { IUneceDeliveryTerms } from "@twin.org/standards-unece";
  * `description`.
  * @json-schema embedded:defs
  */
-export type IDeliveryTerms = IUneceDeliveryTerms &
-  Required<Pick<IUneceDeliveryTerms, "@context" | "type">>;
+export type IDeliveryTerms = IUneceDeliveryTerms & {
+  /**
+   * Relevant locations
+   */
+  relevantLocation: ILocation[];
+
+  /**
+   * Incoterms Code
+   */
+  incotermsCode: string;
+};

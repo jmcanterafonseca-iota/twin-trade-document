@@ -26,8 +26,9 @@
 			"description": "The invoice number, as printed in the document's own heading.\nUNVTD `invoiceNumber`."
 		},
 		"issueDateTime": {
-			"$ref": "#/$defs/Date",
-			"description": "The date the invoice was issued. UNVTD `invoiceDate`."
+			"type": "string",
+			"description": "The date the invoice was issued. UNVTD `invoiceDate`.",
+			"format": "date-time"
 		},
 		"invoicerParty": {
 			"$ref": "#/$defs/TradeParty",
@@ -48,10 +49,6 @@
 			},
 			"description": "The goods being invoiced: `description` carries the goods row verbatim,\n`designation` the grade when the document states one."
 		},
-		"quality": {
-			"$ref": "#/$defs/Quality",
-			"description": "The `Quality` row, verbatim."
-		},
 		"packageQuantity": {
 			"$ref": "#/$defs/Quantity",
 			"description": "The number of packages invoiced, such as the total number of bags."
@@ -59,7 +56,7 @@
 		"includedPackaging": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Packaging"
+				"$ref": "https://schema.twindev.org/trade-document/ProductPackage"
 			},
 			"description": "How the goods are packed, when the document states it."
 		},
@@ -80,20 +77,20 @@
 			"description": "The net weight of the consignment."
 		},
 		"price": {
-			"$ref": "#/$defs/Price",
+			"$ref": "#/$defs/MonetaryAmount",
 			"description": "The unit price and the quantity it is quoted against."
 		},
 		"totalInvoiceAmount": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Amount"
+				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
 			},
 			"description": "The total value of the invoice, as printed."
 		},
 		"duePayableAmount": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Amount"
+				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
 			},
 			"description": "The amount the invoicee is asked to pay. Kept separate from\n`totalInvoiceAmount`: a real invoice can print two different figures."
 		},
@@ -103,20 +100,6 @@
 				"$ref": "https://schema.twindev.org/trade-document/TradeParty"
 			},
 			"description": "The party payment is due to, when the document names one."
-		},
-		"specifiedPaymentMeans": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/PaymentMeans"
-			},
-			"description": "The bank details for payment: institution, account, branch and codes."
-		},
-		"includedNote": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Note"
-			},
-			"description": "Prose with no typed UN/CEFACT slot, discriminated by `subject`."
 		}
 	},
 	"required": [
@@ -130,7 +113,6 @@
 		"invoiceeParty",
 		"notifyParty",
 		"specifiedTradeProduct",
-		"quality",
 		"packageQuantity",
 		"finalDestinationLocation",
 		"grossWeightMeasure",
@@ -138,8 +120,7 @@
 		"netWeightMeasure",
 		"price",
 		"totalInvoiceAmount",
-		"duePayableAmount",
-		"specifiedPaymentMeans"
+		"duePayableAmount"
 	],
 	"allOf": [
 		{
@@ -147,100 +128,40 @@
 		}
 	],
 	"$defs": {
-		"Date": {
-			"title": "Date",
-			"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "Date",
-					"description": "JSON-LD Type."
-				},
-				"DateValue": {
-					"type": "string",
-					"description": "The date, as printed on the document or normalised."
-				}
-			},
-			"required": [
-				"@context",
-				"type",
-				"DateValue"
-			]
-		},
 		"TradeParty": {
 			"title": "TradeParty",
 			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
 			"type": "object",
 			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "TradeParty",
-					"description": "JSON-LD Type."
+				"identifier": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+						}
+					],
+					"description": "A unique identifier of this trade party."
 				},
 				"name": {
 					"type": "string",
 					"description": "A name, expressed as text, for this trade party."
 				},
-				"brandName": {
-					"type": "string",
-					"description": "A brand name, expressed as text, for this trade party."
-				},
-				"emailURICommunication": {
-					"$ref": "https://schema.twindev.org/unece/UneceCommunication",
-					"description": "The email communication for this trade party."
-				},
 				"postalAddress": {
 					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
 					"description": "The postal address for this trade party."
-				},
-				"telephoneCommunication": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/unece/UneceCommunication"
-					},
-					"description": "A telephone communication for this trade party."
 				}
 			},
 			"required": [
-				"@context",
-				"type",
-				"name"
+				"identifier",
+				"name",
+				"postalAddress"
 			],
 			"allOf": [
 				{
 					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
 				}
-			]
-		},
-		"Quality": {
-			"title": "Quality",
-			"description": "The quality of the goods, verbatim as printed on a document's `Quality` row.\nUN/CEFACT has no quality-description property on TradeProduct, so the row's\nown label is the honest name.",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "Quality",
-					"description": "JSON-LD Type."
-				},
-				"QualityValue": {
-					"type": "string",
-					"description": "The verbatim text of the `Quality` row."
-				}
-			},
-			"required": [
-				"@context",
-				"type",
-				"QualityValue"
 			]
 		},
 		"Quantity": {
@@ -277,28 +198,27 @@
 			"description": "A place named by a trade document, such as a destination or a place of\npayment presentation. Use `locationFunctionTypeCode` to say which.",
 			"type": "object",
 			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
+				"locationFunctionTypeCode": {
+					"type": "array",
+					"items": {
+						"anyOf": [
+							{
+								"$ref": "https://schema.twindev.org/unece/UneceLocationFunctionCodeList"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"description": "A code specifying the type of this logistics related location."
 				},
-				"type": {
-					"const": "LogisticsLocation",
-					"description": "JSON-LD Type."
-				},
-				"name": {
-					"type": "string",
-					"description": "A name, expressed as text, of this logistics related location."
-				},
-				"postalAddress": {
-					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
-					"description": "The postal trade address information for this logistics related location."
+				"unLocode": {
+					"type": "string"
 				}
 			},
 			"required": [
-				"@context",
-				"type",
-				"name",
-				"postalAddress"
+				"locationFunctionTypeCode",
+				"unLocode"
 			],
 			"allOf": [
 				{
@@ -340,73 +260,29 @@
 				}
 			]
 		},
-		"Price": {
-			"title": "Price",
-			"description": "A unit price: the amount, and the quantity that amount is quoted against.\nThe basis is not the packing unit — a contract can price per 50 kg on 60 kg\nbags, and dropping the basis makes any total wrong.",
+		"MonetaryAmount": {
+			"title": "MonetaryAmount",
+			"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.",
 			"type": "object",
 			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
+				"AmountTypeValue": {
+					"type": "string",
+					"description": "A number of monetary units."
 				},
-				"type": {
-					"const": "TradePrice",
-					"description": "JSON-LD Type."
-				},
-				"unitAmount": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/trade-document/Amount"
-					},
-					"description": "The price amount and its currency."
-				},
-				"basisQuantity": {
-					"$ref": "#/$defs/Quantity",
-					"description": "The quantity the amount is quoted against."
+				"AmountTypeCurrency": {
+					"$ref": "https://schema.twindev.org/unece/UneceAmountCurrency",
+					"description": "An amount currency code."
 				}
 			},
 			"required": [
-				"@context",
-				"type",
-				"unitAmount",
-				"basisQuantity"
+				"AmountTypeValue",
+				"AmountTypeCurrency"
 			],
 			"allOf": [
 				{
-					"$ref": "https://schema.twindev.org/unece/UneceTradePrice"
+					"$ref": "https://schema.twindev.org/unece/UneceAmountType"
 				}
-			],
-			"$defs": {
-				"Quantity": {
-					"title": "Quantity",
-					"description": "A counted or measured quantity. The unit itself has no home: IUneceQuantityCode\ndeclares no value property, so `QuantityTypeCode` cannot carry \"KGM\".",
-					"type": "object",
-					"properties": {
-						"@context": {
-							"$ref": "https://schema.twindev.org/unece/UneceContextType",
-							"description": "JSON-LD Context."
-						},
-						"type": {
-							"const": "QuantityType",
-							"description": "JSON-LD Type."
-						},
-						"QuantityTypeValue": {
-							"type": "string",
-							"description": "The numeric value."
-						}
-					},
-					"required": [
-						"@context",
-						"type",
-						"QuantityTypeValue"
-					],
-					"allOf": [
-						{
-							"$ref": "https://schema.twindev.org/unece/UneceQuantityType"
-						}
-					]
-				}
-			}
+			]
 		}
 	}
 }

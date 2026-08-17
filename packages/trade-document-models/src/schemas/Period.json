@@ -1,0 +1,35 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Period",
+	"title": "Period",
+	"description": "Specified period",
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceSpecifiedPeriod"
+		},
+		{
+			"description": "A specified period of time.",
+			"type": "object",
+			"properties": {
+				"completeDateTime": {
+					"type": "string",
+					"description": "The date, time, date time or other date time value for a complete specified period of time expressed as a specific\nmonth, a specific week, etc.",
+					"format": "date-time"
+				},
+				"startDateTime": {
+					"type": "string",
+					"description": "The date, time, date time or other date time value for the start of this specified period of time.",
+					"format": "date-time"
+				}
+			},
+			"$comment": "Inlined utility base type UneceSpecifiedPeriod so utility transformations can operate on concrete properties instead of a $ref.",
+			"required": [
+				"completeDateTime",
+				"startDateTime"
+			]
+		},
+		{
+			"type": "object"
+		}
+	]
+}

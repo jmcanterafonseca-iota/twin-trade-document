@@ -9,4 +9,6 @@ import { IUneceLogisticsLocation } from "@twin.org/standards-unece";
  * @json-schema embedded:defs
  */
 export type ILocation = IUneceLogisticsLocation &
-  Required<Pick<IUneceLogisticsLocation, "@context" | "type" | "name" | "postalAddress">>;
+  Required<Pick<IUneceLogisticsLocation, "locationFunctionTypeCode">> & {
+    unLocode: string;
+  }

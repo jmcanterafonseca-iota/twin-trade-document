@@ -5,18 +5,21 @@
 	"description": "The delivery terms of a trade document. The Incoterm goes in\n`deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;\nweight basis, tolerance and tare rules have no typed slot and go verbatim in\n`description`.",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
+		"relevantLocation": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Location"
+			},
+			"description": "Relevant locations"
 		},
-		"type": {
-			"const": "DeliveryTerms",
-			"description": "JSON-LD Type."
+		"incotermsCode": {
+			"type": "string",
+			"description": "Incoterms Code"
 		}
 	},
 	"required": [
-		"@context",
-		"type"
+		"relevantLocation",
+		"incotermsCode"
 	],
 	"allOf": [
 		{

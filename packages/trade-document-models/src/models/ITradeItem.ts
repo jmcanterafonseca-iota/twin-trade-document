@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import { IUneceSupplyChainTradeLineItem } from "@twin.org/standards-unece";
-import { ILineAgreement } from "./ILineAgreement.js";
-import { ILineDelivery } from "./ILineDelivery.js";
 import { IProduct } from "./IProduct.js";
+import { IMeasure } from "./atoms/IMeasure.js";
+import { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
 
 /**
  * A single contracted lot, carried as one line of a trade document.
@@ -14,20 +14,19 @@ import { IProduct } from "./IProduct.js";
  * See docs/model-guide.md §2.2.
  * @json-schema embedded:defs
  */
-export type ITradeItem = IUneceSupplyChainTradeLineItem &
-  Required<Pick<IUneceSupplyChainTradeLineItem, "@context" | "type" | "identifier">> & {
+export type ITradeItem = IUneceSupplyChainTradeLineItem & {
     /**
      * The goods on this line, including their description.
      */
-    specifiedTradeProduct: IProduct[];
+    suppliedProduct: IProduct;
 
     /**
-     * The quantity, the packaging and the content per package.
+     * Unit price
      */
-    specifiedLineTradeDelivery: ILineDelivery[];
-
+    unitPrice: IMonetaryAmount;
+   
     /**
-     * The price and the quantity it is quoted against.
+     * Quantity ordered
      */
-    specifiedLineTradeAgreement: ILineAgreement;
+    orderedQuantity: IMeasure;
   };

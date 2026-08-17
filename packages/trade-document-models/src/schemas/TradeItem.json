@@ -5,51 +5,23 @@
 	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in `identifier` or\n`associatedDocumentLineDocument.lineId`.\nSee docs/model-guide.md §2.2.",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
-		},
-		"type": {
-			"const": "SupplyChainTradeLineItem",
-			"description": "JSON-LD Type."
-		},
-		"identifier": {
-			"anyOf": [
-				{
-					"type": "string"
-				},
-				{
-					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
-				}
-			],
-			"description": "The unique identifier for this supply chain trade line item."
-		},
-		"specifiedTradeProduct": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Product"
-			},
+		"suppliedProduct": {
+			"$ref": "#/$defs/Product",
 			"description": "The goods on this line, including their description."
 		},
-		"specifiedLineTradeDelivery": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/LineDelivery"
-			},
-			"description": "The quantity, the packaging and the content per package."
+		"unitPrice": {
+			"$ref": "#/$defs/MonetaryAmount",
+			"description": "Unit price"
 		},
-		"specifiedLineTradeAgreement": {
-			"$ref": "#/$defs/LineAgreement",
-			"description": "The price and the quantity it is quoted against."
+		"orderedQuantity": {
+			"$ref": "#/$defs/Measure",
+			"description": "Quantity ordered"
 		}
 	},
 	"required": [
-		"@context",
-		"type",
-		"identifier",
-		"specifiedTradeProduct",
-		"specifiedLineTradeDelivery",
-		"specifiedLineTradeAgreement"
+		"suppliedProduct",
+		"unitPrice",
+		"orderedQuantity"
 	],
 	"allOf": [
 		{
@@ -57,9 +29,104 @@
 		}
 	],
 	"$defs": {
-		"LineAgreement": {
-			"title": "LineAgreement",
-			"description": "The pricing facet of a line.",
+		"Product": {
+			"title": "Product",
+			"description": "The goods on a line: `description` for the free text, `name` for the mark,\n`designation` for the grade, `originCountry` for the origin.",
+			"type": "object",
+			"properties": {
+				"description": {
+					"type": "string",
+					"description": "A textual description for this trade product."
+				},
+				"identifier": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+						}
+					],
+					"description": "A unique identifier for this trade product."
+				},
+				"name": {
+					"type": "string",
+					"description": "A name, expressed as text, for this trade product."
+				},
+				"itemNUmber": {
+					"type": "string",
+					"description": "The SKU"
+				},
+				"packaging": {
+					"$ref": "#/$defs/ProductPackage"
+				}
+			},
+			"required": [
+				"description",
+				"identifier",
+				"name",
+				"itemNUmber",
+				"packaging"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
+				}
+			],
+			"$defs": {
+				"ProductPackage": {
+					"title": "ProductPackage",
+					"description": "How the goods are packed: the coded package type, plus its trade name in\n`description` when the document names a brand such as a hermetic liner.",
+					"type": "object",
+					"properties": {
+						"capacityMeasure": {
+							"$ref": "https://schema.twindev.org/unece/UneceMeasureType",
+							"description": "The measure of the capacity of this supply chain packaging."
+						},
+						"packageTypeCode": {
+							"$ref": "https://schema.twindev.org/unece/UnecePackageTypeCodeList",
+							"description": "The code specifying the type of supply chain packaging."
+						}
+					},
+					"required": [
+						"capacityMeasure",
+						"packageTypeCode"
+					],
+					"allOf": [
+						{
+							"$ref": "https://schema.twindev.org/unece/UneceSupplyChainPackaging"
+						}
+					]
+				}
+			}
+		},
+		"MonetaryAmount": {
+			"title": "MonetaryAmount",
+			"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.",
+			"type": "object",
+			"properties": {
+				"AmountTypeValue": {
+					"type": "string",
+					"description": "A number of monetary units."
+				},
+				"AmountTypeCurrency": {
+					"$ref": "https://schema.twindev.org/unece/UneceAmountCurrency",
+					"description": "An amount currency code."
+				}
+			},
+			"required": [
+				"AmountTypeValue",
+				"AmountTypeCurrency"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceAmountType"
+				}
+			]
+		},
+		"Measure": {
+			"title": "Measure",
+			"description": "A measured value such as a weight. The unit itself has no home:\nIUneceMeasureCode declares no value property, so `MeasureTypeCode` cannot\ncarry \"kgs\".",
 			"type": "object",
 			"properties": {
 				"@context": {
@@ -67,25 +134,27 @@
 					"description": "JSON-LD Context."
 				},
 				"type": {
-					"const": "LineTradeAgreement",
+					"const": "MeasureType",
 					"description": "JSON-LD Type."
 				},
-				"agreedPriceProductPrice": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/trade-document/Price"
-					},
-					"description": "The agreed price for the goods on this line."
+				"MeasureTypeValue": {
+					"type": "string",
+					"description": "The numeric value."
+				},
+				"MeasureTypeCode": {
+					"$ref": "https://schema.twindev.org/unece/UneceMeasureCode",
+					"description": "The unit code."
 				}
 			},
 			"required": [
 				"@context",
 				"type",
-				"agreedPriceProductPrice"
+				"MeasureTypeValue",
+				"MeasureTypeCode"
 			],
 			"allOf": [
 				{
-					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
+					"$ref": "https://schema.twindev.org/unece/UneceMeasureType"
 				}
 			]
 		}

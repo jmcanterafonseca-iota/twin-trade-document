@@ -8,5 +8,7 @@ import { IUneceSupplyChainPackaging } from "@twin.org/standards-unece";
  * `description` when the document names a brand such as a hermetic liner.
  * @json-schema embedded:defs
  */
-export type IPackaging = IUneceSupplyChainPackaging &
-  Required<Pick<IUneceSupplyChainPackaging, "@context" | "type" | "packageTypeCode">>;
+export type IProductPackage = IUneceSupplyChainPackaging &
+  Required<
+    Pick<IUneceSupplyChainPackaging, "packageTypeCode" | "capacityMeasure">
+  >;

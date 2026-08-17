@@ -11,11 +11,4 @@ import { IUneceTradeParty } from "@twin.org/standards-unece";
  * @json-schema embedded:defs
  */
 export type ITradeParty = IUneceTradeParty &
-  Required<Pick<IUneceTradeParty, "@context"
-    | "type"
-    | "name"
-  >>
-  & Partial<Pick<IUneceTradeParty, "postalAddress"
-    | "brandName"
-    | "emailURICommunication"
-    | "telephoneCommunication">>;
+  Required<Pick<IUneceTradeParty, "name" | "identifier" | "postalAddress">>;
