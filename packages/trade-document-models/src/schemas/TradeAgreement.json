@@ -2,46 +2,65 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeAgreement",
 	"title": "TradeAgreement",
-	"description": "Trade Agreement Document",
+	"description": "A seller issued sales contract, also called a sale confirmation.\nThe buyer issued mirror of this document is {@link IPurchaseOrder}; the\nseller assigns the contract number, so `sellerReference` is mandatory here.\nSee docs/model-guide.md §2.3.",
 	"type": "object",
 	"properties": {
 		"@context": {
 			"$ref": "https://schema.twindev.org/unece/UneceContextType",
 			"description": "JSON-LD Context."
 		},
-		"buyerApprovedDateTime": {
-			"type": "string",
-			"description": "The date, time, date time, or other date time value of approval by the buyer for this header trade agreement.",
-			"format": "date-time"
-		},
-		"buyerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
-		},
-		"sellerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+		"type": {
+			"const": "HeaderTradeAgreement",
+			"description": "JSON-LD Type."
 		},
 		"sellerReference": {
 			"type": "string",
 			"description": "A seller reference, expressed as text, for this header trade agreement."
 		},
-		"issueDateTime": {
-			"type": "string"
+		"agreementDate": {
+			"type": "string",
+			"description": "The date the document was issued.",
+			"format": "date-time"
 		},
-		"includesTradeItem": {
+		"buyer": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The buyer party for this sales contract."
+		},
+		"seller": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The seller party for this sales contract."
+		},
+		"includesItem": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
-			}
+			},
+			"description": "A contracted lot. Optional: a single lot contract states quantity,\nquality and price at header level and has no line breakdown."
+		},
+		"applicableDeliveryTerms": {
+			"$ref": "https://schema.twindev.org/trade-document/DeliveryTerms",
+			"description": "The delivery terms: the Incoterm and its named place, plus the weight\nbasis, tolerance and tare rules as verbatim text."
+		},
+		"applicablePaymentTerms": {
+			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
+			"description": "The terms of payment."
+		},
+		"shippingPeriod": {
+			"$ref": "https://schema.twindev.org/trade-document/Period",
+			"description": "Shipping period"
 		}
 	},
 	"required": [
 		"@context",
-		"buyerApprovedDateTime",
-		"buyerParty",
-		"sellerParty",
+		"type",
 		"sellerReference",
-		"issueDateTime",
-		"includesTradeItem"
+		"agreementDate",
+		"buyer",
+		"seller",
+		"includesItem",
+		"applicableDeliveryTerms",
+		"applicablePaymentTerms",
+		"shippingPeriod"
 	],
 	"allOf": [
 		{

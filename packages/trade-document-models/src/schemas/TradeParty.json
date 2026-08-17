@@ -2,32 +2,37 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeParty",
 	"title": "TradeParty",
-	"description": "Trade Agreement Document",
+	"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
+	"type": "object",
+	"properties": {
+		"identifier": {
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+				}
+			],
+			"description": "A unique identifier of this trade party."
+		},
+		"name": {
+			"type": "string",
+			"description": "A name, expressed as text, for this trade party."
+		},
+		"postalAddress": {
+			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+			"description": "The postal address for this trade party."
+		}
+	},
+	"required": [
+		"identifier",
+		"name",
+		"postalAddress"
+	],
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
-		},
-		{
-			"description": "An individual, a group, or a body having a role in a trade business function.",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"postalAddress": {
-					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
-					"description": "The postal address for this trade party."
-				}
-			},
-			"$comment": "Inlined utility base type UneceTradeParty so utility transformations can operate on concrete properties instead of a $ref.",
-			"required": [
-				"@context",
-				"postalAddress"
-			]
-		},
-		{
-			"type": "object"
 		}
 	]
 }

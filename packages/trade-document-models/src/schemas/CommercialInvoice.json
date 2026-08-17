@@ -1,0 +1,119 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/CommercialInvoice",
+	"title": "CommercialInvoice",
+	"description": "A commercial invoice: an itemized account of goods delivered together with a\ndemand for payment. Based on HeaderTradeSettlement, the UN/CEFACT settlement\nfacet, which natively carries the invoicer, the invoicee, the amounts and the\npayment means. Aligned to the UNVTD commercial invoice\n(https://unvtd.unece.org/docs/commercial-invoice/), which assigns the\ndocument no UN/CEFACT class of its own.\nSee docs/model-guide.md §9 for the property mapping.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "CommercialInvoice"
+		},
+		"invoiceNumber": {
+			"type": "string",
+			"description": "The invoice number, as printed in the document's own heading.\nUNVTD `invoiceNumber`."
+		},
+		"issueDateTime": {
+			"type": "string",
+			"description": "The date the invoice was issued. UNVTD `invoiceDate`.",
+			"format": "date-time"
+		},
+		"invoicerParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The party issuing the invoice and to be paid."
+		},
+		"invoiceeParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The party the invoice is addressed to."
+		},
+		"notifyParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The party to be notified of the shipment. UN/CEFACT declares no\nnotify-party property on any settlement or agreement class."
+		},
+		"specifiedTradeProduct": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Product"
+			},
+			"description": "The goods being invoiced: `description` carries the goods row verbatim,\n`designation` the grade when the document states one."
+		},
+		"packageQuantity": {
+			"$ref": "https://schema.twindev.org/trade-document/Quantity",
+			"description": "The number of packages invoiced, such as the total number of bags."
+		},
+		"includedPackaging": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ProductPackage"
+			},
+			"description": "How the goods are packed, when the document states it."
+		},
+		"finalDestinationLocation": {
+			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"description": "The destination of the goods."
+		},
+		"grossWeightMeasure": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The gross weight of the consignment."
+		},
+		"tareWeightMeasure": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The tare weight of the consignment."
+		},
+		"netWeightMeasure": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The net weight of the consignment."
+		},
+		"price": {
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
+			"description": "The unit price and the quantity it is quoted against."
+		},
+		"totalInvoiceAmount": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
+			},
+			"description": "The total value of the invoice, as printed."
+		},
+		"duePayableAmount": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
+			},
+			"description": "The amount the invoicee is asked to pay. Kept separate from\n`totalInvoiceAmount`: a real invoice can print two different figures."
+		},
+		"payeeParty": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+			},
+			"description": "The party payment is due to, when the document names one."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"invoiceNumber",
+		"issueDateTime",
+		"invoicerParty",
+		"invoiceeParty",
+		"notifyParty",
+		"specifiedTradeProduct",
+		"packageQuantity",
+		"finalDestinationLocation",
+		"grossWeightMeasure",
+		"tareWeightMeasure",
+		"netWeightMeasure",
+		"price",
+		"totalInvoiceAmount",
+		"duePayableAmount"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceDocument"
+		}
+	]
+}

@@ -2,8 +2,21 @@
 	"baseUrl": "https://schema.twindev.org/trade-document/",
 	"types": [
 		"./src/models/ITradeAgreement.ts",
+		"./src/models/IPurchaseOrder.ts",
+		"./src/models/ICommercialInvoice.ts",
 		"./src/models/ITradeParty.ts",
-		"./src/models/ITradeItem.ts"
+		"./src/models/atoms/ITradeItem.ts",
+		"./src/models/IProduct.ts",
+		"./src/models/ILocation.ts",
+		"./src/models/atoms/IMonetaryAmount.ts",
+		"./src/models/atoms/IPaymentTerms.ts",
+		"./src/models/atoms/IPaymentMeans.ts",
+		"./src/models/atoms/IAllowanceCharge.ts",
+		"./src/models/atoms/IDeliveryTerms.ts",
+		"./src/models/atoms/IQuantity.ts",
+		"./src/models/atoms/IProductPackage.ts",
+		"./src/models/atoms/IPeriod.ts",
+		"./src/models/atoms/IMeasure.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",

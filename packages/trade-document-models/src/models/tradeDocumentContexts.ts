@@ -4,31 +4,32 @@
 import { UneceContexts } from "@twin.org/standards-unece";
 
 /**
- * The contexts of auditable item graph data.
+ * The contexts of trade document data.
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TradeDocumentContexts = {
 	/**
-	 * The canonical RDF namespace URI for Auditable Item Graph.
+	 * The canonical RDF namespace URI for trade documents. Prefixes every data
+	 * type registration key and every generated schema `$id`.
 	 */
 	Namespace: "https://schema.twindev.org/trade-document/",
 
 	/**
-	 * The value to use in context for Auditable Item Graph.
+	 * The value to use in `@context`. Every property comes from UN/CEFACT
+	 * Buy-Ship-Pay D23B, so the D23B context is the one that resolves them.
+	 * Properties named after UNVTD wire names resolve only under that document's
+	 * own context; see docs/model-guide.md §6.
 	 */
-	Context: "https://unvtd.unece.org/",
+	Context: `${UneceContexts.Context}`,
 
 	/**
-	 * The canonical RDF namespace URI for TWIN Common.
+	 * The namespace location of the hosted version of the JSON Schema.
 	 */
-	ContextTradeAgreement: `${UneceContexts.Context}`,
-
-	ContextPurchaseOrder: `https://unvtd.unece.org/purchase-order-context.json`
-
+	JsonSchemaNamespace: "https://schema.twindev.org/trade-document/"
 } as const;
 
 /**
- * The contexts of auditable item graph data.
+ * The contexts of trade document data.
  */
 export type TradeDocumentContexts =
 	(typeof TradeDocumentContexts)[keyof typeof TradeDocumentContexts];

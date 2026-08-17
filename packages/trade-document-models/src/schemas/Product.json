@@ -1,0 +1,47 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Product",
+	"title": "Product",
+	"description": "The goods on a line: `description` for the free text, `name` for the mark,\n`designation` for the grade, `originCountry` for the origin.",
+	"type": "object",
+	"properties": {
+		"description": {
+			"type": "string",
+			"description": "A textual description for this trade product."
+		},
+		"identifier": {
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+				}
+			],
+			"description": "A unique identifier for this trade product."
+		},
+		"name": {
+			"type": "string",
+			"description": "A name, expressed as text, for this trade product."
+		},
+		"itemNUmber": {
+			"type": "string",
+			"description": "The SKU"
+		},
+		"packaging": {
+			"$ref": "https://schema.twindev.org/trade-document/ProductPackage"
+		}
+	},
+	"required": [
+		"description",
+		"identifier",
+		"name",
+		"itemNUmber",
+		"packaging"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceTradeProduct"
+		}
+	]
+}

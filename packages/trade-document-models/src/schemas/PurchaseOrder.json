@@ -1,0 +1,80 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/PurchaseOrder",
+	"title": "PurchaseOrder",
+	"description": "A buyer issued purchase contract, also called a purchase order.\nCarries all eleven `credentialSubject` properties of the UNVTD purchase order\n(https://unvtd.unece.org/docs/purchase-order/#schema). The seller issued\nmirror of this document is {@link ITradeAgreement}.\nSee docs/model-guide.md §2.4 for the property mapping and its trade-offs.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "PurchaseOrder"
+		},
+		"issueDateTime": {
+			"type": "string",
+			"description": "The date the order was issued. UNVTD `orderDate`.",
+			"format": "date-time"
+		},
+		"buyerParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The buyer party placing this order. UNVTD `buyer`."
+		},
+		"sellerParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The seller party the order is placed with. UNVTD `seller`."
+		},
+		"deliveryLocation": {
+			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"description": "Where the goods are to be delivered. UNVTD `deliveryLocation`.\nOther places, such as a place of payment presentation, go in the\ninherited `applicableLocation`."
+		},
+		"includedSupplyChainTradeLineItem": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
+			},
+			"description": "An ordered lot. UNVTD `orderedItems`, minimum one."
+		},
+		"paymentTerms": {
+			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
+			"description": "The terms of payment. UNVTD `paymentTerms`."
+		},
+		"applicableDeliveryTerms": {
+			"$ref": "https://schema.twindev.org/trade-document/DeliveryTerms",
+			"description": "The delivery terms in coded form: the Incoterm and its named place. The\nverbatim source text of the same row is in `basis`."
+		},
+		"paymentMethod": {
+			"$ref": "https://schema.twindev.org/trade-document/PaymentMeans",
+			"description": "The means by which payment is to be made. UNVTD `paymentMethod`."
+		},
+		"allowanceCharge": {
+			"$ref": "https://schema.twindev.org/trade-document/AllowanceCharge",
+			"description": "An allowance or charge applied to this order. UNVTD `allowanceCharge`."
+		},
+		"totalOrderAmount": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The total amount of this order. UNVTD `totalOrderAmount`."
+		},
+		"invoiceeParty": {
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"description": "The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"issueDateTime",
+		"buyerParty",
+		"sellerParty",
+		"deliveryLocation",
+		"includedSupplyChainTradeLineItem",
+		"paymentTerms",
+		"applicableDeliveryTerms"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceDocument"
+		}
+	]
+}
