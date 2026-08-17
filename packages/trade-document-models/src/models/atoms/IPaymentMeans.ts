@@ -8,4 +8,4 @@ import { IUnecePaymentMeans } from "@twin.org/standards-unece";
  * a documentary credit.
  */
 export type IPaymentMeans = IUnecePaymentMeans &
-  Required<Pick<IUnecePaymentMeans, "@context" | "type">>;
+  Required<Pick<IUnecePaymentMeans, "paymentMeansTypeCode">>;

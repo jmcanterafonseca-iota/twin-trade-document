@@ -23,11 +23,11 @@
 			"format": "date-time"
 		},
 		"buyer": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The buyer party for this sales contract."
 		},
 		"seller": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The seller party for this sales contract."
 		},
 		"includesItem": {

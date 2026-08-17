@@ -18,11 +18,11 @@
 			"format": "date-time"
 		},
 		"buyerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The buyer party placing this order. UNVTD `buyer`."
 		},
 		"sellerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The seller party the order is placed with. UNVTD `seller`."
 		},
 		"deliveryLocation": {
@@ -57,7 +57,7 @@
 			"description": "The total amount of this order. UNVTD `totalOrderAmount`."
 		},
 		"invoiceeParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`."
 		}
 	},

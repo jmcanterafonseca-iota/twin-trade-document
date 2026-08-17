@@ -3,7 +3,6 @@
 
 import {
   IUneceDocument,
-  IUneceHeaderTradeAgreement,
 } from "@twin.org/standards-unece";
 import { IAllowanceCharge } from "./atoms/IAllowanceCharge.js";
 import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
@@ -11,7 +10,7 @@ import { ILocation } from "./ILocation.js";
 import { IPaymentMeans } from "./atoms/IPaymentMeans.js";
 import { IPaymentTerms } from "./atoms/IPaymentTerms.js";
 import { ITradeItem } from "./atoms/ITradeItem.js";
-import { ITradeParty } from "./ITradeParty.js";
+import { IParty } from "./IParty.js";
 import { IMeasure } from "./atoms/IMeasure.js";
 import { TradeDocumentTypes } from "./tradeDocumentTypes.js";
 
@@ -35,12 +34,12 @@ export type IPurchaseOrder = IUneceDocument &
     /**
      * The buyer party placing this order. UNVTD `buyer`.
      */
-    buyerParty: ITradeParty;
+    buyerParty: IParty;
 
     /**
      * The seller party the order is placed with. UNVTD `seller`.
      */
-    sellerParty: ITradeParty;
+    sellerParty: IParty;
 
     /**
      * Where the goods are to be delivered. UNVTD `deliveryLocation`.
@@ -84,5 +83,5 @@ export type IPurchaseOrder = IUneceDocument &
     /**
      * The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`.
      */
-    invoiceeParty?: ITradeParty;
+    invoiceeParty?: IParty;
   };

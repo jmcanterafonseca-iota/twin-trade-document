@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://schema.twindev.org/trade-document/TradeParty",
-	"title": "TradeParty",
+	"$id": "https://schema.twindev.org/trade-document/Party",
+	"title": "Party",
 	"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
 	"type": "object",
 	"properties": {
@@ -21,8 +21,7 @@
 			"description": "A name, expressed as text, for this trade party."
 		},
 		"postalAddress": {
-			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
-			"description": "The postal address for this trade party."
+			"$ref": "https://schema.twindev.org/trade-document/Address"
 		}
 	},
 	"required": [

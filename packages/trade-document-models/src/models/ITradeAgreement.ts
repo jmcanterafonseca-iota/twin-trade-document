@@ -5,7 +5,7 @@ import { IUneceHeaderTradeAgreement } from "@twin.org/standards-unece";
 import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
 import { IPaymentTerms } from "./atoms/IPaymentTerms.js";
 import { ITradeItem } from "./atoms/ITradeItem.js";
-import { ITradeParty } from "./ITradeParty.js";
+import { IParty } from "./IParty.js";
 import { IPeriod } from "./atoms/IPeriod.js";
 
 /**
@@ -30,12 +30,12 @@ export type ITradeAgreement = IUneceHeaderTradeAgreement &
     /**
      * The buyer party for this sales contract.
      */
-    buyer: ITradeParty;
+    buyer: IParty;
 
     /**
      * The seller party for this sales contract.
      */
-    seller: ITradeParty;
+    seller: IParty;
 
     /**
      * A contracted lot. Optional: a single lot contract states quantity,

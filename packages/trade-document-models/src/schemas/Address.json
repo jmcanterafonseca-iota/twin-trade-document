@@ -1,0 +1,21 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Address",
+	"title": "Address",
+	"description": "An allowance or a charge applied to a trade document. `chargeIndicator` is\nmandatory because it is what distinguishes the two.",
+	"type": "object",
+	"properties": {
+		"countryIdentificationCountry": {
+			"$ref": "https://schema.twindev.org/unece/UneceCountry",
+			"description": "The unique identifier of the country for this trade address."
+		}
+	},
+	"required": [
+		"countryIdentificationCountry"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress"
+		}
+	]
+}

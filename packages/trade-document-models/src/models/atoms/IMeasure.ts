@@ -9,4 +9,4 @@ import { IUneceMeasureType } from "@twin.org/standards-unece";
  * carry "kgs".
  */
 export type IMeasure = IUneceMeasureType &
-  Required<Pick<IUneceMeasureType, "@context" | "type" | "MeasureTypeValue" | "MeasureTypeCode">>;
+  Required<Pick<IUneceMeasureType, "MeasureTypeValue" | "MeasureTypeCode">>;

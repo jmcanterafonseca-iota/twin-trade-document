@@ -5,18 +5,20 @@
 	"description": "The means by which a payment is to be made, such as a transfer, a cheque or\na documentary credit.",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
-		},
-		"type": {
-			"const": "PaymentMeans",
-			"description": "JSON-LD Type."
+		"paymentMeansTypeCode": {
+			"anyOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentMeansCodeList"
+				},
+				{
+					"type": "string"
+				}
+			],
+			"description": "The code specifying the type of trade settlement payment means, such as cash or check."
 		}
 	},
 	"required": [
-		"@context",
-		"type"
+		"paymentMeansTypeCode"
 	],
 	"allOf": [
 		{

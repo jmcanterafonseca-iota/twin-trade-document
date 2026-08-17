@@ -22,15 +22,15 @@
 			"format": "date-time"
 		},
 		"invoicerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The party issuing the invoice and to be paid."
 		},
 		"invoiceeParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The party the invoice is addressed to."
 		},
 		"notifyParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The party to be notified of the shipment. UN/CEFACT declares no\nnotify-party property on any settlement or agreement class."
 		},
 		"specifiedTradeProduct": {
@@ -88,7 +88,7 @@
 		"payeeParty": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+				"$ref": "https://schema.twindev.org/trade-document/Party"
 			},
 			"description": "The party payment is due to, when the document names one."
 		}

@@ -29,12 +29,17 @@ export const TradeDocumentTypes = {
 	/**
 	 * A party taking a role in a trade document.
 	 */
-	TradeParty: "TradeParty",
+	Party: "TradeParty",
 
 	/**
 	 * A place named by a trade document.
 	 */
 	Location: "Location",
+
+	/**
+	 * A postal address of a trade party.
+	 */
+	Address: "Address",
 
 	/**
 	 * A monetary amount together with its currency.

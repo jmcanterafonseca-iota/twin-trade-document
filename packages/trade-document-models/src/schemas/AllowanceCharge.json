@@ -5,22 +5,12 @@
 	"description": "An allowance or a charge applied to a trade document. `chargeIndicator` is\nmandatory because it is what distinguishes the two.",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
-		},
-		"type": {
-			"const": "TradeAllowanceCharge",
-			"description": "JSON-LD Type."
-		},
 		"chargeIndicator": {
 			"type": "boolean",
 			"description": "The indication of whether or not the trade allowance charge is a charge."
 		}
 	},
 	"required": [
-		"@context",
-		"type",
 		"chargeIndicator"
 	],
 	"allOf": [

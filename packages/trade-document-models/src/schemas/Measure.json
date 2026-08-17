@@ -5,14 +5,6 @@
 	"description": "A measured value such as a weight. The unit itself has no home:\nIUneceMeasureCode declares no value property, so `MeasureTypeCode` cannot\ncarry \"kgs\".",
 	"type": "object",
 	"properties": {
-		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
-		},
-		"type": {
-			"const": "MeasureType",
-			"description": "JSON-LD Type."
-		},
 		"MeasureTypeValue": {
 			"type": "string",
 			"description": "The numeric value."
@@ -23,8 +15,6 @@
 		}
 	},
 	"required": [
-		"@context",
-		"type",
 		"MeasureTypeValue",
 		"MeasureTypeCode"
 	],

@@ -6,7 +6,7 @@ import { ILocation } from "./ILocation.js";
 import { IMeasure } from "./atoms/IMeasure.js";
 import { IProduct } from "./IProduct.js";
 import { IQuantity } from "./atoms/IQuantity.js";
-import { ITradeParty } from "./ITradeParty.js";
+import { IParty } from "./IParty.js";
 import { IProductPackage } from "./atoms/IProductPackage.js";
 import { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
 import { TradeDocumentTypes } from "./tradeDocumentTypes.js";
@@ -46,18 +46,18 @@ export type ICommercialInvoice = IUneceDocument &
     /**
      * The party issuing the invoice and to be paid.
      */
-    invoicerParty: ITradeParty;
+    invoicerParty: IParty;
 
     /**
      * The party the invoice is addressed to.
      */
-    invoiceeParty: ITradeParty;
+    invoiceeParty: IParty;
 
     /**
      * The party to be notified of the shipment. UN/CEFACT declares no
      * notify-party property on any settlement or agreement class.
      */
-    notifyParty: ITradeParty;
+    notifyParty: IParty;
 
     /**
      * The goods being invoiced: `description` carries the goods row verbatim,
@@ -121,7 +121,7 @@ export type ICommercialInvoice = IUneceDocument &
     /**
      * The party payment is due to, when the document names one.
      */
-    payeeParty?: ITradeParty[];
+    payeeParty?: IParty[];
 
     /**
      * The bank details for payment: institution, account, branch and codes.

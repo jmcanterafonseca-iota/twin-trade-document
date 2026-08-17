@@ -9,6 +9,7 @@ import CommercialInvoiceSchema from "../schemas/CommercialInvoice.json" with { t
 import MeasureSchema from "../schemas/Measure.json" with { type: "json" };
 import QuantitySchema from "../schemas/Quantity.json" with { type: "json" };
 import ProductSchema from "../schemas/Product.json" with { type: "json" };
+import AddressSchema from "../schemas/Address.json" with { type: "json" };
 import AllowanceChargeSchema from "../schemas/AllowanceCharge.json" with { type: "json" };
 import DeliveryTermsSchema from "../schemas/DeliveryTerms.json" with { type: "json" };
 import LocationSchema from "../schemas/Location.json" with { type: "json" };
@@ -20,7 +21,7 @@ import PaymentTermsSchema from "../schemas/PaymentTerms.json" with { type: "json
 import PurchaseOrderSchema from "../schemas/PurchaseOrder.json" with { type: "json" };
 import TradeAgreementSchema from "../schemas/TradeAgreement.json" with { type: "json" };
 import TradeItemSchema from "../schemas/TradeItem.json" with { type: "json" };
-import TradePartySchema from "../schemas/TradeParty.json" with { type: "json" };
+import PartySchema from "../schemas/Party.json" with { type: "json" };
 
 /**
  * Handle all the data types for trade documents.
@@ -36,9 +37,10 @@ export class TradeDocumentDataTypes {
       { type: TradeDocumentTypes.TradeAgreement, schema: TradeAgreementSchema },
       { type: TradeDocumentTypes.PurchaseOrder, schema: PurchaseOrderSchema },
       { type: TradeDocumentTypes.CommercialInvoice, schema: CommercialInvoiceSchema },
-      { type: TradeDocumentTypes.TradeParty, schema: TradePartySchema },
+      { type: TradeDocumentTypes.Party, schema: PartySchema },
       { type: TradeDocumentTypes.TradeItem, schema: TradeItemSchema },
       { type: TradeDocumentTypes.Location, schema: LocationSchema },
+      { type: TradeDocumentTypes.Address, schema: AddressSchema },
       { type: TradeDocumentTypes.MonetaryAmount, schema: MonetaryAmountSchema },
       { type: TradeDocumentTypes.PaymentTerms, schema: PaymentTermsSchema },
       { type: TradeDocumentTypes.PaymentMeans, schema: PaymentMeansSchema },

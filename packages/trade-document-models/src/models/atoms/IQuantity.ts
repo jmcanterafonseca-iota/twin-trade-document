@@ -8,4 +8,4 @@ import { IUneceQuantityType } from "@twin.org/standards-unece";
  * declares no value property, so `QuantityTypeCode` cannot carry "KGM".
  */
 export type IQuantity = IUneceQuantityType &
-  Required<Pick<IUneceQuantityType, "@context" | "type" | "QuantityTypeValue">>;
+  Required<Pick<IUneceQuantityType, "QuantityTypeValue">>;
