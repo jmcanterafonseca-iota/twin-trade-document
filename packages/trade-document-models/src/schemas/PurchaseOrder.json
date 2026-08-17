@@ -1,0 +1,453 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/PurchaseOrder",
+	"title": "PurchaseOrder",
+	"description": "A buyer issued purchase contract, also called a purchase order.\nCarries all eleven `credentialSubject` properties of the UNVTD purchase order\n(https://unvtd.unece.org/docs/purchase-order/#schema). The seller issued\nmirror of this document is {@link ITradeAgreement}.\nSee docs/model-guide.md §2.4 for the property mapping and its trade-offs.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "HeaderTradeAgreement",
+			"description": "JSON-LD Type."
+		},
+		"issueDateTime": {
+			"$ref": "#/$defs/Date",
+			"description": "The date the order was issued. UNVTD `orderDate`."
+		},
+		"buyerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The buyer party placing this order. UNVTD `buyer`."
+		},
+		"sellerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The seller party the order is placed with. UNVTD `seller`."
+		},
+		"deliveryLocation": {
+			"$ref": "#/$defs/Location",
+			"description": "Where the goods are to be delivered. UNVTD `deliveryLocation`.\nOther places, such as a place of payment presentation, go in the\ninherited `applicableLocation`."
+		},
+		"includedSupplyChainTradeLineItem": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
+			},
+			"description": "An ordered lot. UNVTD `orderedItems`, minimum one."
+		},
+		"basis": {
+			"$ref": "#/$defs/Basis",
+			"description": "The `Basis` row, verbatim."
+		},
+		"insurance": {
+			"$ref": "#/$defs/Insurance",
+			"description": "The `Insurance` row, verbatim."
+		},
+		"paymentTerms": {
+			"$ref": "#/$defs/PaymentTerms",
+			"description": "The terms of payment. UNVTD `paymentTerms`."
+		},
+		"conditions": {
+			"$ref": "#/$defs/Conditions",
+			"description": "The `Conditions` row, verbatim."
+		},
+		"applicableDeliveryTerms": {
+			"$ref": "#/$defs/DeliveryTerms",
+			"description": "The delivery terms in coded form: the Incoterm and its named place. The\nverbatim source text of the same row is in `basis`."
+		},
+		"purchaseConditionsDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "A document setting conditions on this order, such as a supplier code of\nconduct."
+		},
+		"contractDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "A document whose terms govern this order, such as a standard trade\ncontract or a supplier code of conduct."
+		},
+		"paymentMethod": {
+			"$ref": "#/$defs/PaymentMeans",
+			"description": "The means by which payment is to be made. UNVTD `paymentMethod`."
+		},
+		"allowanceCharge": {
+			"$ref": "#/$defs/AllowanceCharge",
+			"description": "An allowance or charge applied to this order. UNVTD `allowanceCharge`."
+		},
+		"totalOrderAmount": {
+			"$ref": "#/$defs/Amount",
+			"description": "The total amount of this order. UNVTD `totalOrderAmount`."
+		},
+		"invoiceeParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`."
+		},
+		"applicableHeaderTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeDelivery"
+			},
+			"description": "The shipping details: instructions, despatch and delivery events, ship-to\nand ship-from parties, consignments, packaging and transport equipment."
+		},
+		"includedNote": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Note"
+			},
+			"description": "Contractual prose with no typed UN/CEFACT slot, discriminated by\n`subject`. The insurance allocation lives here: UN/CEFACT has no\ninsurance property on any header class."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"issueDateTime",
+		"buyerParty",
+		"sellerParty",
+		"deliveryLocation",
+		"includedSupplyChainTradeLineItem",
+		"basis",
+		"insurance",
+		"paymentTerms",
+		"conditions",
+		"applicableDeliveryTerms"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeAgreement"
+		}
+	],
+	"$defs": {
+		"Date": {
+			"title": "Date",
+			"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Date",
+					"description": "JSON-LD Type."
+				},
+				"DateValue": {
+					"type": "string",
+					"description": "The date, as printed on the document or normalised."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"DateValue"
+			]
+		},
+		"TradeParty": {
+			"title": "TradeParty",
+			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "TradeParty",
+					"description": "JSON-LD Type."
+				},
+				"name": {
+					"type": "string",
+					"description": "A name, expressed as text, for this trade party."
+				},
+				"brandName": {
+					"type": "string",
+					"description": "A brand name, expressed as text, for this trade party."
+				},
+				"emailURICommunication": {
+					"$ref": "https://schema.twindev.org/unece/UneceCommunication",
+					"description": "The email communication for this trade party."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal address for this trade party."
+				},
+				"telephoneCommunication": {
+					"type": "array",
+					"items": {
+						"$ref": "https://schema.twindev.org/unece/UneceCommunication"
+					},
+					"description": "A telephone communication for this trade party."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"name"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
+				}
+			]
+		},
+		"Location": {
+			"title": "Location",
+			"description": "A place named by a trade document, such as a destination or a place of\npayment presentation. Use `locationFunctionTypeCode` to say which.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "LogisticsLocation",
+					"description": "JSON-LD Type."
+				},
+				"name": {
+					"type": "string",
+					"description": "A name, expressed as text, of this logistics related location."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal trade address information for this logistics related location."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"name",
+				"postalAddress"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation"
+				}
+			]
+		},
+		"Basis": {
+			"title": "Basis",
+			"description": "The trading basis of a document, verbatim as printed on its `Basis` row: the\ndelivery term, the weight basis, any franchise and the tare method.\n\nThe coded Incoterm and its named place are carried separately in\n`applicableDeliveryTerms`; this is the verbatim source text.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Basis",
+					"description": "JSON-LD Type."
+				},
+				"BasisValue": {
+					"type": "string",
+					"description": "The verbatim text of the `Basis` row, for example\n`FOB origin, N.S.W, 0.5% franchise, Actual Tare.`"
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"BasisValue"
+			]
+		},
+		"Insurance": {
+			"title": "Insurance",
+			"description": "How insurance is allocated between the parties, verbatim as printed on the\n`Insurance` row.\n\nUN/CEFACT has no insurance property on any header class —\n`IUneceCargoInsurance` hangs off a physical consignment — so there is no\nstructured alternative to grow into yet.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Insurance",
+					"description": "JSON-LD Type."
+				},
+				"InsuranceValue": {
+					"type": "string",
+					"description": "The verbatim text of the `Insurance` row, for example\n`For buyer's account.`"
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"InsuranceValue"
+			]
+		},
+		"PaymentTerms": {
+			"title": "PaymentTerms",
+			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "PaymentTerms",
+					"description": "JSON-LD Type."
+				},
+				"information": {
+					"type": "string",
+					"description": "Information, expressed as text, for these trade payment terms."
+				},
+				"billStartDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the bill start specified by these trade payment terms.",
+					"format": "date-time"
+				},
+				"dueDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the due date specified by these trade payment terms.",
+					"format": "date-time"
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"information"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
+				}
+			]
+		},
+		"Conditions": {
+			"title": "Conditions",
+			"description": "Conditions the document is subject to, verbatim as printed on its\n`Conditions` row.\n\nReferenced governing documents stay in `contractDocument` and\n`purchaseConditionsDocument`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Conditions",
+					"description": "JSON-LD Type."
+				},
+				"ConditionsValue": {
+					"type": "string",
+					"description": "The verbatim text of the `Conditions` row, for example\n`Subject to approval of preshipment sample by buyer.`"
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"ConditionsValue"
+			]
+		},
+		"DeliveryTerms": {
+			"title": "DeliveryTerms",
+			"description": "The delivery terms of a trade document. The Incoterm goes in\n`deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;\nweight basis, tolerance and tare rules have no typed slot and go verbatim in\n`description`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "DeliveryTerms",
+					"description": "JSON-LD Type."
+				}
+			},
+			"required": [
+				"@context",
+				"type"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceDeliveryTerms"
+				}
+			]
+		},
+		"PaymentMeans": {
+			"title": "PaymentMeans",
+			"description": "The means by which a payment is to be made, such as a transfer, a cheque or\na documentary credit.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "PaymentMeans",
+					"description": "JSON-LD Type."
+				}
+			},
+			"required": [
+				"@context",
+				"type"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentMeans"
+				}
+			]
+		},
+		"AllowanceCharge": {
+			"title": "AllowanceCharge",
+			"description": "An allowance or a charge applied to a trade document. `chargeIndicator` is\nmandatory because it is what distinguishes the two.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "TradeAllowanceCharge",
+					"description": "JSON-LD Type."
+				},
+				"chargeIndicator": {
+					"type": "boolean",
+					"description": "The indication of whether or not the trade allowance charge is a charge."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"chargeIndicator"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAllowanceCharge"
+				}
+			]
+		},
+		"Amount": {
+			"title": "Amount",
+			"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "AmountType",
+					"description": "JSON-LD Type."
+				},
+				"AmountTypeValue": {
+					"type": "string",
+					"description": "A number of monetary units."
+				},
+				"AmountTypeCurrency": {
+					"$ref": "https://schema.twindev.org/unece/UneceAmountCurrency",
+					"description": "An amount currency code."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"AmountTypeValue",
+				"AmountTypeCurrency"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceAmountType"
+				}
+			]
+		}
+	}
+}

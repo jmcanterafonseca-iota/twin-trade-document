@@ -2,35 +2,92 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "Trade Agreement Document",
+	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in `identifier` or\n`associatedDocumentLineDocument.lineId`.\nSee docs/model-guide.md §2.2.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "SupplyChainTradeLineItem",
+			"description": "JSON-LD Type."
+		},
+		"identifier": {
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+				}
+			],
+			"description": "The unique identifier for this supply chain trade line item."
+		},
+		"specifiedTradeProduct": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Product"
+			},
+			"description": "The goods on this line, including their description."
+		},
+		"specifiedLineTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/LineDelivery"
+			},
+			"description": "The quantity, the packaging and the content per package."
+		},
+		"specifiedLineTradeAgreement": {
+			"$ref": "#/$defs/LineAgreement",
+			"description": "The price and the quantity it is quoted against."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"identifier",
+		"specifiedTradeProduct",
+		"specifiedLineTradeDelivery",
+		"specifiedLineTradeAgreement"
+	],
 	"allOf": [
 		{
-			"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
-		},
-		{
-			"description": "The contractual terms of a line trade agreement.",
+			"$ref": "https://schema.twindev.org/unece/UneceSupplyChainTradeLineItem"
+		}
+	],
+	"$defs": {
+		"LineAgreement": {
+			"title": "LineAgreement",
+			"description": "The pricing facet of a line.",
 			"type": "object",
 			"properties": {
 				"@context": {
 					"$ref": "https://schema.twindev.org/unece/UneceContextType",
 					"description": "JSON-LD Context."
 				},
+				"type": {
+					"const": "LineTradeAgreement",
+					"description": "JSON-LD Type."
+				},
 				"agreedPriceProductPrice": {
 					"type": "array",
 					"items": {
-						"$ref": "https://schema.twindev.org/unece/UneceTradePrice"
+						"$ref": "https://schema.twindev.org/trade-document/Price"
 					},
-					"description": "An agreed product price for this line trade agreement."
+					"description": "The agreed price for the goods on this line."
 				}
 			},
-			"$comment": "Inlined utility base type UneceLineTradeAgreement so utility transformations can operate on concrete properties instead of a $ref.",
 			"required": [
 				"@context",
+				"type",
 				"agreedPriceProductPrice"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceLineTradeAgreement"
+				}
 			]
-		},
-		{
-			"type": "object"
 		}
-	]
+	}
 }

@@ -2,50 +2,241 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeAgreement",
 	"title": "TradeAgreement",
-	"description": "Trade Agreement Document",
+	"description": "A seller issued sales contract, also called a sale confirmation.\nThe buyer issued mirror of this document is {@link IPurchaseOrder}; the\nseller assigns the contract number, so `sellerReference` is mandatory here.\nSee docs/model-guide.md §2.3.",
 	"type": "object",
 	"properties": {
 		"@context": {
 			"$ref": "https://schema.twindev.org/unece/UneceContextType",
 			"description": "JSON-LD Context."
 		},
-		"buyerApprovedDateTime": {
-			"type": "string",
-			"description": "The date, time, date time, or other date time value of approval by the buyer for this header trade agreement.",
-			"format": "date-time"
-		},
-		"buyerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
-		},
-		"sellerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/TradeParty"
+		"type": {
+			"const": "HeaderTradeAgreement",
+			"description": "JSON-LD Type."
 		},
 		"sellerReference": {
 			"type": "string",
 			"description": "A seller reference, expressed as text, for this header trade agreement."
 		},
 		"issueDateTime": {
-			"type": "string"
+			"$ref": "#/$defs/Date",
+			"description": "The date the document was issued."
 		},
-		"includesTradeItem": {
+		"saleDate": {
+			"$ref": "#/$defs/Date",
+			"description": "The date the sale was concluded, as stated in the confirmation sentence.\nDistinct from `issueDateTime`: a confirmation can be written up after the\nsale is struck."
+		},
+		"buyerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The buyer party for this sales contract."
+		},
+		"sellerParty": {
+			"$ref": "#/$defs/TradeParty",
+			"description": "The seller party for this sales contract."
+		},
+		"includedSupplyChainTradeLineItem": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
-			}
+			},
+			"description": "A contracted lot. Optional: a single lot contract states quantity,\nquality and price at header level and has no line breakdown."
+		},
+		"applicableDeliveryTerms": {
+			"$ref": "#/$defs/DeliveryTerms",
+			"description": "The delivery terms: the Incoterm and its named place, plus the weight\nbasis, tolerance and tare rules as verbatim text."
+		},
+		"applicableLocation": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Location"
+			},
+			"description": "A place named by this contract, such as the destination. Discriminate\nwith `locationFunctionTypeCode`."
+		},
+		"applicablePaymentTerms": {
+			"$ref": "#/$defs/PaymentTerms",
+			"description": "The terms of payment."
+		},
+		"salesConditionsDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "Conditions the contract is subject to, in `processCondition`."
+		},
+		"contractDocument": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/ReferencedDocument"
+			},
+			"description": "A document whose terms govern this contract."
+		},
+		"applicableHeaderTradeDelivery": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/TradeDelivery"
+			},
+			"description": "The shipping details."
+		},
+		"includedNote": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/trade-document/Note"
+			},
+			"description": "Contractual prose with no typed UN/CEFACT slot, discriminated by\n`subject`. See {@link IPurchaseOrder.includedNote}."
 		}
 	},
 	"required": [
 		"@context",
-		"buyerApprovedDateTime",
-		"buyerParty",
-		"sellerParty",
+		"type",
 		"sellerReference",
 		"issueDateTime",
-		"includesTradeItem"
+		"saleDate",
+		"buyerParty",
+		"sellerParty",
+		"includedSupplyChainTradeLineItem",
+		"applicableDeliveryTerms",
+		"applicableLocation",
+		"applicablePaymentTerms"
 	],
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeAgreement"
 		}
-	]
+	],
+	"$defs": {
+		"Date": {
+			"title": "Date",
+			"description": "A date carried by a trade document.\n`DateValue` is an unconstrained string for now, so it accepts the document's\nown wording as well as a normalised form. No `format` is asserted until the\nrepresentation is settled.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "Date",
+					"description": "JSON-LD Type."
+				},
+				"DateValue": {
+					"type": "string",
+					"description": "The date, as printed on the document or normalised."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"DateValue"
+			]
+		},
+		"TradeParty": {
+			"title": "TradeParty",
+			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "TradeParty",
+					"description": "JSON-LD Type."
+				},
+				"name": {
+					"type": "string",
+					"description": "A name, expressed as text, for this trade party."
+				},
+				"brandName": {
+					"type": "string",
+					"description": "A brand name, expressed as text, for this trade party."
+				},
+				"emailURICommunication": {
+					"$ref": "https://schema.twindev.org/unece/UneceCommunication",
+					"description": "The email communication for this trade party."
+				},
+				"postalAddress": {
+					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
+					"description": "The postal address for this trade party."
+				},
+				"telephoneCommunication": {
+					"type": "array",
+					"items": {
+						"$ref": "https://schema.twindev.org/unece/UneceCommunication"
+					},
+					"description": "A telephone communication for this trade party."
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"name"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
+				}
+			]
+		},
+		"DeliveryTerms": {
+			"title": "DeliveryTerms",
+			"description": "The delivery terms of a trade document. The Incoterm goes in\n`deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;\nweight basis, tolerance and tare rules have no typed slot and go verbatim in\n`description`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "DeliveryTerms",
+					"description": "JSON-LD Type."
+				}
+			},
+			"required": [
+				"@context",
+				"type"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UneceDeliveryTerms"
+				}
+			]
+		},
+		"PaymentTerms": {
+			"title": "PaymentTerms",
+			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
+			"type": "object",
+			"properties": {
+				"@context": {
+					"$ref": "https://schema.twindev.org/unece/UneceContextType",
+					"description": "JSON-LD Context."
+				},
+				"type": {
+					"const": "PaymentTerms",
+					"description": "JSON-LD Type."
+				},
+				"information": {
+					"type": "string",
+					"description": "Information, expressed as text, for these trade payment terms."
+				},
+				"billStartDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the bill start specified by these trade payment terms.",
+					"format": "date-time"
+				},
+				"dueDateTime": {
+					"type": "string",
+					"description": "The date, time, date time, or other date time value of the due date specified by these trade payment terms.",
+					"format": "date-time"
+				}
+			},
+			"required": [
+				"@context",
+				"type",
+				"information"
+			],
+			"allOf": [
+				{
+					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
+				}
+			]
+		}
+	}
 }

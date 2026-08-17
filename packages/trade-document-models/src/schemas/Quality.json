@@ -1,0 +1,26 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/Quality",
+	"title": "Quality",
+	"description": "The quality of the goods, verbatim as printed on a document's `Quality` row.\nUN/CEFACT has no quality-description property on TradeProduct, so the row's\nown label is the honest name.",
+	"type": "object",
+	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
+		"type": {
+			"const": "Quality",
+			"description": "JSON-LD Type."
+		},
+		"QualityValue": {
+			"type": "string",
+			"description": "The verbatim text of the `Quality` row."
+		}
+	},
+	"required": [
+		"@context",
+		"type",
+		"QualityValue"
+	]
+}
