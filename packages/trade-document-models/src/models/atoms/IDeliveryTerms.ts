@@ -9,7 +9,6 @@ import { ILocation } from "../ILocation.js";
  * `deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;
  * weight basis, tolerance and tare rules have no typed slot and go verbatim in
  * `description`.
- * @json-schema embedded:defs
  */
 export type IDeliveryTerms = IUneceDeliveryTerms & {
   /**

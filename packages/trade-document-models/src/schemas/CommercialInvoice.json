@@ -10,16 +10,7 @@
 			"description": "JSON-LD Context."
 		},
 		"type": {
-			"const": "HeaderTradeSettlement",
-			"description": "JSON-LD Type."
-		},
-		"invoiceIssuerReference": {
-			"type": "string",
-			"description": "The invoice issuer reference, expressed as text, for this header trade settlement."
-		},
-		"payerReference": {
-			"type": "string",
-			"description": "The payer reference, expressed as text, for this header trade settlement."
+			"const": "CommercialInvoice"
 		},
 		"invoiceNumber": {
 			"type": "string",
@@ -31,15 +22,15 @@
 			"format": "date-time"
 		},
 		"invoicerParty": {
-			"$ref": "#/$defs/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
 			"description": "The party issuing the invoice and to be paid."
 		},
 		"invoiceeParty": {
-			"$ref": "#/$defs/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
 			"description": "The party the invoice is addressed to."
 		},
 		"notifyParty": {
-			"$ref": "#/$defs/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
 			"description": "The party to be notified of the shipment. UN/CEFACT declares no\nnotify-party property on any settlement or agreement class."
 		},
 		"specifiedTradeProduct": {
@@ -50,7 +41,7 @@
 			"description": "The goods being invoiced: `description` carries the goods row verbatim,\n`designation` the grade when the document states one."
 		},
 		"packageQuantity": {
-			"$ref": "#/$defs/Quantity",
+			"$ref": "https://schema.twindev.org/trade-document/Quantity",
 			"description": "The number of packages invoiced, such as the total number of bags."
 		},
 		"includedPackaging": {
@@ -61,23 +52,23 @@
 			"description": "How the goods are packed, when the document states it."
 		},
 		"finalDestinationLocation": {
-			"$ref": "#/$defs/Location",
+			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The destination of the goods."
 		},
 		"grossWeightMeasure": {
-			"$ref": "#/$defs/Measure",
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
 			"description": "The gross weight of the consignment."
 		},
 		"tareWeightMeasure": {
-			"$ref": "#/$defs/Measure",
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
 			"description": "The tare weight of the consignment."
 		},
 		"netWeightMeasure": {
-			"$ref": "#/$defs/Measure",
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
 			"description": "The net weight of the consignment."
 		},
 		"price": {
-			"$ref": "#/$defs/MonetaryAmount",
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
 			"description": "The unit price and the quantity it is quoted against."
 		},
 		"totalInvoiceAmount": {
@@ -105,8 +96,6 @@
 	"required": [
 		"@context",
 		"type",
-		"invoiceIssuerReference",
-		"payerReference",
 		"invoiceNumber",
 		"issueDateTime",
 		"invoicerParty",
@@ -124,165 +113,7 @@
 	],
 	"allOf": [
 		{
-			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeSettlement"
+			"$ref": "https://schema.twindev.org/unece/UneceDocument"
 		}
-	],
-	"$defs": {
-		"TradeParty": {
-			"title": "TradeParty",
-			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
-			"type": "object",
-			"properties": {
-				"identifier": {
-					"anyOf": [
-						{
-							"type": "string"
-						},
-						{
-							"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
-						}
-					],
-					"description": "A unique identifier of this trade party."
-				},
-				"name": {
-					"type": "string",
-					"description": "A name, expressed as text, for this trade party."
-				},
-				"postalAddress": {
-					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
-					"description": "The postal address for this trade party."
-				}
-			},
-			"required": [
-				"identifier",
-				"name",
-				"postalAddress"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
-				}
-			]
-		},
-		"Quantity": {
-			"title": "Quantity",
-			"description": "A counted or measured quantity. The unit itself has no home: IUneceQuantityCode\ndeclares no value property, so `QuantityTypeCode` cannot carry \"KGM\".",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "QuantityType",
-					"description": "JSON-LD Type."
-				},
-				"QuantityTypeValue": {
-					"type": "string",
-					"description": "The numeric value."
-				}
-			},
-			"required": [
-				"@context",
-				"type",
-				"QuantityTypeValue"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceQuantityType"
-				}
-			]
-		},
-		"Location": {
-			"title": "Location",
-			"description": "A place named by a trade document, such as a destination or a place of\npayment presentation. Use `locationFunctionTypeCode` to say which.",
-			"type": "object",
-			"properties": {
-				"locationFunctionTypeCode": {
-					"type": "array",
-					"items": {
-						"anyOf": [
-							{
-								"$ref": "https://schema.twindev.org/unece/UneceLocationFunctionCodeList"
-							},
-							{
-								"type": "string"
-							}
-						]
-					},
-					"description": "A code specifying the type of this logistics related location."
-				},
-				"unLocode": {
-					"type": "string"
-				}
-			},
-			"required": [
-				"locationFunctionTypeCode",
-				"unLocode"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation"
-				}
-			]
-		},
-		"Measure": {
-			"title": "Measure",
-			"description": "A measured value such as a weight. The unit itself has no home:\nIUneceMeasureCode declares no value property, so `MeasureTypeCode` cannot\ncarry \"kgs\".",
-			"type": "object",
-			"properties": {
-				"@context": {
-					"$ref": "https://schema.twindev.org/unece/UneceContextType",
-					"description": "JSON-LD Context."
-				},
-				"type": {
-					"const": "MeasureType",
-					"description": "JSON-LD Type."
-				},
-				"MeasureTypeValue": {
-					"type": "string",
-					"description": "The numeric value."
-				},
-				"MeasureTypeCode": {
-					"$ref": "https://schema.twindev.org/unece/UneceMeasureCode",
-					"description": "The unit code."
-				}
-			},
-			"required": [
-				"@context",
-				"type",
-				"MeasureTypeValue",
-				"MeasureTypeCode"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceMeasureType"
-				}
-			]
-		},
-		"MonetaryAmount": {
-			"title": "MonetaryAmount",
-			"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.",
-			"type": "object",
-			"properties": {
-				"AmountTypeValue": {
-					"type": "string",
-					"description": "A number of monetary units."
-				},
-				"AmountTypeCurrency": {
-					"$ref": "https://schema.twindev.org/unece/UneceAmountCurrency",
-					"description": "An amount currency code."
-				}
-			},
-			"required": [
-				"AmountTypeValue",
-				"AmountTypeCurrency"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceAmountType"
-				}
-			]
-		}
-	}
+	]
 }

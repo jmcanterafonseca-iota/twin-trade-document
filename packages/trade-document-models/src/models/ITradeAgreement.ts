@@ -4,7 +4,7 @@
 import { IUneceHeaderTradeAgreement } from "@twin.org/standards-unece";
 import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
 import { IPaymentTerms } from "./atoms/IPaymentTerms.js";
-import { ITradeItem } from "./ITradeItem.js";
+import { ITradeItem } from "./atoms/ITradeItem.js";
 import { ITradeParty } from "./ITradeParty.js";
 import { IPeriod } from "./atoms/IPeriod.js";
 

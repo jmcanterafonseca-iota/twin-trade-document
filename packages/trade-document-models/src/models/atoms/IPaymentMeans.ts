@@ -6,7 +6,6 @@ import { IUnecePaymentMeans } from "@twin.org/standards-unece";
 /**
  * The means by which a payment is to be made, such as a transfer, a cheque or
  * a documentary credit.
- * @json-schema embedded:defs
  */
 export type IPaymentMeans = IUnecePaymentMeans &
   Required<Pick<IUnecePaymentMeans, "@context" | "type">>;

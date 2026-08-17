@@ -1,7 +1,7 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { IUneceHeaderTradeSettlement } from "@twin.org/standards-unece";
+import { IUneceDocument } from "@twin.org/standards-unece";
 import { ILocation } from "./ILocation.js";
 import { IMeasure } from "./atoms/IMeasure.js";
 import { IProduct } from "./IProduct.js";
@@ -9,6 +9,7 @@ import { IQuantity } from "./atoms/IQuantity.js";
 import { ITradeParty } from "./ITradeParty.js";
 import { IProductPackage } from "./atoms/IProductPackage.js";
 import { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
+import { TradeDocumentTypes } from "./tradeDocumentTypes.js";
 
 /**
  * A commercial invoice: an itemized account of goods delivered together with a
@@ -19,13 +20,16 @@ import { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
  * document no UN/CEFACT class of its own.
  * See docs/model-guide.md §9 for the property mapping.
  */
-export type ICommercialInvoice = IUneceHeaderTradeSettlement &
+export type ICommercialInvoice = IUneceDocument &
   Required<
     Pick<
-      IUneceHeaderTradeSettlement,
-      "@context" | "type" | "invoiceIssuerReference" | "payerReference"
+      IUneceDocument,
+      "@context" | "type"
     >
   > & {
+
+    type: typeof TradeDocumentTypes.CommercialInvoice;
+
     /**
      * The invoice number, as printed in the document's own heading.
      * UNVTD `invoiceNumber`.

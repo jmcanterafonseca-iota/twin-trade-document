@@ -6,7 +6,6 @@ import { IUneceTradeAllowanceCharge } from "@twin.org/standards-unece";
 /**
  * An allowance or a charge applied to a trade document. `chargeIndicator` is
  * mandatory because it is what distinguishes the two.
- * @json-schema embedded:defs
  */
 export type IAllowanceCharge = IUneceTradeAllowanceCharge &
   Required<Pick<IUneceTradeAllowanceCharge, "@context" | "type" | "chargeIndicator">>;

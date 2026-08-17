@@ -5,7 +5,7 @@ export * from "./models/ICommercialInvoice.js";
 export * from "./models/IProduct.js";
 export * from "./models/IPurchaseOrder.js";
 export * from "./models/ITradeAgreement.js";
-export * from "./models/ITradeItem.js";
+export * from "./models/atoms/ITradeItem.js";
 export * from "./models/ITradeParty.js";
 export * from "./models/atoms/IAllowanceCharge.js";
 export * from "./models/atoms/IDeliveryTerms.js";

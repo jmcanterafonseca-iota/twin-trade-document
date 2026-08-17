@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/ProductPackage",
 	"title": "ProductPackage",
-	"description": "How the goods are packed: the coded package type, plus its trade name in\n`description` when the document names a brand such as a hermetic liner.",
+	"description": "How the goods are packed: the coded package type, plus its trade name in\ndescription` when the document names a brand such as a hermetic liner.",
 	"type": "object",
 	"properties": {
 		"capacityMeasure": {

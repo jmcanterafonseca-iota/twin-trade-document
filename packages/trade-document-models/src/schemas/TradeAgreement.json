@@ -23,11 +23,11 @@
 			"format": "date-time"
 		},
 		"buyer": {
-			"$ref": "#/$defs/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
 			"description": "The buyer party for this sales contract."
 		},
 		"seller": {
-			"$ref": "#/$defs/TradeParty",
+			"$ref": "https://schema.twindev.org/trade-document/TradeParty",
 			"description": "The seller party for this sales contract."
 		},
 		"includesItem": {
@@ -38,11 +38,11 @@
 			"description": "A contracted lot. Optional: a single lot contract states quantity,\nquality and price at header level and has no line breakdown."
 		},
 		"applicableDeliveryTerms": {
-			"$ref": "#/$defs/DeliveryTerms",
+			"$ref": "https://schema.twindev.org/trade-document/DeliveryTerms",
 			"description": "The delivery terms: the Incoterm and its named place, plus the weight\nbasis, tolerance and tare rules as verbatim text."
 		},
 		"applicablePaymentTerms": {
-			"$ref": "#/$defs/PaymentTerms",
+			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
 			"description": "The terms of payment."
 		},
 		"shippingPeriod": {
@@ -66,99 +66,5 @@
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceHeaderTradeAgreement"
 		}
-	],
-	"$defs": {
-		"TradeParty": {
-			"title": "TradeParty",
-			"description": "A party taking a role in a trade document, such as the buyer or the seller.\nOnly the name is mandatory: sample documents identify counterparties by name\nalone, so requiring an address would reject a real document. The address,\nrole codes, identifiers and contacts are all inherited and optional.",
-			"type": "object",
-			"properties": {
-				"identifier": {
-					"anyOf": [
-						{
-							"type": "string"
-						},
-						{
-							"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
-						}
-					],
-					"description": "A unique identifier of this trade party."
-				},
-				"name": {
-					"type": "string",
-					"description": "A name, expressed as text, for this trade party."
-				},
-				"postalAddress": {
-					"$ref": "https://schema.twindev.org/unece/UneceTradeAddress",
-					"description": "The postal address for this trade party."
-				}
-			},
-			"required": [
-				"identifier",
-				"name",
-				"postalAddress"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceTradeParty"
-				}
-			]
-		},
-		"DeliveryTerms": {
-			"title": "DeliveryTerms",
-			"description": "The delivery terms of a trade document. The Incoterm goes in\n`deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;\nweight basis, tolerance and tare rules have no typed slot and go verbatim in\n`description`.",
-			"type": "object",
-			"properties": {
-				"relevantLocation": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/trade-document/Location"
-					},
-					"description": "Relevant locations"
-				},
-				"incotermsCode": {
-					"type": "string",
-					"description": "Incoterms Code"
-				}
-			},
-			"required": [
-				"relevantLocation",
-				"incotermsCode"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UneceDeliveryTerms"
-				}
-			]
-		},
-		"PaymentTerms": {
-			"title": "PaymentTerms",
-			"description": "The terms of payment agreed for a trade document. Carry the verbatim text in\n`description` and the code list value in `paymentTermsTypeCode`.",
-			"type": "object",
-			"properties": {
-				"paymentTermsTypeCode": {
-					"type": "array",
-					"items": {
-						"anyOf": [
-							{
-								"$ref": "https://schema.twindev.org/unece/UnecePaymentTermsTypeCodeList"
-							},
-							{
-								"type": "string"
-							}
-						]
-					},
-					"description": "A code specifying the type of trade payment terms."
-				}
-			},
-			"required": [
-				"paymentTermsTypeCode"
-			],
-			"allOf": [
-				{
-					"$ref": "https://schema.twindev.org/unece/UnecePaymentTerms"
-				}
-			]
-		}
-	}
+	]
 }
