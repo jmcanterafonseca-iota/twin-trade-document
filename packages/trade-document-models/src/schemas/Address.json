@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Address",
 	"title": "Address",
-	"description": "An allowance or a charge applied to a trade document. `chargeIndicator` is\nmandatory because it is what distinguishes the two.",
+	"description": "Trade Address",
 	"type": "object",
 	"properties": {
 		"countryIdentificationCountry": {

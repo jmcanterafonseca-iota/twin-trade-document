@@ -1,0 +1,49 @@
+{
+	"language": "en-GB",
+	"ignorePaths": [
+		"**/node_modules/**",
+		"LICENSE",
+		"**/coverage/**",
+		"**/dist/**",
+		"**/docs/reference/**",
+		"**/docs/open-api/**",
+		"**/tests/**",
+		"*.yaml",
+		"package.json",
+		"vitest.config.*",
+		"tsconfig.json",
+		"tsconfig.eslint.json",
+		"typedoc.json",
+		"eslint.config*",
+		"**/wordlists/**",
+		"changelog.md"
+	],
+	"words": [
+		"abbrev",
+		"autorelease",
+		"bech",
+		"CEFACT",
+		"Faucet",
+		"hotfixes",
+		"invoicee",
+		"invoicer",
+		"ipfs",
+		"Jsonld",
+		"Locode",
+		"nameof",
+		"openapi",
+		"Stiftung",
+		"twindev",
+		"Unece",
+		"Unrevoke",
+		"UNVTD"
+	],
+	"ignoreRegExpList": [
+		"/from\\s+(['\"]).*\\1/",
+		"/eslint-disable.*/",
+		"/^```typescript[\\s\\S]*?```$/gm",
+		"/^```shell[\\s\\S]*?```$/gm",
+		"/^```json[\\s\\S]*?```$/gm",
+		"/tst1.*/"
+	]
+}

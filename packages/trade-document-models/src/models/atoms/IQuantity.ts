@@ -1,11 +1,10 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { IUneceQuantityType } from "@twin.org/standards-unece";
+import type { IUneceQuantityType } from "@twin.org/standards-unece";
 
 /**
- * A counted or measured quantity. The unit itself has no home: IUneceQuantityCode
- * declares no value property, so `QuantityTypeCode` cannot carry "KGM".
+ * A counted or measured quantity.
  */
 export type IQuantity = IUneceQuantityType &
-  Required<Pick<IUneceQuantityType, "QuantityTypeValue">>;
+	Required<Pick<IUneceQuantityType, "QuantityTypeValue" | "QuantityTypeCode">>;

@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/CommercialInvoice",
 	"title": "CommercialInvoice",
-	"description": "A commercial invoice: an itemized account of goods delivered together with a\ndemand for payment. Based on HeaderTradeSettlement, the UN/CEFACT settlement\nfacet, which natively carries the invoicer, the invoicee, the amounts and the\npayment means. Aligned to the UNVTD commercial invoice\n(https://unvtd.unece.org/docs/commercial-invoice/), which assigns the\ndocument no UN/CEFACT class of its own.\nSee docs/model-guide.md §9 for the property mapping.",
+	"description": "A commercial invoice: an itemized account of goods delivered together with a\ndemand for payment.",
 	"type": "object",
 	"properties": {
 		"@context": {

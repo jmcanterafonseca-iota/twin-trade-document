@@ -1,87 +1,82 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import {
-  IUneceDocument,
-} from "@twin.org/standards-unece";
-import { IAllowanceCharge } from "./atoms/IAllowanceCharge.js";
-import { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
-import { ILocation } from "./ILocation.js";
-import { IPaymentMeans } from "./atoms/IPaymentMeans.js";
-import { IPaymentTerms } from "./atoms/IPaymentTerms.js";
-import { ITradeItem } from "./atoms/ITradeItem.js";
-import { IParty } from "./IParty.js";
-import { IMeasure } from "./atoms/IMeasure.js";
-import { TradeDocumentTypes } from "./tradeDocumentTypes.js";
+import type { IUneceDocument } from "@twin.org/standards-unece";
+import type { IAllowanceCharge } from "./atoms/IAllowanceCharge.js";
+import type { IDeliveryTerms } from "./atoms/IDeliveryTerms.js";
+import type { IMeasure } from "./atoms/IMeasure.js";
+import type { IPaymentMeans } from "./atoms/IPaymentMeans.js";
+import type { IPaymentTerms } from "./atoms/IPaymentTerms.js";
+import type { ITradeItem } from "./atoms/ITradeItem.js";
+import type { ILocation } from "./ILocation.js";
+import type { IParty } from "./IParty.js";
+import type { TradeDocumentTypes } from "./tradeDocumentTypes.js";
 
 /**
  * A buyer issued purchase contract, also called a purchase order.
- * Carries all eleven `credentialSubject` properties of the UNVTD purchase order
- * (https://unvtd.unece.org/docs/purchase-order/#schema). The seller issued
- * mirror of this document is {@link ITradeAgreement}.
- * See docs/model-guide.md §2.4 for the property mapping and its trade-offs.
+ *
  */
 export type IPurchaseOrder = IUneceDocument &
-  Required<Pick<IUneceDocument, "@context">> & {
-    type: typeof TradeDocumentTypes.PurchaseOrder;
-    /**
-     * The date the order was issued. UNVTD `orderDate`.
-     * @see https://vocabulary.uncefact.org/issueDateTime
-     * @json-schema format:date-time
-     */
-    issueDateTime: string;
+	Required<Pick<IUneceDocument, "@context">> & {
+		type: typeof TradeDocumentTypes.PurchaseOrder;
+		/**
+		 * The date the order was issued. UNVTD `orderDate`.
+		 * @see https://vocabulary.uncefact.org/issueDateTime
+		 * @json-schema format:date-time
+		 */
+		issueDateTime: string;
 
-    /**
-     * The buyer party placing this order. UNVTD `buyer`.
-     */
-    buyerParty: IParty;
+		/**
+		 * The buyer party placing this order. UNVTD `buyer`.
+		 */
+		buyerParty: IParty;
 
-    /**
-     * The seller party the order is placed with. UNVTD `seller`.
-     */
-    sellerParty: IParty;
+		/**
+		 * The seller party the order is placed with. UNVTD `seller`.
+		 */
+		sellerParty: IParty;
 
-    /**
-     * Where the goods are to be delivered. UNVTD `deliveryLocation`.
-     * Other places, such as a place of payment presentation, go in the
-     * inherited `applicableLocation`.
-     */
-    deliveryLocation: ILocation;
+		/**
+		 * Where the goods are to be delivered. UNVTD `deliveryLocation`.
+		 * Other places, such as a place of payment presentation, go in the
+		 * inherited `applicableLocation`.
+		 */
+		deliveryLocation: ILocation;
 
-    /**
-     * An ordered lot. UNVTD `orderedItems`, minimum one.
-     * @see https://vocabulary.uncefact.org/includedSupplyChainTradeLineItem
-     */
-    includedSupplyChainTradeLineItem: ITradeItem[];
+		/**
+		 * An ordered lot. UNVTD `orderedItems`, minimum one.
+		 * @see https://vocabulary.uncefact.org/includedSupplyChainTradeLineItem
+		 */
+		includedSupplyChainTradeLineItem: ITradeItem[];
 
-    /**
-     * The terms of payment. UNVTD `paymentTerms`.
-     */
-    paymentTerms: IPaymentTerms;
+		/**
+		 * The terms of payment. UNVTD `paymentTerms`.
+		 */
+		paymentTerms: IPaymentTerms;
 
-    /**
-     * The delivery terms in coded form: the Incoterm and its named place. The
-     * verbatim source text of the same row is in `basis`.
-     */
-    applicableDeliveryTerms: IDeliveryTerms;
+		/**
+		 * The delivery terms in coded form: the Incoterm and its named place. The
+		 * verbatim source text of the same row is in `basis`.
+		 */
+		applicableDeliveryTerms: IDeliveryTerms;
 
-    /**
-     * The means by which payment is to be made. UNVTD `paymentMethod`.
-     */
-    paymentMethod?: IPaymentMeans;
+		/**
+		 * The means by which payment is to be made. UNVTD `paymentMethod`.
+		 */
+		paymentMethod?: IPaymentMeans;
 
-    /**
-     * An allowance or charge applied to this order. UNVTD `allowanceCharge`.
-     */
-    allowanceCharge?: IAllowanceCharge;
+		/**
+		 * An allowance or charge applied to this order. UNVTD `allowanceCharge`.
+		 */
+		allowanceCharge?: IAllowanceCharge;
 
-    /**
-     * The total amount of this order. UNVTD `totalOrderAmount`.
-     */
-    totalOrderAmount?: IMeasure;
+		/**
+		 * The total amount of this order. UNVTD `totalOrderAmount`.
+		 */
+		totalOrderAmount?: IMeasure;
 
-    /**
-     * The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`.
-     */
-    invoiceeParty?: IParty;
-  };
+		/**
+		 * The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`.
+		 */
+		invoiceeParty?: IParty;
+	};

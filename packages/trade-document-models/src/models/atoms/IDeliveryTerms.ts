@@ -1,23 +1,20 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { IUneceDeliveryTerms } from "@twin.org/standards-unece";
-import { ILocation } from "../ILocation.js";
+import type { IUneceDeliveryTerms } from "@twin.org/standards-unece";
+import type { ILocation } from "../ILocation.js";
 
 /**
- * The delivery terms of a trade document. The Incoterm goes in
- * `deliveryTermsDeliveryTypeCode` and its named place in `relevantLocation`;
- * weight basis, tolerance and tare rules have no typed slot and go verbatim in
- * `description`.
+ * The delivery terms of a trade document.
  */
 export type IDeliveryTerms = IUneceDeliveryTerms & {
-  /**
-   * Relevant locations
-   */
-  relevantLocation: ILocation[];
+	/**
+	 * Relevant locations
+	 */
+	relevantLocation: ILocation[];
 
-  /**
-   * Incoterms Code
-   */
-  incotermsCode: string;
+	/**
+	 * Incoterms Code
+	 */
+	incotermsCode: string;
 };

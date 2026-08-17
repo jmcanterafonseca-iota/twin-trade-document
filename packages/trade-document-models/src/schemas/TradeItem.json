@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "A single contracted lot, carried as one line of a trade document.\nBased on SupplyChainTradeLineItem rather than LineTradeAgreement, which has\nneither a quantity nor a product. The lot reference is in `identifier` or\n`associatedDocumentLineDocument.lineId`.\nSee docs/model-guide.md §2.2.",
+	"description": "A Trade item composed by a product, a price and a quantity",
 	"type": "object",
 	"properties": {
 		"suppliedProduct": {

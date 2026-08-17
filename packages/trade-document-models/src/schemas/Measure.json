@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Measure",
 	"title": "Measure",
-	"description": "A measured value such as a weight. The unit itself has no home:\nIUneceMeasureCode declares no value property, so `MeasureTypeCode` cannot\ncarry \"kgs\".",
+	"description": "A measured value such as a weight.",
 	"type": "object",
 	"properties": {
 		"MeasureTypeValue": {

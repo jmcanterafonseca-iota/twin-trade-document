@@ -23,7 +23,7 @@ And two rules that follow from the first:
 3. **Never derive, infer or synthesise a value.** If the page does not state it, leave the property
    absent. A composite invented to satisfy a `required` list — a range of line numbers standing in
    for a missing document number, a role code inferred from a letterhead — is data corruption, not
-   completeness. Deterministic *format* normalisation of a value that IS on the page (a written date
+   completeness. Deterministic _format_ normalisation of a value that IS on the page (a written date
    to ISO 8601, a stated month to its first and last day) is not derivation and is expected.
 
 4. **Nothing committed carries real counterparty data.** The sample PDFs live under `.context/`,
@@ -38,22 +38,22 @@ schema `description`), model guide, README — uses **fictional** parties, addre
 quantities, prices and dates. The verbatim reading of the real page lives only in the fact
 inventory you work from and in the gitignored `.ocr-preview/` artefact.
 
-This costs the proof nothing: it demonstrates that every *field* is carried, and field coverage does
+This costs the proof nothing: it demonstrates that every _field_ is carried, and field coverage does
 not depend on the literal values.
 
 **Replace the shape, not just the string.** The awkwardness of a real document is exactly what
 tests the model, so every fictional value must reproduce the format, length and irregularity of the
 one it replaces:
 
-| keep | because |
-|---|---|
-| a UK postcode alphanumeric, with its space (`BS1 4RN`) | UNVTD's `zip: number` rejects it — that is a finding |
-| leading zeros in postal codes (`00240`) | they get eaten by numeric types |
-| comma-joined tokens with no space (`Mwitu,AB`) | it is what the parser must split |
-| consecutive line numbers with no header number | it is why `identifier` is optional |
-| the typed-vs-stamped party name mismatch | a real contradiction the model must be able to hold |
-| a price basis that differs from the packing unit (per 50 kg on 60 kg bags) | the factor that UNVTD loses |
-| industry and regulatory boilerplate — Incoterms, `N.S.W`, `Actual Tare`, `Grain Pro`, `EUDR`, the European Standard Contract for Coffee, arbitration seats, grades, origin country | public terms, not counterparty data |
+| keep                                                                                                                                                                               | because                                              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| a UK postcode alphanumeric, with its space (`BS1 4RN`)                                                                                                                             | UNVTD's `zip: number` rejects it — that is a finding |
+| leading zeros in postal codes (`00240`)                                                                                                                                            | they get eaten by numeric types                      |
+| comma-joined tokens with no space (`Mwitu,AB`)                                                                                                                                     | it is what the parser must split                     |
+| consecutive line numbers with no header number                                                                                                                                     | it is why `identifier` is optional                   |
+| the typed-vs-stamped party name mismatch                                                                                                                                           | a real contradiction the model must be able to hold  |
+| a price basis that differs from the packing unit (per 50 kg on 60 kg bags)                                                                                                         | the factor that UNVTD loses                          |
+| industry and regulatory boilerplate — Incoterms, `N.S.W`, `Actual Tare`, `Grain Pro`, `EUDR`, the European Standard Contract for Coffee, arbitration seats, grades, origin country | public terms, not counterparty data                  |
 
 Recompute anything derived from the changed numbers — line totals, contract totals, the figures
 quoted in the docs — and check the diff: a bulk find-and-replace will silently hit values it should
@@ -134,7 +134,7 @@ the property names were chosen. Do the same for your document.
 
 Be aware that the UNVTD schemas have real defects; see `references/unvtd.md`. They are not valid
 JSON Schema 2020-12 despite declaring it, they set no `additionalProperties`, and several field
-types are wrong (`zip` as a number, `unlocode` as a URI). Use them for *vocabulary and structure*,
+types are wrong (`zip` as a number, `unlocode` as a URI). Use them for _vocabulary and structure_,
 not as a validation authority.
 
 If no UNVTD document exists, say so explicitly with the URLs you probed, and generate from the PDF
@@ -167,7 +167,7 @@ authentications — plus the known gaps. Start there before searching.
 For each fact record: **HOME** with the full path, or **NO HOME** with the closest miss and why it
 fails. A near-miss that means something else is not a home. Two real examples from this repo:
 `IUneceCargoInsurance` exists but hangs off a physical `Consignment`, so it cannot carry a contract's
-insurance allocation; `IUneceMarking` is documented as an inscription *on packaging*, so it cannot
+insurance allocation; `IUneceMarking` is documented as an inscription _on packaging_, so it cannot
 carry a rubber stamp on paper.
 
 ## Step 4 — Write the model
@@ -205,7 +205,7 @@ and `IPrice`, which references `IAmount` and `IQuantity` again. That buys three 
   rather than being re-promoted in every document that uses it;
 - **a name the domain uses** — `ILocation` rather than `IUneceLogisticsLocation`.
 
-The document's *own* base is still a direct `IUnece*` intersection; only its child properties go
+The document's _own_ base is still a direct `IUnece*` intersection; only its child properties go
 through atoms.
 
 ### Reuse before you create
@@ -225,22 +225,22 @@ absent, and prefer widening the base or relaxing a promoted field to duplicating
  * @json-schema embedded:defs
  */
 export type ILocation = IUneceLogisticsLocation &
-  Required<Pick<IUneceLogisticsLocation, "@context" | "type" | "name">>;
+  Required<Pick<IUneceLogisticsLocation, '@context' | 'type' | 'name'>>;
 ```
 
 **Local, when UN/CEFACT has no class for it** — a document row that is only ever text. It is still
 an object, never a bare `export type IFoo = string`: a bare alias breaks coherence with every other
-type *and* is still emitted as a `$ref`, so it buys nothing. Follow UN/CEFACT's own convention for
+type _and_ is still emitted as a `$ref`, so it buys nothing. Follow UN/CEFACT's own convention for
 scalar values (`AmountTypeValue`, `QuantityTypeValue`) and name the field `<Name>Value`:
 
 ```ts
 export interface IBasis {
-    /** JSON-LD Context. */
-    "@context": UneceContextType;
-    /** JSON-LD Type. */
-    type: typeof TradeDocumentTypes.Basis;
-    /** The verbatim text of the `Basis` row. */
-    BasisValue: string;
+  /** JSON-LD Context. */
+  '@context': UneceContextType;
+  /** JSON-LD Type. */
+  type: typeof TradeDocumentTypes.Basis;
+  /** The verbatim text of the `Basis` row. */
+  BasisValue: string;
 }
 ```
 
@@ -395,23 +395,23 @@ Update the target-document table in the root `README.md`.
 
 ## Report honestly
 
-State the coverage as a count, not an impression: *N atomic facts, M data bearing, all M carried* —
+State the coverage as a count, not an impression: _N atomic facts, M data bearing, all M carried_ —
 or, if not all, exactly which are not and why. If a fact could only be placed by bending a property
 to mean something it does not, say so rather than counting it as covered. If the sample contradicts
 itself, report the contradiction; do not resolve it silently.
 
 ## What a run delivers
 
-| | committed |
-|---|---|
-| `src/models/I<Document>.ts` | yes |
-| any new or widened atom under `src/models/atoms/` | yes |
-| the four wiring edits, for the document **and** for each new atom | yes |
-| `src/schemas/*.json`, regenerated — one per document and per atom | yes |
-| `tests/fixtures/<document>.ts` and `tests/documents/<document>.spec.ts` | yes |
-| a section in `docs/model-guide.md` and a row in the root `README.md` | yes |
-| the atom table in `references/unece-property-map.md §1`, if you added one | yes |
-| `.ocr-preview/<document>/` — the simulated conversion | **no**, gitignored, regenerate on demand |
+|                                                                           | committed                                |
+| ------------------------------------------------------------------------- | ---------------------------------------- |
+| `src/models/I<Document>.ts`                                               | yes                                      |
+| any new or widened atom under `src/models/atoms/`                         | yes                                      |
+| the four wiring edits, for the document **and** for each new atom         | yes                                      |
+| `src/schemas/*.json`, regenerated — one per document and per atom         | yes                                      |
+| `tests/fixtures/<document>.ts` and `tests/documents/<document>.spec.ts`   | yes                                      |
+| a section in `docs/model-guide.md` and a row in the root `README.md`      | yes                                      |
+| the atom table in `references/unece-property-map.md §1`, if you added one | yes                                      |
+| `.ocr-preview/<document>/` — the simulated conversion                     | **no**, gitignored, regenerate on demand |
 
 ## References
 

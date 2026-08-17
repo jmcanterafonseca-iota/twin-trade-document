@@ -1,11 +1,10 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { IUneceTradeAddress } from "@twin.org/standards-unece";
+import type { IUneceTradeAddress } from "@twin.org/standards-unece";
 
 /**
- * An allowance or a charge applied to a trade document. `chargeIndicator` is
- * mandatory because it is what distinguishes the two.
+ * Trade Address
  */
 export type IAddress = IUneceTradeAddress &
-  Required<Pick<IUneceTradeAddress, "countryIdentificationCountry">>;
+	Required<Pick<IUneceTradeAddress, "countryIdentificationCountry">>;

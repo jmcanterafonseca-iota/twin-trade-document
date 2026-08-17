@@ -3,11 +3,7 @@
 
 /**
  * The types of trade document data.
- * These are local profile names, used as the data type registration key
- * (`Namespace + type`) and matching each generated schema's `$id`. They are not
- * UN/CEFACT class names: two documents can share one class, so deriving them
- * from `UneceTypes` would collide. A payload's JSON-LD `type` stays the
- * UN/CEFACT class name its base interface pins it to.
+ *
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const TradeDocumentTypes = {
@@ -94,11 +90,10 @@ export const TradeDocumentTypes = {
 	/**
 	 * The goods on a line.
 	 */
-	Product: "Product",
+	Product: "Product"
 } as const;
 
 /**
  * The types of trade document data.
  */
-export type TradeDocumentTypes =
-	(typeof TradeDocumentTypes)[keyof typeof TradeDocumentTypes];
+export type TradeDocumentTypes = (typeof TradeDocumentTypes)[keyof typeof TradeDocumentTypes];

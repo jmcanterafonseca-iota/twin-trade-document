@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Location",
 	"title": "Location",
-	"description": "A place named by a trade document, such as a destination or a place of\npayment presentation. Use `locationFunctionTypeCode` to say which.",
+	"description": "A relevant location",
 	"type": "object",
 	"properties": {
 		"locationFunctionTypeCode": {

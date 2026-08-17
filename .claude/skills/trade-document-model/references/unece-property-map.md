@@ -14,10 +14,10 @@ Shorthand below: `BSP` = `.../src/models/bsp`, `LISTS` = `.../src/models/lists`.
 
 ### Documents — `src/models/`
 
-| Model | Base | Holds | Does **not** hold |
-|---|---|---|---|
-| `ITradeAgreement` | `IUneceHeaderTradeAgreement` | seller issued sales contract / sale confirmation | — |
-| `IPurchaseOrder` | `IUneceHeaderTradeAgreement` | buyer issued purchase contract, aligned to UNVTD | — |
+| Model             | Base                         | Holds                                            | Does **not** hold |
+| ----------------- | ---------------------------- | ------------------------------------------------ | ----------------- |
+| `ITradeAgreement` | `IUneceHeaderTradeAgreement` | seller issued sales contract / sale confirmation | —                 |
+| `IPurchaseOrder`  | `IUneceHeaderTradeAgreement` | buyer issued purchase contract, aligned to UNVTD | —                 |
 
 Both root on the same class: UNVTD's context says `"PurchaseOrder": "unece:HeaderTradeAgreement"`,
 and a sale confirmation is the same class from the other side. Two models on one base cannot carry
@@ -34,29 +34,29 @@ paper must go into a child object or a lifted local property.
 The decoupling layer: documents reference these, and only these reference `IUnece*`. **Check this
 table before creating anything new, and widen rather than fork.**
 
-| Atom | Base | Promoted to mandatory | Use for |
-|---|---|---|---|
-| `ITradeParty` | `IUneceTradeParty` | `name` | any party: buyer, seller, invoicee, shipper, warehouse keeper |
-| `ITradeItem` | `IUneceSupplyChainTradeLineItem` | `identifier`, product, delivery, agreement | one line of any document with a goods table |
-| `IProduct` | `IUneceTradeProduct` | `description` | the goods on a line: mark, grade, origin |
-| `ILineDelivery` | `IUneceLineTradeDelivery` | `orderQuantity`, `perPackageUnitQuantity`, `includedPackaging` | how much, packed how, how much per package |
-| `ILineAgreement` | `IUneceLineTradeAgreement` | `agreedPriceProductPrice` | the pricing facet of a line |
-| `IPrice` | `IUneceTradePrice` | `unitAmount`, `basisQuantity` | a unit price and the quantity it is quoted against |
-| `IPackaging` | `IUneceSupplyChainPackaging` | `packageTypeCode` | how goods are packed |
-| `IQuantity` | `IUneceQuantityType` | `QuantityTypeValue` | any counted or measured quantity |
-| `IAmount` | `IUneceAmountType` | `AmountTypeValue`, `AmountTypeCurrency` | any monetary amount |
-| `ILocation` | `IUneceLogisticsLocation` | `name` | any place; discriminate with `locationFunctionTypeCode` |
-| `IPaymentTerms` | `IUnecePaymentTerms` | — | terms of payment |
-| `IPaymentMeans` | `IUnecePaymentMeans` | — | how payment is made |
-| `IAllowanceCharge` | `IUneceTradeAllowanceCharge` | `chargeIndicator` | an allowance or a charge |
-| `INote` | `IUneceNote` | `content`, `subject` | prose with no typed slot |
-| `ITradeDelivery` | `IUneceHeaderTradeDelivery` | — | shipping details at document level |
-| `IDeliveryTerms` | `IUneceDeliveryTerms` | — | Incoterm plus named place |
-| `IReferencedDocument` | `IUneceDocument` | — | another document referenced by this one |
-| `IBasis` | *(local)* | `BasisValue` | the verbatim `Basis` row |
-| `IInsurance` | *(local)* | `InsuranceValue` | the verbatim `Insurance` row |
-| `IConditions` | *(local)* | `ConditionsValue` | the verbatim `Conditions` row |
-| `IDate` | *(local)* | `DateValue` | any date; no `format` asserted yet |
+| Atom                  | Base                             | Promoted to mandatory                                          | Use for                                                       |
+| --------------------- | -------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------- |
+| `ITradeParty`         | `IUneceTradeParty`               | `name`                                                         | any party: buyer, seller, invoicee, shipper, warehouse keeper |
+| `ITradeItem`          | `IUneceSupplyChainTradeLineItem` | `identifier`, product, delivery, agreement                     | one line of any document with a goods table                   |
+| `IProduct`            | `IUneceTradeProduct`             | `description`                                                  | the goods on a line: mark, grade, origin                      |
+| `ILineDelivery`       | `IUneceLineTradeDelivery`        | `orderQuantity`, `perPackageUnitQuantity`, `includedPackaging` | how much, packed how, how much per package                    |
+| `ILineAgreement`      | `IUneceLineTradeAgreement`       | `agreedPriceProductPrice`                                      | the pricing facet of a line                                   |
+| `IPrice`              | `IUneceTradePrice`               | `unitAmount`, `basisQuantity`                                  | a unit price and the quantity it is quoted against            |
+| `IPackaging`          | `IUneceSupplyChainPackaging`     | `packageTypeCode`                                              | how goods are packed                                          |
+| `IQuantity`           | `IUneceQuantityType`             | `QuantityTypeValue`                                            | any counted or measured quantity                              |
+| `IAmount`             | `IUneceAmountType`               | `AmountTypeValue`, `AmountTypeCurrency`                        | any monetary amount                                           |
+| `ILocation`           | `IUneceLogisticsLocation`        | `name`                                                         | any place; discriminate with `locationFunctionTypeCode`       |
+| `IPaymentTerms`       | `IUnecePaymentTerms`             | —                                                              | terms of payment                                              |
+| `IPaymentMeans`       | `IUnecePaymentMeans`             | —                                                              | how payment is made                                           |
+| `IAllowanceCharge`    | `IUneceTradeAllowanceCharge`     | `chargeIndicator`                                              | an allowance or a charge                                      |
+| `INote`               | `IUneceNote`                     | `content`, `subject`                                           | prose with no typed slot                                      |
+| `ITradeDelivery`      | `IUneceHeaderTradeDelivery`      | —                                                              | shipping details at document level                            |
+| `IDeliveryTerms`      | `IUneceDeliveryTerms`            | —                                                              | Incoterm plus named place                                     |
+| `IReferencedDocument` | `IUneceDocument`                 | —                                                              | another document referenced by this one                       |
+| `IBasis`              | _(local)_                        | `BasisValue`                                                   | the verbatim `Basis` row                                      |
+| `IInsurance`          | _(local)_                        | `InsuranceValue`                                               | the verbatim `Insurance` row                                  |
+| `IConditions`         | _(local)_                        | `ConditionsValue`                                              | the verbatim `Conditions` row                                 |
+| `IDate`               | _(local)_                        | `DateValue`                                                    | any date; no `format` asserted yet                            |
 
 All twenty-one promote `@context` and `type` as well, and carry `@json-schema embedded:defs`.
 
@@ -104,15 +104,15 @@ events, gross/net weights — that is the moment to reconsider rooting it on
 
 ### Parties — `IUneceTradeParty`
 
-| what | property | line |
-|---|---|---|
-| name | `name?: string` | :337 |
-| role | `partyRoleCode?: (UnecePartyRoleCodeList \| string)[]` | :349 |
-| address | `postalAddress?: IUneceTradeAddress` | :361 |
-| identifiers | `identifier`, `registeredId`, `gLNId`, `dUNSId`, `globalId` | :313, :391, :301, :259, :307 |
-| legal entity | `specifiedLegalOrganization?: IUneceLegalOrganization` | :499 |
-| contacts | `definedContact`, `emailURICommunication`, `telephoneCommunication`, `uRICommunication` | :265, :283, :541, :553 |
-| **stamp / signature** | `confirmedAuthentication?: IUneceAuthentication[]` | :241 |
+| what                  | property                                                                                | line                         |
+| --------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+| name                  | `name?: string`                                                                         | :337                         |
+| role                  | `partyRoleCode?: (UnecePartyRoleCodeList \| string)[]`                                  | :349                         |
+| address               | `postalAddress?: IUneceTradeAddress`                                                    | :361                         |
+| identifiers           | `identifier`, `registeredId`, `gLNId`, `dUNSId`, `globalId`                             | :313, :391, :301, :259, :307 |
+| legal entity          | `specifiedLegalOrganization?: IUneceLegalOrganization`                                  | :499                         |
+| contacts              | `definedContact`, `emailURICommunication`, `telephoneCommunication`, `uRICommunication` | :265, :283, :541, :553       |
+| **stamp / signature** | `confirmedAuthentication?: IUneceAuthentication[]`                                      | :241                         |
 
 `IUneceTradeAddress`: `buildingName`, `streetName`, `cityName`, `postcodeCode`, `postOfficeBox`,
 `countryName`, `tradeAddressCountryId`.
@@ -126,25 +126,25 @@ and ~1500 more.
 
 ### Line items — `IUneceSupplyChainTradeLineItem`
 
-| what | path |
-|---|---|
-| line / contract number | `associatedDocumentLineDocument.lineId` |
-| product name, grade, second name | `specifiedTradeProduct[].name`, `.designation`, `.tradeName` |
-| origin | `specifiedTradeProduct[].originCountry[].countryId` (`IUneceCountry`) |
-| tolerances | `specifiedTradeProduct[].applicableProductCharacteristic[].valueTolerance[]` → `IUneceTolerance` (`minusValuePercent`, `surplusValuePercent`, `marginValuePercent`, `minusValueQuantity`) |
-| measurement method | `…applicableProductCharacteristic[].valueMethod[]` → `IUneceSpecifiedMethod` (`name`, `measurementCode`, `standardTypeCode`) |
-| ordered quantity | `specifiedLineTradeDelivery[].orderQuantity` |
-| per-package quantity | `specifiedLineTradeDelivery[].perPackageUnitQuantity` |
-| packaging | `specifiedLineTradeDelivery[].includedPackaging[]` → `packageTypeCode`, `description` |
-| weight rule | `specifiedLineTradeDelivery[].quantityCalculationMethodCode` |
-| price | `specifiedLineTradeAgreement.agreedPriceProductPrice[]` → `unitAmount[]`, `basisQuantity` |
-| line incoterm | `specifiedLineTradeAgreement.applicableDeliveryTerms` |
+| what                             | path                                                                                                                                                                                      |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| line / contract number           | `associatedDocumentLineDocument.lineId`                                                                                                                                                   |
+| product name, grade, second name | `specifiedTradeProduct[].name`, `.designation`, `.tradeName`                                                                                                                              |
+| origin                           | `specifiedTradeProduct[].originCountry[].countryId` (`IUneceCountry`)                                                                                                                     |
+| tolerances                       | `specifiedTradeProduct[].applicableProductCharacteristic[].valueTolerance[]` → `IUneceTolerance` (`minusValuePercent`, `surplusValuePercent`, `marginValuePercent`, `minusValueQuantity`) |
+| measurement method               | `…applicableProductCharacteristic[].valueMethod[]` → `IUneceSpecifiedMethod` (`name`, `measurementCode`, `standardTypeCode`)                                                              |
+| ordered quantity                 | `specifiedLineTradeDelivery[].orderQuantity`                                                                                                                                              |
+| per-package quantity             | `specifiedLineTradeDelivery[].perPackageUnitQuantity`                                                                                                                                     |
+| packaging                        | `specifiedLineTradeDelivery[].includedPackaging[]` → `packageTypeCode`, `description`                                                                                                     |
+| weight rule                      | `specifiedLineTradeDelivery[].quantityCalculationMethodCode`                                                                                                                              |
+| price                            | `specifiedLineTradeAgreement.agreedPriceProductPrice[]` → `unitAmount[]`, `basisQuantity`                                                                                                 |
+| line incoterm                    | `specifiedLineTradeAgreement.applicableDeliveryTerms`                                                                                                                                     |
 
 Sibling quantities on `IUneceLineTradeDelivery` for other lifecycle stages: `agreedQuantity`,
 `requestedQuantity`, `despatchedQuantity`, `receivedQuantity`, `billedQuantity`, `packageQuantity`,
 `productUnitQuantity`, `rejectedQuantity`, `returnedQuantity`.
 
-**Do not use `IUneceLineTradeAgreement` as a line base.** Its quantities are ordering *constraints*
+**Do not use `IUneceLineTradeAgreement` as a line base.** Its quantities are ordering _constraints_
 (`economicOrderQuantity`, `minimum`/`maximum`/`incrementalProductOrderableQuantity`), not the
 ordered amount, and it has no product.
 
@@ -176,7 +176,7 @@ Also: `relevantLocation?: IUneceTradeLocation` (:67) for the named place,
 `DocumentsAgainstAcceptance` = `#61`, `Cash` = `#56`.
 
 `paymentTermsEventTimeReferenceFromEventCode?: string` (:120) — takes
-`unece:TimeReferenceCodeList#71` (*date of presentation of documents*).
+`unece:TimeReferenceCodeList#71` (_date of presentation of documents_).
 
 Also `description` (:55), `information` (:83), `dueDateTime` (:62), `settlementPeriodMeasure`
 (:139), `payeeParty` (:114), `instructedAmount` (:90).
@@ -233,15 +233,15 @@ document models here as the home for prose with no typed slot.
 
 Each of these was searched across all 394 interfaces and all code lists, and returns zero hits:
 
-| concept | grep | consequence |
-|---|---|---|
-| vessel nomination | `-i nominat` | 0 hits outside a party role code |
-| arbitration / dispute forum | `-i arbitration` | 0 hits in interfaces **and** lists |
-| clause precedence | `-i "override\|precedence\|prevail\|supersede"` | only a customs `requestOverrideCode` |
-| insurance on an agreement | `-i insurance` on the three header classes | 0 hits; `IUneceCargoInsurance` hangs off `IUneceConsignment` only |
-| Incoterms revision year | — | not modelled at all |
-| `includesTradeItem` | `-rn includesTradeItem` | 0 hits — it is not a UN/CEFACT term in any casing |
-| `orderedQuantity` | `-rn "orderedQuantity"` | 0 hits; the term is `orderQuantity`, on `LineTradeDelivery` only |
+| concept                     | grep                                            | consequence                                                       |
+| --------------------------- | ----------------------------------------------- | ----------------------------------------------------------------- |
+| vessel nomination           | `-i nominat`                                    | 0 hits outside a party role code                                  |
+| arbitration / dispute forum | `-i arbitration`                                | 0 hits in interfaces **and** lists                                |
+| clause precedence           | `-i "override\|precedence\|prevail\|supersede"` | only a customs `requestOverrideCode`                              |
+| insurance on an agreement   | `-i insurance` on the three header classes      | 0 hits; `IUneceCargoInsurance` hangs off `IUneceConsignment` only |
+| Incoterms revision year     | —                                               | not modelled at all                                               |
+| `includesTradeItem`         | `-rn includesTradeItem`                         | 0 hits — it is not a UN/CEFACT term in any casing                 |
+| `orderedQuantity`           | `-rn "orderedQuantity"`                         | 0 hits; the term is `orderQuantity`, on `LineTradeDelivery` only  |
 
 Vessel nomination, precedence and arbitration belong in `includedNote[]` with a discriminating
 `subject`. Insurance got its own atom, `IInsurance`, because the `Insurance` row is a document field

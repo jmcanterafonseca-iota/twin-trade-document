@@ -2,16 +2,21 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Quantity",
 	"title": "Quantity",
-	"description": "A counted or measured quantity. The unit itself has no home: IUneceQuantityCode\ndeclares no value property, so `QuantityTypeCode` cannot carry \"KGM\".",
+	"description": "A counted or measured quantity.",
 	"type": "object",
 	"properties": {
 		"QuantityTypeValue": {
 			"type": "string",
 			"description": "The numeric value."
+		},
+		"QuantityTypeCode": {
+			"$ref": "https://schema.twindev.org/unece/UneceQuantityCode",
+			"description": "The unit code."
 		}
 	},
 	"required": [
-		"QuantityTypeValue"
+		"QuantityTypeValue",
+		"QuantityTypeCode"
 	],
 	"allOf": [
 		{

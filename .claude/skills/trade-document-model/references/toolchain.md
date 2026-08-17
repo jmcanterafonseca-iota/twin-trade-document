@@ -46,10 +46,10 @@ mandatory one level down:
 
 ```ts
 specifiedLineTradeAgreement: IUneceLineTradeAgreement &
-  Required<Pick<IUneceLineTradeAgreement, "agreedPriceProductPrice">>;
+  Required<Pick<IUneceLineTradeAgreement, 'agreedPriceProductPrice'>>;
 ```
 
-A *named exported* intermediate type would not: `ts-to-schema` emits a `$ref` to a schema it never
+A _named exported_ intermediate type would not: `ts-to-schema` emits a `$ref` to a schema it never
 generates unless the type has its own file listed in `types`.
 
 **JSDoc is load-bearing.** The leading comment becomes the schema `description` verbatim — keep it
@@ -61,11 +61,11 @@ also ride in from the dependency's `.d.ts`.
 Two kinds, both **pure string construction at build time**; nothing is ever dereferenced or
 existence-checked.
 
-| `$ref` | live | why |
-|---|---|---|
-| `https://schema.twindev.org/unece/Unece*` | 200 | `standards-unece` is published |
-| `https://schema.twindev.org/trade-document/*` | 404 | this package is not published |
-| `#/$defs/TradeParty` | — | local |
+| `$ref`                                        | live | why                            |
+| --------------------------------------------- | ---- | ------------------------------ |
+| `https://schema.twindev.org/unece/Unece*`     | 200  | `standards-unece` is published |
+| `https://schema.twindev.org/trade-document/*` | 404  | this package is not published  |
+| `#/$defs/TradeParty`                          | —    | local                          |
 
 Local refs are `baseUrl + StringHelper.stripPrefix(typeName)`. External refs come from the
 `externalReferences` regex map in `ts-to-schema.json` — `"IUnece(.*)"` compiles to

@@ -1,22 +1,21 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import { IUneceTradeProduct } from "@twin.org/standards-unece";
-import { IProductPackage } from "./atoms/IProductPackage.js";
+import type { IUneceTradeProduct } from "@twin.org/standards-unece";
+import type { IProductPackage } from "./atoms/IProductPackage.js";
 
 /**
- * The goods on a line: `description` for the free text, `name` for the mark,
- * `designation` for the grade, `originCountry` for the origin.
+ * A product
  */
 export type IProduct = IUneceTradeProduct &
-  Required<Pick<IUneceTradeProduct, "identifier" | "name" | "description">> & {
-    /**
-     * The SKU
-     */
-    itemNUmber: string;
+	Required<Pick<IUneceTradeProduct, "identifier" | "name" | "description">> & {
+		/**
+		 * The SKU
+		 */
+		itemNUmber: string;
 
-    /**
-     * 
-     */
-    packaging: IProductPackage;
-  }
+		/**
+		 * Product package.
+		 */
+		packaging: IProductPackage;
+	};
