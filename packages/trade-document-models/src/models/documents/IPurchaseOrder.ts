@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceDocument } from "@twin.org/standards-unece";
+import type { ILocation } from "../entities/ILocation.js";
+import type { IParty } from "../entities/IParty.js";
+import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
 import type { IAllowanceCharge } from "../valueObjects/IAllowanceCharge.js";
 import type { IDeliveryTerms } from "../valueObjects/IDeliveryTerms.js";
 import type { IMeasure } from "../valueObjects/IMeasure.js";
 import type { IPaymentMeans } from "../valueObjects/IPaymentMeans.js";
 import type { IPaymentTerms } from "../valueObjects/IPaymentTerms.js";
 import type { ITradeItem } from "../valueObjects/ITradeItem.js";
-import type { ILocation } from "../entities/ILocation.js";
-import type { IParty } from "../entities/IParty.js";
-import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
 
 /**
  * A buyer issued purchase contract, also called a purchase order.

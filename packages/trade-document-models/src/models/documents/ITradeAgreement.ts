@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceHeaderTradeAgreement } from "@twin.org/standards-unece";
+import type { IParty } from "../entities/IParty.js";
 import type { IDeliveryTerms } from "../valueObjects/IDeliveryTerms.js";
 import type { IPaymentTerms } from "../valueObjects/IPaymentTerms.js";
 import type { IPeriod } from "../valueObjects/IPeriod.js";
 import type { ITradeItem } from "../valueObjects/ITradeItem.js";
-import type { IParty } from "../entities/IParty.js";
 
 /**
  * A seller issued sales contract
