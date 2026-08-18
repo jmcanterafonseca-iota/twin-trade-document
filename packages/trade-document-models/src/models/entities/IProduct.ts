@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceTradeProduct } from "@twin.org/standards-unece";
-import type { IProductPackage } from "./atoms/IProductPackage.js";
+import type { IProductPackage } from "../valueObjects/IProductPackage.js";
 
 /**
  * A product

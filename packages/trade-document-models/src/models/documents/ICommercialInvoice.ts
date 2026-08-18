@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceDocument } from "@twin.org/standards-unece";
-import type { IMeasure } from "./atoms/IMeasure.js";
-import type { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
-import type { IProductPackage } from "./atoms/IProductPackage.js";
-import type { ILocation } from "./ILocation.js";
-import type { IParty } from "./IParty.js";
-import type { IProduct } from "./IProduct.js";
-import type { TradeDocumentTypes } from "./tradeDocumentTypes.js";
+import type { IMeasure } from "../valueObjects/IMeasure.js";
+import type { IMonetaryAmount } from "../valueObjects/IMonetaryAmount.js";
+import type { IProductPackage } from "../valueObjects/IProductPackage.js";
+import type { ILocation } from "../entities/ILocation.js";
+import type { IParty } from "../entities/IParty.js";
+import type { IProduct } from "../entities/IProduct.js";
+import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
 
 /**
  * A commercial invoice: an itemized account of goods delivered together with a

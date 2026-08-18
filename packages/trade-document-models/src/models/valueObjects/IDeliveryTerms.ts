@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceDeliveryTerms } from "@twin.org/standards-unece";
-import type { ILocation } from "../ILocation.js";
+import type { ILocation } from "../entities/ILocation.js";
 
 /**
  * The delivery terms of a trade document.

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceTradeParty } from "@twin.org/standards-unece";
-import type { IAddress } from "./atoms/IAddress.js";
+import type { IAddress } from "../valueObjects/IAddress.js";
 
 /**
  * A party playing a role
