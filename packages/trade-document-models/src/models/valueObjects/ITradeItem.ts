@@ -13,9 +13,9 @@ import type { IProduct } from "../entities/IProduct.js";
 export type ITradeItem = Required<Pick<IUneceLineTradeAgreement, "type">> & {
 	/**
 	 * The goods on this line, including their description.
-	 * x-json-ld-property: https://test.uncefact.org/vocabulary/suppliedProduct
+	 * x-json-ld-property: https://vocabulary.uncefact.org/applicableProduct
 	 */
-	suppliedProduct: IProduct;
+	applicableProduct: IProduct;
 
 	/**
 	 * Unit price

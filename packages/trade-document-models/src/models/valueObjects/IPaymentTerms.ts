@@ -8,4 +8,9 @@ import type { IUnecePaymentTerms } from "@twin.org/standards-unece";
  * x-json-ld-type: https://vocabulary.uncefact.org/PaymentTerms
  */
 export type IPaymentTerms = IUnecePaymentTerms &
-	Required<Pick<IUnecePaymentTerms, "type" | "paymentTermsTypeCode">>;
+	Required<Pick<IUnecePaymentTerms, "type" | "paymentTermsTypeCode">> & {
+		/**
+		 * Description
+		 */
+		description?: string;
+	};

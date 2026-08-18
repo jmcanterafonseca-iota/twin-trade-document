@@ -9,9 +9,9 @@
 			"const": "LineTradeAgreement",
 			"description": "JSON-LD Type."
 		},
-		"suppliedProduct": {
+		"applicableProduct": {
 			"$ref": "https://schema.twindev.org/trade-document/Product",
-			"description": "The goods on this line, including their description.\nx-json-ld-property: https://test.uncefact.org/vocabulary/suppliedProduct"
+			"description": "The goods on this line, including their description.\nx-json-ld-property: https://vocabulary.uncefact.org/applicableProduct"
 		},
 		"unitPrice": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
@@ -24,7 +24,7 @@
 	},
 	"required": [
 		"type",
-		"suppliedProduct",
+		"applicableProduct",
 		"unitPrice",
 		"orderedQuantity"
 	]

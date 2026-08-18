@@ -26,13 +26,21 @@
 		},
 		"name": {
 			"type": "string",
-			"description": "A name, expressed as text, for this trade product."
+			"description": "Product name"
+		},
+		"originCountry": {
+			"type": "string",
+			"description": "Origin country"
+		},
+		"qualityLevelCode": {
+			"type": "string",
+			"description": "Quality level code"
 		},
 		"description": {
 			"type": "string",
 			"description": "Description"
 		},
-		"packaging": {
+		"applicableSupplyChainPackage": {
 			"$ref": "https://schema.twindev.org/trade-document/ProductPackage",
 			"description": "Product package."
 		}
@@ -41,8 +49,7 @@
 		"type",
 		"classificationCode",
 		"identifier",
-		"name",
-		"packaging"
+		"applicableSupplyChainPackage"
 	],
 	"allOf": [
 		{

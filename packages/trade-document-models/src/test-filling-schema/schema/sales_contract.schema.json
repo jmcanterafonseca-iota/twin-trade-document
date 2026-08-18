@@ -132,7 +132,8 @@
             "null"
           ],
           "minLength": 1,
-          "description": "Company name exactly as printed"
+          "description": "Company name exactly as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/name"
         },
         "address": {
           "$ref": "#/$defs/postal-address"
@@ -263,7 +264,7 @@
       "items": {
         "type": "object",
         "x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct",
-        "x-json-ld-property": "https://test.uncefact.org/vocabulary/suppliedProduct",
+        "x-json-ld-property": "https://vocabulary.uncefact.org/applicableProduct",
         "properties": {
           "lot_reference": {
             "type": [
@@ -365,7 +366,10 @@
         "null"
       ],
       "minLength": 1,
-      "description": "The delivery/terms line verbatim, including any wording beyond the Incoterms rule itself"
+      "description": "The delivery/terms line verbatim, including any wording beyond the Incoterms rule itself",
+      "x-json-ld-parent-property": "https://vocabulary.uncefact.org/applicableDeliveryTerms",
+      "x-json-ld-type": "https://vocabulary.uncefact.org/DeliveryTerms",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/description"
     },
     "incoterms": {
       "type": [
@@ -408,11 +412,13 @@
       "$ref": "#/$defs/iso-date-partial",
       "description": "Shipment or delivery period. When the printed period has been struck through and replaced by hand, this is the REPLACEMENT value and the struck original belongs in amendments — ISO 8601 at the precision printed (YYYY, YYYY-MM or YYYY-MM-DD)",
       "x-json-ld-type": "https://vocabulary.uncefact.org/SpecifiedPeriod",
-      "x-json-ld-property": "https://vocabulary.uncefact.org/shippingPeriod"
+      "x-json-ld-parent-property": "https://vocabulary.uncefact.org/shippingPeriod",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/startDateTime"
     },
     "destination": {
       "x-json-ld-type": "https://vocabulary.uncefact.org/LogisticsLocation",
       "x-json-ld-property": "https://vocabulary.uncefact.org/relevantLocation",
+      "x-json-ld-parent-property": "https://vocabulary.uncefact.org/applicableDeliveryTerms",
       "type": "object",
       "properties": {
         "locode": {
@@ -426,12 +432,12 @@
           ],
           "minLength": 1,
           "description": "Port name exactly as printed, name portion only — from 'ROTTERDAM, NETHERLANDS' copy 'ROTTERDAM'; never reformatted",
-          "x-json-ld-type": "https://vocabulary.uncefact.org/name"
+          "x-json-ld-property": "https://vocabulary.uncefact.org/name"
         },
         "country": {
           "$ref": "#/$defs/iso-3166-alpha2",
           "description": "Port country",
-          "x-json-ld-type": "https://vocabulary.uncefact.org/countryName"
+          "x-json-ld-property": "https://vocabulary.uncefact.org/countryName"
         }
       },
       "required": [
@@ -444,7 +450,10 @@
     },
     "country_of_origin": {
       "$ref": "#/$defs/iso-3166-alpha2",
-      "description": "The goods' origin country from an explicitly printed origin field"
+      "description": "The goods' origin country from an explicitly printed origin field",
+      "x-json-ld-parent-property": "https://vocabulary.uncefact.org/applicableProduct",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/originCountry",
+      "x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct"
     },
     "payment_terms": {
       "type": [
@@ -452,7 +461,9 @@
         "null"
       ],
       "minLength": 1,
-      "description": "Payment terms as printed"
+      "description": "Payment terms as printed",
+      "x-json-ld-type": "https://vocabulary.uncefact.org/PaymentTerms",
+       "x-json-ld-property": "https://vocabulary.uncefact.org/description"
     },
     "total_amount": {
       "type": [

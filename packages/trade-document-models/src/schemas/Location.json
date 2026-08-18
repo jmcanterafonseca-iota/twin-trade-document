@@ -2,11 +2,11 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Location",
 	"title": "Location",
-	"description": "A relevant location\nx-json-ld-type: https://vocabulary.uncefact.org/LogisticsLocation",
+	"description": "A relevant location\nx-json-ld-type: https://vocabulary.uncefact.org/TradeLocation",
 	"type": "object",
 	"properties": {
 		"type": {
-			"const": "LogisticsLocation",
+			"const": "TradeLocation",
 			"description": "JSON-LD Type."
 		},
 		"locationFunctionTypeCode": {
@@ -21,21 +21,28 @@
 					}
 				]
 			},
-			"description": "A code specifying the type of this logistics related location."
+			"description": "A code specifying the type of trade location."
 		},
 		"unLocationCode": {
 			"type": "string",
 			"description": "UN Location code\nx-json-ld-property: https://test.uncefact.org/vocabulary/unLocationCode"
+		},
+		"name": {
+			"type": "string",
+			"description": "Location name"
+		},
+		"countryName": {
+			"type": "string",
+			"description": "Country name"
 		}
 	},
 	"required": [
 		"type",
-		"locationFunctionTypeCode",
-		"unLocationCode"
+		"locationFunctionTypeCode"
 	],
 	"allOf": [
 		{
-			"$ref": "https://schema.twindev.org/unece/UneceLogisticsLocation"
+			"$ref": "https://schema.twindev.org/unece/UneceTradeLocation"
 		}
 	]
 }

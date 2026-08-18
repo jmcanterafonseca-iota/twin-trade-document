@@ -22,6 +22,10 @@
 				]
 			},
 			"description": "A code specifying the type of trade payment terms."
+		},
+		"description": {
+			"type": "string",
+			"description": "Description"
 		}
 	},
 	"required": [

@@ -20,4 +20,9 @@ export type IDeliveryTerms = IUneceDeliveryTerms &
 		 * x-json-ld-property: https://test.uncefact.org/vocabulary/incotermsCode
 		 */
 		incotermsCode: string;
+
+		/**
+		 * Description
+		 */
+		description: string;
 	};
