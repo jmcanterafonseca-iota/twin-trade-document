@@ -14,7 +14,6 @@
 		"./src/models/atoms/IPaymentMeans.ts",
 		"./src/models/atoms/IAllowanceCharge.ts",
 		"./src/models/atoms/IDeliveryTerms.ts",
-		"./src/models/atoms/IQuantity.ts",
 		"./src/models/atoms/IProductPackage.ts",
 		"./src/models/atoms/IPeriod.ts",
 		"./src/models/atoms/IMeasure.ts"

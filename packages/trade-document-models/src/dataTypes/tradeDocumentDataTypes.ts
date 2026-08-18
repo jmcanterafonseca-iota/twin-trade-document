@@ -19,7 +19,6 @@ import PeriodSchema from "../schemas/Period.json" with { type: "json" };
 import ProductSchema from "../schemas/Product.json" with { type: "json" };
 import ProductPackageSchema from "../schemas/ProductPackage.json" with { type: "json" };
 import PurchaseOrderSchema from "../schemas/PurchaseOrder.json" with { type: "json" };
-import QuantitySchema from "../schemas/Quantity.json" with { type: "json" };
 import TradeAgreementSchema from "../schemas/TradeAgreement.json" with { type: "json" };
 import TradeItemSchema from "../schemas/TradeItem.json" with { type: "json" };
 
@@ -47,7 +46,6 @@ export class TradeDocumentDataTypes {
 			{ type: TradeDocumentTypes.AllowanceCharge, schema: AllowanceChargeSchema },
 			{ type: TradeDocumentTypes.DeliveryTerms, schema: DeliveryTermsSchema },
 			{ type: TradeDocumentTypes.Measure, schema: MeasureSchema },
-			{ type: TradeDocumentTypes.Quantity, schema: QuantitySchema },
 			{ type: TradeDocumentTypes.Period, schema: PeriodSchema },
 			{ type: TradeDocumentTypes.ProductPackage, schema: ProductPackageSchema },
 			{ type: TradeDocumentTypes.Product, schema: ProductSchema }

@@ -73,11 +73,6 @@ export const TradeDocumentTypes = {
 	Measure: "Measure",
 
 	/**
-	 * A counted or measured quantity.
-	 */
-	Quantity: "Quantity",
-
-	/**
 	 * A period of time delimited by start and end date times.
 	 */
 	Period: "Period",

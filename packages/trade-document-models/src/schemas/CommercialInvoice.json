@@ -41,7 +41,7 @@
 			"description": "The goods being invoiced: `description` carries the goods row verbatim,\n`designation` the grade when the document states one."
 		},
 		"packageQuantity": {
-			"$ref": "https://schema.twindev.org/trade-document/Quantity",
+			"type": "number",
 			"description": "The number of packages invoiced, such as the total number of bags."
 		},
 		"includedPackaging": {

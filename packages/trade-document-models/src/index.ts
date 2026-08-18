@@ -17,6 +17,5 @@ export * from "./models/atoms/IPaymentMeans.js";
 export * from "./models/atoms/IPaymentTerms.js";
 export * from "./models/atoms/IPeriod.js";
 export * from "./models/atoms/IProductPackage.js";
-export * from "./models/atoms/IQuantity.js";
 export * from "./models/tradeDocumentContexts.js";
 export * from "./models/tradeDocumentTypes.js";

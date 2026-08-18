@@ -5,7 +5,6 @@ import type { IUneceDocument } from "@twin.org/standards-unece";
 import type { IMeasure } from "./atoms/IMeasure.js";
 import type { IMonetaryAmount } from "./atoms/IMonetaryAmount.js";
 import type { IProductPackage } from "./atoms/IProductPackage.js";
-import type { IQuantity } from "./atoms/IQuantity.js";
 import type { ILocation } from "./ILocation.js";
 import type { IParty } from "./IParty.js";
 import type { IProduct } from "./IProduct.js";
@@ -59,7 +58,7 @@ export type ICommercialInvoice = IUneceDocument &
 		 * The number of packages invoiced, such as the total number of bags.
 		 * @see https://vocabulary.uncefact.org/packageQuantity
 		 */
-		packageQuantity: IQuantity;
+		packageQuantity: number;
 
 		/**
 		 * How the goods are packed, when the document states it.
