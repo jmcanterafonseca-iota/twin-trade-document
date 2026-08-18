@@ -2,12 +2,16 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/TradeItem",
 	"title": "TradeItem",
-	"description": "A Trade item composed by a product, a price and a quantity",
+	"description": "A Trade item composed by a product, a price and a quantity\nx-json-ld-type: https://vocabulary.uncefact.org/LineTradeAgreement",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "LineTradeAgreement",
+			"description": "JSON-LD Type."
+		},
 		"suppliedProduct": {
 			"$ref": "https://schema.twindev.org/trade-document/Product",
-			"description": "The goods on this line, including their description."
+			"description": "The goods on this line, including their description.\nx-json-ld-property: https://test.uncefact.org/vocabulary/suppliedProduct"
 		},
 		"unitPrice": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
@@ -19,13 +23,9 @@
 		}
 	},
 	"required": [
+		"type",
 		"suppliedProduct",
 		"unitPrice",
 		"orderedQuantity"
-	],
-	"allOf": [
-		{
-			"$ref": "https://schema.twindev.org/unece/UneceSupplyChainTradeLineItem"
-		}
 	]
 }

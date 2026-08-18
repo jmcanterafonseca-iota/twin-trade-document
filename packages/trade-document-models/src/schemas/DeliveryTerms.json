@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/DeliveryTerms",
 	"title": "DeliveryTerms",
-	"description": "The delivery terms of a trade document.",
+	"description": "The delivery terms of a trade document.\nx-json-ld-type: https://vocabulary.uncefact.org/DeliveryTerms",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "DeliveryTerms",
+			"description": "JSON-LD Type."
+		},
 		"relevantLocation": {
 			"type": "array",
 			"items": {
@@ -14,10 +18,11 @@
 		},
 		"incotermsCode": {
 			"type": "string",
-			"description": "Incoterms Code"
+			"description": "Incoterms Code\nx-json-ld-property: https://test.uncefact.org/vocabulary/incotermsCode"
 		}
 	},
 	"required": [
+		"type",
 		"relevantLocation",
 		"incotermsCode"
 	],

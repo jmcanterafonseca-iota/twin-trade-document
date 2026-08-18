@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/PaymentTerms",
 	"title": "PaymentTerms",
-	"description": "The terms of payment agreed for a trade document.",
+	"description": "The terms of payment agreed for a trade document.\nx-json-ld-type: https://vocabulary.uncefact.org/PaymentTerms",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "PaymentTerms",
+			"description": "JSON-LD Type."
+		},
 		"paymentTermsTypeCode": {
 			"type": "array",
 			"items": {
@@ -21,6 +25,7 @@
 		}
 	},
 	"required": [
+		"type",
 		"paymentTermsTypeCode"
 	],
 	"allOf": [

@@ -10,12 +10,27 @@ import type { ITradeItem } from "../valueObjects/ITradeItem.js";
 
 /**
  * A seller issued sales contract
+ * x-json-ld-type: https://vocabulary.uncefact.org/HeaderTradeAgreement
  */
 export type ITradeAgreement = IUneceHeaderTradeAgreement &
-	Required<Pick<IUneceHeaderTradeAgreement, "@context" | "type" | "sellerReference">> & {
+	Required<
+		Pick<
+			IUneceHeaderTradeAgreement,
+			"@context" | "type" | "sellerReference" | "buyerReference" | "identifier"
+		>
+	> & {
 		/**
 		 * The date the document was issued.
-		 * @see https://vocabulary.uncefact.org/issueDateTime
+		 * x-json-ld-property: https://vocabulary.uncefact.org/issueDate
+		 *
+		 * @json-schema format:date-time
+		 *
+		 */
+		issueDate: string;
+
+		/**
+		 * The date the agreement was concluded.
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/agreementDate
 		 *
 		 * @json-schema format:date-time
 		 *
@@ -24,31 +39,38 @@ export type ITradeAgreement = IUneceHeaderTradeAgreement &
 
 		/**
 		 * The buyer party for this sales contract.
+		 * x-json-ld-property: https://vocabulary.uncefact.org/buyerParty
 		 */
 		buyer: IParty;
 
 		/**
 		 * The seller party for this sales contract.
+		 * x-json-ld-property: https://vocabulary.uncefact.org/sellerParty
 		 */
 		seller: IParty;
 
 		/**
 		 * The items under agreement
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/includesItem
 		 */
 		includesItem: ITradeItem[];
 
 		/**
 		 * The delivery terms
+		 * x-json-ld-property: https://vocabulary.uncefact.org/applicableDeliveryTerms
 		 */
 		applicableDeliveryTerms: IDeliveryTerms;
 
 		/**
 		 * The terms of payment.
+		 * x-json-ld-property: https://vocabulary.uncefact.org/applicablePaymentTerms
 		 */
 		applicablePaymentTerms: IPaymentTerms;
 
 		/**
 		 * Shipping period
+		 *
+		 * x-json-ld-property: https://vocabulary.uncefact.org/shippingPeriod
 		 */
 		shippingPeriod: IPeriod;
 	};

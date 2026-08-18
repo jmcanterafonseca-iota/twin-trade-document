@@ -5,6 +5,7 @@ import type { IUnecePaymentTerms } from "@twin.org/standards-unece";
 
 /**
  * The terms of payment agreed for a trade document.
+ * x-json-ld-type: https://vocabulary.uncefact.org/PaymentTerms
  */
 export type IPaymentTerms = IUnecePaymentTerms &
-	Required<Pick<IUnecePaymentTerms, "paymentTermsTypeCode">>;
+	Required<Pick<IUnecePaymentTerms, "type" | "paymentTermsTypeCode">>;

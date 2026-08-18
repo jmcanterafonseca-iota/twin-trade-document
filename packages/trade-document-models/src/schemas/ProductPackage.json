@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/ProductPackage",
 	"title": "ProductPackage",
-	"description": "How the goods are packed",
+	"description": "How the goods are packed\nx-json-ld-type: https://vocabulary.uncefact.org/SupplyChainPackaging",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "SupplyChainPackaging",
+			"description": "JSON-LD Type."
+		},
 		"capacityMeasure": {
 			"$ref": "https://schema.twindev.org/unece/UneceMeasureType",
 			"description": "The measure of the capacity of this supply chain packaging."
@@ -15,6 +19,7 @@
 		}
 	},
 	"required": [
+		"type",
 		"capacityMeasure",
 		"packageTypeCode"
 	],

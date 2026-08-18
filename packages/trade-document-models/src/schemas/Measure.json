@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Measure",
 	"title": "Measure",
-	"description": "A measured value such as a weight.",
+	"description": "A measured value such as a weight.\nx-json-ld-type: https://vocabulary.uncefact.org/Measurement",
 	"type": "object",
 	"properties": {
 		"MeasureTypeValue": {

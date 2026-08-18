@@ -5,8 +5,13 @@ import type { IUneceLogisticsLocation } from "@twin.org/standards-unece";
 
 /**
  * A relevant location
+ * x-json-ld-type: https://vocabulary.uncefact.org/LogisticsLocation
  */
 export type ILocation = IUneceLogisticsLocation &
-	Required<Pick<IUneceLogisticsLocation, "locationFunctionTypeCode">> & {
-		unLocode: string;
+	Required<Pick<IUneceLogisticsLocation, "type" | "locationFunctionTypeCode">> & {
+		/**
+		 * UN Location code
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/unLocationCode
+		 */
+		unLocationCode: string;
 	};

@@ -6,13 +6,14 @@ import type { IProductPackage } from "../valueObjects/IProductPackage.js";
 
 /**
  * A product
+ * x-json-ld-type: https://vocabulary.uncefact.org/TradeProduct
  */
 export type IProduct = IUneceTradeProduct &
-	Required<Pick<IUneceTradeProduct, "identifier" | "name" | "description">> & {
+	Required<Pick<IUneceTradeProduct, "type" | "identifier" | "name" | "classificationCode">> & {
 		/**
-		 * The SKU
+		 * Description
 		 */
-		itemNUmber: string;
+		description?: string;
 
 		/**
 		 * Product package.

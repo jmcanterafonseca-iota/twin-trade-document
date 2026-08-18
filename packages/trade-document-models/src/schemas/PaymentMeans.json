@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/PaymentMeans",
 	"title": "PaymentMeans",
-	"description": "The means by which a payment is to be made, such as a transfer, a cheque or\na documentary credit.",
+	"description": "The means by which a payment is to be made, such as a transfer, a cheque or\na documentary credit.\nx-json-ld-type: https://vocabulary.uncefact.org/PaymentMeans",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "PaymentMeans",
+			"description": "JSON-LD Type."
+		},
 		"paymentMeansTypeCode": {
 			"anyOf": [
 				{
@@ -18,6 +22,7 @@
 		}
 	},
 	"required": [
+		"type",
 		"paymentMeansTypeCode"
 	],
 	"allOf": [

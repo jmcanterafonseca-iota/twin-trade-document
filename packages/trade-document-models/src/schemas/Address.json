@@ -2,15 +2,25 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Address",
 	"title": "Address",
-	"description": "Trade Address",
+	"description": "Trade Address\nx-json-ld-type: https://vocabulary.uncefact.org/TradeAddress",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "TradeAddress",
+			"description": "JSON-LD Type."
+		},
+		"cityName": {
+			"type": "string",
+			"description": "A name, expressed as text, of the city, town or village of this trade address."
+		},
 		"countryIdentificationCountry": {
 			"$ref": "https://schema.twindev.org/unece/UneceCountry",
 			"description": "The unique identifier of the country for this trade address."
 		}
 	},
 	"required": [
+		"type",
+		"cityName",
 		"countryIdentificationCountry"
 	],
 	"allOf": [

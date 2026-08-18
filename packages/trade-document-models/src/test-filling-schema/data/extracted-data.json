@@ -1,0 +1,129 @@
+{
+  "contract_number": null,
+  "seller_reference": "S - JCT / 742-744",
+  "buyer_reference": "TBA",
+  "contract_date": "2024-09-06",
+  "trade_date": "2024-09-06",
+  "seller": {
+    "name": "Jowam Coffee Traders Co. Ltd.",
+    "address": {
+      "raw": "Nairobi, Kenya.",
+      "po_box": null,
+      "street": null,
+      "district": null,
+      "city": "Nairobi",
+      "postal_code": null,
+      "state": null,
+      "country_code": "KE"
+    },
+    "tax_ids": null,
+    "phone": "+254772122770",
+    "email": "trading@jowamcoffee.com"
+  },
+  "buyer": {
+    "name": "D.R. Wakefield & Company Ltd.",
+    "address": {
+      "raw": "United Kingdom",
+      "po_box": null,
+      "street": null,
+      "district": null,
+      "city": null,
+      "postal_code": null,
+      "state": null,
+      "country_code": "GB"
+    },
+    "tax_ids": null
+  },
+  "broker": null,
+  "commodity": null,
+  "total_package_count": 320,
+  "package_type": "BG",
+  "weight_per_package": 60,
+  "weight_per_package_unit": "KGM",
+  "weight_basis": "net",
+  "currency": null,
+  "lots": [
+    {
+      "lot_reference": "ctr/742",
+      "package_count": 200,
+      "package_type": "BG",
+      "quality_grade": "AB",
+      "description": "Asali",
+      "unit_price": 290,
+      "currency": "USD",
+      "price_per_quantity": 50,
+      "price_per_unit": "KGM",
+      "incoterm": "FOB"
+    },
+    {
+      "lot_reference": "ctr/743",
+      "package_count": 60,
+      "package_type": "BG",
+      "quality_grade": "PB",
+      "description": "Zawadi",
+      "unit_price": 296,
+      "currency": "USD",
+      "price_per_quantity": 50,
+      "price_per_unit": "KGM",
+      "incoterm": "FOB"
+    },
+    {
+      "lot_reference": "ctr/744",
+      "package_count": 70,
+      "package_type": "BG",
+      "quality_grade": "AA",
+      "description": "Acacias Thunguri",
+      "unit_price": 318,
+      "currency": "USD",
+      "price_per_quantity": 50,
+      "price_per_unit": "KGM",
+      "incoterm": "FOB"
+    }
+  ],
+  "conditions": "SUBJECT TO APPROVAL OF SAMPLES in GrainPro bags",
+  "packaging": null,
+  "delivery_terms": "Free On Board Net Shipping Weight.",
+  "incoterms": {
+    "rule": "FOB",
+    "named_place": null
+  },
+  "insurance": "For Buyers Account.",
+  "shipment_period": "November",
+  "destination": {
+    "locode": null,
+    "name": "London Gateway",
+    "country": "GB"
+  },
+  "country_of_origin": null,
+  "payment_terms": "Net Cash against Documents.",
+  "total_amount": null,
+  "signatories": [
+    {
+      "party_name": "Jowam Coffee Traders Co. Ltd",
+      "role": "Accepted",
+      "signed": true
+    },
+    {
+      "party_name": "D.R. WAKEFIELD & CO. LTD. U K.",
+      "role": "Accepted",
+      "signed": true
+    }
+  ],
+  "amendments": [
+    {
+      "field_label": "Shipment",
+      "original_value": "October 2024",
+      "amended_value": "November",
+      "initialled": true
+    }
+  ],
+  "stamps": [
+    {
+      "text": "JOWAM COFFEE TRADERS\nLTD.\n06 SEP 2024\nP.O. Box 58513-00200,\nNAIROBI - KENYA.",
+      "party_name": "JOWAM COFFEE TRADERS LTD.",
+      "date": "2024-09-06"
+    }
+  ],
+  "additional_references": null,
+  "notes": null
+}

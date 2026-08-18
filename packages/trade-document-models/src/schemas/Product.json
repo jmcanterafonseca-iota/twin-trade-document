@@ -2,12 +2,16 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Product",
 	"title": "Product",
-	"description": "A product",
+	"description": "A product\nx-json-ld-type: https://vocabulary.uncefact.org/TradeProduct",
 	"type": "object",
 	"properties": {
-		"description": {
+		"type": {
+			"const": "TradeProduct",
+			"description": "JSON-LD Type."
+		},
+		"classificationCode": {
 			"type": "string",
-			"description": "A textual description for this trade product."
+			"description": "The code specifying the classification for this trade product."
 		},
 		"identifier": {
 			"anyOf": [
@@ -24,9 +28,9 @@
 			"type": "string",
 			"description": "A name, expressed as text, for this trade product."
 		},
-		"itemNUmber": {
+		"description": {
 			"type": "string",
-			"description": "The SKU"
+			"description": "Description"
 		},
 		"packaging": {
 			"$ref": "https://schema.twindev.org/trade-document/ProductPackage",
@@ -34,10 +38,10 @@
 		}
 	},
 	"required": [
-		"description",
+		"type",
+		"classificationCode",
 		"identifier",
 		"name",
-		"itemNUmber",
 		"packaging"
 	],
 	"allOf": [

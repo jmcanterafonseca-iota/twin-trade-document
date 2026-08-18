@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Party",
 	"title": "Party",
-	"description": "A party playing a role",
+	"description": "A party playing a role\nx-json-ld-type: https://vocabulary.uncefact.org/TradeParty",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "TradeParty",
+			"description": "JSON-LD Type."
+		},
 		"identifier": {
 			"anyOf": [
 				{
@@ -23,9 +27,18 @@
 		"postalAddress": {
 			"$ref": "https://schema.twindev.org/trade-document/Address",
 			"description": "Postal Address"
+		},
+		"telephone": {
+			"type": "string",
+			"description": "Telephone number\nx-json-ld-property: https://test.uncefact.org/vocabulary/telephone"
+		},
+		"email": {
+			"type": "string",
+			"description": "emailAddress\nx-json-ld-property: https://test.uncefact.org/vocabulary/email"
 		}
 	},
 	"required": [
+		"type",
 		"identifier",
 		"name",
 		"postalAddress"

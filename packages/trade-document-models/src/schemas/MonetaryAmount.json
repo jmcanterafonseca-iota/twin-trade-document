@@ -2,9 +2,13 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/MonetaryAmount",
 	"title": "MonetaryAmount",
-	"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.",
+	"description": "A monetary amount. Both the value and its currency are mandatory: an amount\nwithout one of them cannot be acted on.\nx-json-ld-type: https://vocabulary.uncefact.org/AmountType",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "AmountType",
+			"description": "JSON-LD Type."
+		},
 		"AmountTypeValue": {
 			"type": "string",
 			"description": "A number of monetary units."
@@ -15,6 +19,7 @@
 		}
 	},
 	"required": [
+		"type",
 		"AmountTypeValue",
 		"AmountTypeCurrency"
 	],

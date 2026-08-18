@@ -2,7 +2,7 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Period",
 	"title": "Period",
-	"description": "Specified period",
+	"description": "Specified period\nx-json-ld-type: \"https://vocabulary.uncefact.org/SpecifiedPeriod\"",
 	"allOf": [
 		{
 			"$ref": "https://schema.twindev.org/unece/UneceSpecifiedPeriod"
@@ -11,6 +11,10 @@
 			"description": "A specified period of time.",
 			"type": "object",
 			"properties": {
+				"type": {
+					"const": "SpecifiedPeriod",
+					"description": "JSON-LD Type."
+				},
 				"completeDateTime": {
 					"type": "string",
 					"description": "The date, time, date time or other date time value for a complete specified period of time expressed as a specific\nmonth, a specific week, etc.",
@@ -22,11 +26,12 @@
 					"format": "date-time"
 				}
 			},
-			"$comment": "Inlined utility base type UneceSpecifiedPeriod so utility transformations can operate on concrete properties instead of a $ref.",
 			"required": [
+				"type",
 				"completeDateTime",
 				"startDateTime"
-			]
+			],
+			"$comment": "Inlined utility base type UneceSpecifiedPeriod so utility transformations can operate on concrete properties instead of a $ref."
 		},
 		{
 			"type": "object"

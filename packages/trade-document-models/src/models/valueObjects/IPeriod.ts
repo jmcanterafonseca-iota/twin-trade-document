@@ -5,6 +5,7 @@ import type { IUneceSpecifiedPeriod } from "@twin.org/standards-unece";
 
 /**
  * Specified period
+ * x-json-ld-type: "https://vocabulary.uncefact.org/SpecifiedPeriod"
  */
 export type IPeriod = IUneceSpecifiedPeriod &
-	Required<Pick<IUneceSpecifiedPeriod, "startDateTime" | "completeDateTime">> & {};
+	Required<Pick<IUneceSpecifiedPeriod, "type" | "startDateTime" | "completeDateTime">> & {};

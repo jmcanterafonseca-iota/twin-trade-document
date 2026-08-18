@@ -6,15 +6,18 @@ import type { ILocation } from "../entities/ILocation.js";
 
 /**
  * The delivery terms of a trade document.
+ * x-json-ld-type: https://vocabulary.uncefact.org/DeliveryTerms
  */
-export type IDeliveryTerms = IUneceDeliveryTerms & {
-	/**
-	 * Relevant locations
-	 */
-	relevantLocation: ILocation[];
+export type IDeliveryTerms = IUneceDeliveryTerms &
+	Required<Pick<IUneceDeliveryTerms, "type">> & {
+		/**
+		 * Relevant locations
+		 */
+		relevantLocation: ILocation[];
 
-	/**
-	 * Incoterms Code
-	 */
-	incotermsCode: string;
-};
+		/**
+		 * Incoterms Code
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/incotermsCode
+		 */
+		incotermsCode: string;
+	};

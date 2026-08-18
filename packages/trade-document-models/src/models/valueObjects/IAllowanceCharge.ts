@@ -8,4 +8,4 @@ import type { IUneceTradeAllowanceCharge } from "@twin.org/standards-unece";
  * mandatory because it is what distinguishes the two.
  */
 export type IAllowanceCharge = IUneceTradeAllowanceCharge &
-	Required<Pick<IUneceTradeAllowanceCharge, "chargeIndicator">>;
+	Required<Pick<IUneceTradeAllowanceCharge, "type" | "chargeIndicator">>;
