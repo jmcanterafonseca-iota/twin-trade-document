@@ -21,6 +21,7 @@ import ProductPackageSchema from "../schemas/ProductPackage.json" with { type: "
 import PurchaseOrderSchema from "../schemas/PurchaseOrder.json" with { type: "json" };
 import TradeAgreementSchema from "../schemas/TradeAgreement.json" with { type: "json" };
 import TradeItemSchema from "../schemas/TradeItem.json" with { type: "json" };
+import TradePriceSchema from "../schemas/TradePrice.json" with { type: "json" };
 
 /**
  * Handle all the data types for trade documents.
@@ -38,6 +39,7 @@ export class TradeDocumentDataTypes {
 			{ type: TradeDocumentTypes.CommercialInvoice, schema: CommercialInvoiceSchema },
 			{ type: TradeDocumentTypes.Party, schema: PartySchema },
 			{ type: TradeDocumentTypes.TradeItem, schema: TradeItemSchema },
+			{ type: TradeDocumentTypes.TradePrice, schema: TradePriceSchema },
 			{ type: TradeDocumentTypes.Location, schema: LocationSchema },
 			{ type: TradeDocumentTypes.Address, schema: AddressSchema },
 			{ type: TradeDocumentTypes.MonetaryAmount, schema: MonetaryAmountSchema },

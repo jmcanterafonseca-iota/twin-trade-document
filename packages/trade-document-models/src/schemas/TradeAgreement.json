@@ -42,11 +42,11 @@
 			"description": "The date the agreement was concluded.\nx-json-ld-property: https://test.uncefact.org/vocabulary/agreementDate",
 			"format": "date-time"
 		},
-		"buyer": {
+		"buyerParty": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The buyer party for this sales contract.\nx-json-ld-property: https://vocabulary.uncefact.org/buyerParty"
 		},
-		"seller": {
+		"sellerParty": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The seller party for this sales contract.\nx-json-ld-property: https://vocabulary.uncefact.org/sellerParty"
 		},
@@ -78,8 +78,8 @@
 		"sellerReference",
 		"issueDate",
 		"agreementDate",
-		"buyer",
-		"seller",
+		"buyerParty",
+		"sellerParty",
 		"includesItem",
 		"applicableDeliveryTerms",
 		"applicablePaymentTerms",

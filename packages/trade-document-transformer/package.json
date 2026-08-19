@@ -1,11 +1,11 @@
 {
-	"name": "@twin.org/trade-documents-models",
+	"name": "@twin.org/trade-documents-transformer",
 	"version": "0.0.1",
-	"description": "Defines shared trade document models using UN/CEFACT.",
+	"description": "Transformation logic from a war schema into a semantic one",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/iotaledger/twin-trade-documents.git",
-		"directory": "packages/trade-document-models"
+		"directory": "packages/trade-documents-transformer"
 	},
 	"author": "jose.cantera@iota.org",
 	"license": "Apache-2.0",
@@ -14,10 +14,9 @@
 		"node": ">=24.0.0"
 	},
 	"scripts": {
-		"clean": "rimraf dist coverage src/schemas",
-		"build:schema": "ts-to-schema ./ts-to-schema.json ./src/schemas",
+		"clean": "rimraf dist coverage",
 		"build:compile": "tspc",
-		"build": "npm run build:schema && npm run build:compile",
+		"build": "npm run build:compile",
 		"test": "vitest --run --config ./vitest.config.ts --no-cache",
 		"test:build": "tspc -p ./tests/tsconfig.json --noEmit",
 		"validate-locales": "validate-locales",
@@ -29,17 +28,18 @@
 		"dist:no-test": "npm run clean && npm run build && npm run test:build"
 	},
 	"dependencies": {
-		"@twin.org/nameof": "next",
-		"@twin.org/standards-schema-org": "next",
-		"@twin.org/standards-unece": "next",
+		"@twin.org/core": "next",
 		"@twin.org/data-core": "next",
-		"@twin.org/data-json-ld": "next"
+		"@twin.org/data-json-ld": "next",
+		"@twin.org/nameof": "next",
+		"@twin.org/standards-unece": "next",
+		"@twin.org/trade-document-models": "0.0.1"
 	},
 	"devDependencies": {
 		"@twin.org/nameof-transformer": "next",
 		"@twin.org/nameof-vitest-plugin": "next",
-		"@twin.org/ts-to-schema": "next",
 		"@twin.org/validate-locales": "next",
+		"@types/node": "^26.2.0",
 		"@vitest/coverage-v8": "4.1.10",
 		"copyfiles": "2.4.1",
 		"rimraf": "6.1.3",

@@ -55,7 +55,8 @@
 		"release-please": "17.10.4"
 	},
 	"workspaces": [
-		"packages/trade-document-models"
+		"packages/trade-document-models",
+		"packages/trade-document-transformer"
 	],
 	"type": "module",
 	"bugs": {

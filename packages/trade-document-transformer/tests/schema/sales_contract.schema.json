@@ -233,18 +233,42 @@
 					},
 					"unit_price": {
 						"type": ["number", "null"],
-						"description": "Price figure printed for this lot, without currency or unit"
+						"description": "Price figure printed for this lot, without currency or unit",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
+							"https://vocabulary.uncefact.org/chargeAmount",
+							"https://vocabulary.uncefact.org/AmountTypeValue"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"currency": {
 						"$ref": "#/$defs/iso-4217",
-						"description": "Currency printed for this lot"
+						"description": "Currency printed for this lot",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
+							"https://vocabulary.uncefact.org/chargeAmount",
+							"https://vocabulary.uncefact.org/AmountTypeCurrency"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"price_per_quantity": {
 						"type": ["number", "null"],
-						"description": "The quantity the price applies to, e.g. 50 from \"USD 290/50 kgs\". This is frequently NOT the package weight — copy what is printed"
+						"description": "The quantity the price applies to, e.g. 50 from \"USD 290/50 kgs\". This is frequently NOT the package weight — copy what is printed",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
+							"https://vocabulary.uncefact.org/basisQuantity",
+							"https://vocabulary.uncefact.org/MeasureTypeValue"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"price_per_unit": {
-						"$ref": "#/$defs/rec20-unit"
+						"$ref": "#/$defs/rec20-unit",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
+							"https://vocabulary.uncefact.org/basisQuantity",
+							"https://vocabulary.uncefact.org/MeasureTypeCode"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"incoterm": {
 						"$ref": "#/$defs/incoterm",
@@ -604,7 +628,10 @@
 				"country_code": {
 					"$ref": "#/$defs/iso-3166-alpha2",
 					"description": "Country derived from the printed address",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/countryIdentificationCountry"
+					"x-json-ld-property": [
+						"https://vocabulary.uncefact.org/countryIdentificationCountry",
+						"https://vocabulary.uncefact.org/countryId"
+					]
 				}
 			},
 			"required": [

@@ -3,36 +3,23 @@
 	"$id": "https://schema.twindev.org/trade-document/TradePrice",
 	"title": "TradePrice",
 	"description": "A Trade item composed by a product, a price and a quantity\nx-json-ld-type: https://vocabulary.uncefact.org/TradePrice",
-	"allOf": [
-		{
-			"description": "A sum of money for which something is or may be bought or sold for trade purposes.",
-			"type": "object",
-			"properties": {
-				"type": {
-					"const": "TradePrice",
-					"description": "JSON-LD Type."
-				},
-				"basisQuantity": {
-					"$ref": "https://schema.twindev.org/unece/UneceQuantityType",
-					"description": "The quantity on which the trade price is based."
-				},
-				"chargeAmount": {
-					"type": "array",
-					"items": {
-						"$ref": "https://schema.twindev.org/unece/UneceAmountType"
-					},
-					"description": "A monetary value of the trade price charge."
-				}
-			},
-			"required": [
-				"type",
-				"basisQuantity",
-				"chargeAmount"
-			],
-			"$comment": "Inlined utility base type UneceTradePrice so utility transformations can operate on concrete properties instead of a $ref."
+	"type": "object",
+	"properties": {
+		"type": {
+			"const": "TradePrice",
+			"description": "JSON-LD Type."
 		},
-		{
-			"type": "object"
+		"basisQuantity": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "Basis quantity"
+		},
+		"chargeAmount": {
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
+			"description": "Monetary amount"
 		}
+	},
+	"required": [
+		"type",
+		"chargeAmount"
 	]
 }

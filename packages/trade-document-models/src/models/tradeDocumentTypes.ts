@@ -23,6 +23,11 @@ export const TradeDocumentTypes = {
 	TradeItem: "TradeItem",
 
 	/**
+	 * A trade price
+	 */
+	TradePrice: "TradePrice",
+
+	/**
 	 * A party taking a role in a trade document.
 	 */
 	Party: "TradeParty",

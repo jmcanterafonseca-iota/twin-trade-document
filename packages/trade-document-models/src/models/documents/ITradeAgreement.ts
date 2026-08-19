@@ -41,13 +41,13 @@ export type ITradeAgreement = IUneceHeaderTradeAgreement &
 		 * The buyer party for this sales contract.
 		 * x-json-ld-property: https://vocabulary.uncefact.org/buyerParty
 		 */
-		buyer: IParty;
+		buyerParty: IParty;
 
 		/**
 		 * The seller party for this sales contract.
 		 * x-json-ld-property: https://vocabulary.uncefact.org/sellerParty
 		 */
-		seller: IParty;
+		sellerParty: IParty;
 
 		/**
 		 * The items under agreement

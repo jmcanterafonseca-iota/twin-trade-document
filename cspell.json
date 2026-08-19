@@ -36,7 +36,11 @@
 		"twindev",
 		"Unece",
 		"Unrevoke",
-		"UNVTD"
+		"UNVTD",
+		"dereffed",
+		"subproperties",
+		"subproperty",
+		"authored"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",
