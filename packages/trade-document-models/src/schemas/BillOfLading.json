@@ -6,7 +6,7 @@
 	"type": "object",
 	"properties": {
 		"@context": {
-			"const": "https://unvtd.unece.org/bill-of-lading-context.json ",
+			"const": "https://unvtd.unece.org/bill-of-lading-context.json",
 			"description": "Context"
 		},
 		"type": {
@@ -47,19 +47,19 @@
 		},
 		"consignor": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party consigning the goods as stipulated in the transport"
+			"description": "The party consigning the goods as stipulated in the transport contract.\nx-json-ld-property: https://vocabulary.uncefact.org/consignorParty"
 		},
 		"consignee": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to which the goods are consigned (UNVTD `consignee`)."
+			"description": "The party to which the goods are consigned (UNVTD `consignee`).\nx-json-ld-property: https://vocabulary.uncefact.org/consigneeParty"
 		},
 		"carrier": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party providing the transport of the goods between named points"
+			"description": "The party providing the transport of the goods between named points.\nx-json-ld-property: https://vocabulary.uncefact.org/carrierParty"
 		},
 		"notifyParty": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to be notified of the shipment (UNVTD `notifyParty`)."
+			"description": "The party to be notified of the shipment (UNVTD `notifyParty`).\nx-json-ld-property: https://vocabulary.uncefact.org/notifyParty"
 		},
 		"freightPayer": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",

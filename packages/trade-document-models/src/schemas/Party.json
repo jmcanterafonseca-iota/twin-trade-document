@@ -5,6 +5,10 @@
 	"description": "A party playing a role\nx-json-ld-type: https://vocabulary.uncefact.org/TradeParty",
 	"type": "object",
 	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
 		"type": {
 			"const": "TradeParty",
 			"description": "JSON-LD Type."
@@ -38,6 +42,7 @@
 		}
 	},
 	"required": [
+		"@context",
 		"type",
 		"identifier",
 		"name",

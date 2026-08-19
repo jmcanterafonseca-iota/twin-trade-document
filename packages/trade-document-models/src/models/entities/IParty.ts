@@ -9,10 +9,9 @@ import type { IAddress } from "../valueObjects/IAddress.js";
  * x-json-ld-type: https://vocabulary.uncefact.org/TradeParty
  */
 export type IParty = IUneceTradeParty &
-	Required<Pick<IUneceTradeParty, "type" | "name" | "identifier">> & {
+	Required<Pick<IUneceTradeParty, "@context" | "type" | "name" | "identifier">> & {
 		/**
 		 * Postal Address
-		 * @json-schema embedded:inline
 		 */
 		postalAddress: IAddress;
 

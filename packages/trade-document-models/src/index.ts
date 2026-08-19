@@ -1,6 +1,7 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 export * from "./dataTypes/tradeDocumentDataTypes.js";
+export * from "./models/documents/IBillOfLading.js";
 export * from "./models/documents/ICommercialInvoice.js";
 export * from "./models/entities/IProduct.js";
 export * from "./models/documents/IPurchaseOrder.js";

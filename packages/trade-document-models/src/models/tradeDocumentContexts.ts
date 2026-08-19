@@ -30,7 +30,7 @@ export const TradeDocumentContexts = {
 	/**
 	 * Bill of lading context.
 	 */
-	BillOfLadingContext: "https://unvtd.unece.org/bill-of-lading-context.json "
+	BillOfLadingContext: "https://unvtd.unece.org/bill-of-lading-context.json"
 } as const;
 
 /**

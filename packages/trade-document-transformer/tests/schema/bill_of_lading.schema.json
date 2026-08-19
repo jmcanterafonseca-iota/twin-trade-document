@@ -1,0 +1,501 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/bill_of_lading.schema.json",
+  "title": "Bill of Lading",
+  "description": "Ocean (port-to-port) bill of lading. Container numbers follow ISO 6346 (4 letters + 7 digits incl. check digit).",
+  "type": "object",
+  "properties": {
+    "bl_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Bill of lading number exactly as printed",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
+    },
+    "booking_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Carrier booking reference; null if not stated"
+    },
+    "carrier_name": {
+      "x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty",
+      "x-json-ld-property": [
+        "https://vocabulary.uncefact.org/carrierParty",
+        "https://vocabulary.uncefact.org/name"
+      ],
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Issuing carrier's name"
+    },
+    "shipper": {
+      "x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/consignorParty",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Company name exactly as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/name"
+        },
+        "address": {
+          "$ref": "#/$defs/postal-address",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/postalAddress"
+        }
+      },
+      "required": [
+        "name",
+        "address"
+      ],
+      "additionalProperties": false,
+      "description": "Shipper / consignor"
+    },
+    "consignee": {
+      "x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/consigneeParty",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Company name exactly as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/name"
+        },
+        "address": {
+          "x-json-ld-property": "https://vocabulary.uncefact.org/postalAddress",
+          "$ref": "#/$defs/postal-address"
+        }
+      },
+      "required": [
+        "name",
+        "address"
+      ],
+      "additionalProperties": false,
+      "description": "Consignee; for a negotiable B/L the name may be 'TO ORDER' or 'TO ORDER OF SHIPPER' with no address"
+    },
+    "notify_party": {
+      "x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty",
+      "x-json-ld-property": "https://vocabulary.uncefact.org/notifyParty",
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Company name exactly as printed"
+        },
+        "address": {
+          "x-json-ld-property": "https://vocabulary.uncefact.org/postalAddress",
+          "$ref": "#/$defs/postal-address"
+        }
+      },
+      "required": [
+        "name",
+        "address"
+      ],
+      "additionalProperties": false,
+      "description": "Notify party. MUST be null (not an object) when the box is empty or merely references the consignee, e.g. 'SAME AS CONSIGNEE'"
+    },
+    "place_of_receipt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Place of receipt for combined transport; null if port-to-port only"
+    },
+    "vessel_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Ocean vessel name"
+    },
+    "voyage_number": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Voyage number"
+    },
+    "port_of_loading": {
+      "type": "object",
+      "properties": {
+        "locode": {
+          "$ref": "#/$defs/un-locode"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Port name exactly as printed, name portion only — from 'ROTTERDAM, NETHERLANDS' copy 'ROTTERDAM'; never reformatted"
+        },
+        "country": {
+          "$ref": "#/$defs/iso-3166-alpha2",
+          "description": "Port country"
+        }
+      },
+      "required": [
+        "locode",
+        "name",
+        "country"
+      ],
+      "additionalProperties": false,
+      "description": "Port of loading"
+    },
+    "port_of_discharge": {
+      "type": "object",
+      "properties": {
+        "locode": {
+          "$ref": "#/$defs/un-locode"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Port name exactly as printed, name portion only — from 'ROTTERDAM, NETHERLANDS' copy 'ROTTERDAM'; never reformatted"
+        },
+        "country": {
+          "$ref": "#/$defs/iso-3166-alpha2",
+          "description": "Port country"
+        }
+      },
+      "required": [
+        "locode",
+        "name",
+        "country"
+      ],
+      "additionalProperties": false,
+      "description": "Port of discharge"
+    },
+    "place_of_delivery": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Final place of delivery; null if port-to-port only"
+    },
+    "marks_and_numbers": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Shipping marks and numbers as printed, newline-separated"
+    },
+    "containers": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "One entry per container",
+      "items": {
+        "type": "object",
+        "properties": {
+          "container_number": {
+            "$ref": "#/$defs/iso-6346"
+          },
+          "seal_number": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "description": "Carrier seal number; null when the field shows a placeholder such as 'N/A' or '—'"
+          },
+          "container_type": {
+            "$ref": "#/$defs/container-size-type"
+          },
+          "packages_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of packages in this container"
+          },
+          "package_kind": {
+            "$ref": "#/$defs/rec21-package"
+          },
+          "goods_description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "description": "Description of goods"
+          },
+          "gross_weight_kg": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Gross weight in kilograms"
+          },
+          "volume_cbm": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Measurement in cubic metres"
+          }
+        },
+        "required": [
+          "container_number",
+          "seal_number",
+          "container_type",
+          "packages_count",
+          "package_kind",
+          "goods_description",
+          "gross_weight_kg",
+          "volume_cbm"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "total_packages": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Total number of packages across all containers"
+    },
+    "total_gross_weight_kg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Total gross weight in kilograms"
+    },
+    "total_volume_cbm": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "Total measurement in cubic metres"
+    },
+    "freight_terms": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "'FREIGHT PREPAID' or 'FREIGHT COLLECT'"
+    },
+    "shipped_on_board_date": {
+      "$ref": "#/$defs/date",
+      "description": "Shipped-on-board date — ISO 8601 (YYYY-MM-DD)"
+    },
+    "place_of_issue": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Place where the B/L was issued"
+    },
+    "date_of_issue": {
+      "$ref": "#/$defs/date",
+      "description": "Date of issue — ISO 8601 (YYYY-MM-DD)"
+    },
+    "number_of_originals": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Number of original B/Ls issued, e.g. 'THREE (3)'"
+    }
+  },
+  "required": [
+    "bl_number",
+    "booking_number",
+    "carrier_name",
+    "shipper",
+    "consignee",
+    "notify_party",
+    "place_of_receipt",
+    "vessel_name",
+    "voyage_number",
+    "port_of_loading",
+    "port_of_discharge",
+    "place_of_delivery",
+    "marks_and_numbers",
+    "containers",
+    "total_packages",
+    "total_gross_weight_kg",
+    "total_volume_cbm",
+    "freight_terms",
+    "shipped_on_board_date",
+    "place_of_issue",
+    "date_of_issue",
+    "number_of_originals"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "format": "date",
+      "description": "ISO 8601 date (YYYY-MM-DD)."
+    },
+    "iso-3166-alpha2": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{2}$",
+      "format": "iso-3166-alpha2",
+      "description": "ISO 3166-1 alpha-2 country code."
+    },
+    "iso-6346": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{3}[UJZ]\\d{7}$",
+      "format": "iso-6346",
+      "description": "ISO 6346 container number (3 owner letters + U/J/Z category + 7 digits incl. check digit), without spaces."
+    },
+    "un-locode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
+      "format": "un-locode",
+      "description": "Five-character UN/LOCODE."
+    },
+    "container-size-type": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9A-Z]{2}[A-Z][0-9]$",
+      "format": "container-size-type",
+      "description": "ISO 6346 size/type code, e.g. '22G1' (the type group is validated; size/subtype digits are not)."
+    },
+    "rec21-package": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z0-9]{2}$",
+      "format": "rec21-package",
+      "description": "UNECE Rec 21 package type code (CT carton, PX pallet, ...)."
+    },
+    "postal-address": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "raw": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The verbatim printed address block, unchanged from the extraction channel",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/lineAddress1"
+        },
+        "po_box": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "PO box line as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/postOfficeBox"
+        },
+        "street": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "The full street line as printed, house number included",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/streetName"
+        },
+        "district": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Sub-city tier as printed: district, suburb, ward, free zone"
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "City/locality as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/cityName"
+        },
+        "postal_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "Postal code as printed",
+          "x-json-ld-property": "https://vocabulary.uncefact.org/postcodeCode"
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "description": "State/region as printed"
+        },
+        "country_code": {
+          "$ref": "#/$defs/iso-3166-alpha2",
+          "description": "Country derived from the printed address",
+          "x-json-ld-property": [
+            "https://vocabulary.uncefact.org/countryIdentificationCountry",
+            "https://vocabulary.uncefact.org/countryId"
+          ]
+        }
+      },
+      "required": [
+        "raw",
+        "po_box",
+        "street",
+        "district",
+        "city",
+        "postal_code",
+        "state",
+        "country_code"
+      ],
+      "additionalProperties": false,
+      "description": "Structured address: raw is verbatim; components are substrings of raw, derived post-extraction and null when not confidently parsed"
+    }
+  }
+}

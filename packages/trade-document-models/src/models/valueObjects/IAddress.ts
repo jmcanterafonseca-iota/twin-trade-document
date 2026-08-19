@@ -8,4 +8,5 @@ import type { IUneceTradeAddress } from "@twin.org/standards-unece";
  * x-json-ld-type: https://vocabulary.uncefact.org/TradeAddress
  */
 export type IAddress = IUneceTradeAddress &
-	Required<Pick<IUneceTradeAddress, "type" | "countryIdentificationCountry" | "cityName">>;
+	Required<Pick<IUneceTradeAddress, "type" | "countryIdentificationCountry">> &
+	Pick<IUneceTradeAddress, "postcodeCode" | "cityName">;

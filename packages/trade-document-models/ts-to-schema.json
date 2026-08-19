@@ -19,8 +19,8 @@
 		"./src/models/valueObjects/IPeriod.ts",
 		"./src/models/valueObjects/IMeasure.ts",
 		"./src/models/valueObjects/ITradePrice.ts",
-		"./src/models/valueObjects/ITransportPackage.ts",
-		"./src/models/valueObjects/IConsignmentItem.ts"
+		"./src/models/entities/ITransportPackage.ts",
+		"./src/models/entities/IConsignmentItem.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",

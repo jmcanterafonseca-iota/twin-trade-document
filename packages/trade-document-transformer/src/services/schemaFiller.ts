@@ -61,6 +61,13 @@ export class SchemaFiller {
 	private static readonly _JSONLD_CONTEXT_VALUE: string = "https://vocabulary.uncefact.org/";
 
 	/**
+	 * Fetched JSON-LD contexts, term to IRI, cached per context URL.
+	 * @internal
+	 */
+	private static readonly _CONTEXT_CACHE =
+		new Map<string, { [term: string]: string } | undefined>();
+
+	/**
 	 * Runtime name for the class.
 	 */
 	public readonly CLASS_NAME: string = nameof<SchemaFiller>();
@@ -100,6 +107,7 @@ export class SchemaFiller {
 	 * @internal
 	 */
 	private _consumed: Set<string>;
+
 
 	/**
 	 * Create a new instance of SchemaFiller.
@@ -145,7 +153,8 @@ export class SchemaFiller {
 			this.scopesFor(root, []),
 			"",
 			true,
-			new Set<string>()
+			new Set<string>(),
+			undefined
 		);
 		const filledValue = filled?.value;
 		const document = Is.object<{ [key: string]: unknown }>(filledValue) ? filledValue : {};
@@ -449,17 +458,24 @@ export class SchemaFiller {
 				// property paths resolve relative to the current context.
 				return { entry, context };
 			}
+			// An entry with several locations is ambiguous without a
+			// discriminating context: it must not match from an empty one.
 			const paths = this.slotPaths(entry.path);
-			for (const segments of paths) {
-				const concrete = this.materialize(segments, context);
-				if (concrete) {
-					return { entry, context: concrete };
+			const ambiguous = paths.length > 1;
+			if (!ambiguous || context.length > 0) {
+				for (const segments of paths) {
+					const concrete = this.materialize(segments, context);
+					if (concrete) {
+						return { entry, context: concrete };
+					}
 				}
 			}
-			for (const segments of paths) {
-				const concrete = this.materialize(segments, []);
-				if (concrete) {
-					return { entry, context: concrete };
+			if (!ambiguous) {
+				for (const segments of paths) {
+					const concrete = this.materialize(segments, []);
+					if (concrete) {
+						return { entry, context: concrete };
+					}
 				}
 			}
 		}
@@ -502,6 +518,8 @@ export class SchemaFiller {
 	 * @param targetPath The target path, for reporting.
 	 * @param required Whether the node is required, for reporting.
 	 * @param seenRefs The `$ref`s already expanded on this branch.
+	 * @param terms The term to IRI map of the enclosing schema's JSON-LD
+	 * context, used to derive the FQN of unannotated properties.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -511,7 +529,8 @@ export class SchemaFiller {
 		scopes: IFillScope[],
 		targetPath: string,
 		required: boolean,
-		seenRefs: Set<string>
+		seenRefs: Set<string>,
+		terms: { [term: string]: string } | undefined
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
 		const branchRefs = new Set(seenRefs);
 		const eff = await this.resolveEffective(node, branchRefs);
@@ -524,21 +543,34 @@ export class SchemaFiller {
 			return { value: SchemaFiller._JSONLD_CONTEXT_VALUE, hasData: false };
 		}
 
+		// The node's own name belongs to the enclosing schema, so it resolves
+		// against the enclosing terms: explicit annotation first, the JSON-LD
+		// context second, the vocabulary name as last resort.
 		const own = Is.array<string>(eff.propertyFqn) ? eff.propertyFqn.at(-1) : eff.propertyFqn;
+		const contextFqn = Is.stringValue(propertyName) ? terms?.[propertyName] : undefined;
 		const fqn =
 			own ??
+			contextFqn ??
 			(Is.stringValue(propertyName)
 				? `${SchemaFiller._VOCABULARY_BASE}${propertyName}`
 				: undefined);
 
+		// A node declaring its own @context switches the term map for its
+		// children.
+		let childTerms = terms;
+		const contextNode = eff.properties["@context"];
+		if (!Is.undefined(contextNode)) {
+			childTerms = (await this.loadContextTerms(contextNode)) ?? terms;
+		}
+
 		if (Object.keys(eff.properties).length > 0) {
-			return this.fillObject(eff, fqn, scopes, targetPath, required, branchRefs);
+			return this.fillObject(eff, fqn, scopes, targetPath, required, branchRefs, childTerms);
 		}
 		if (
 			!Is.undefined(eff.items) ||
 			(Is.array(eff.type) ? eff.type : [eff.type]).includes("array")
 		) {
-			return this.fillArray(eff, fqn, scopes, targetPath, required, branchRefs);
+			return this.fillArray(eff, fqn, scopes, targetPath, required, branchRefs, childTerms);
 		}
 		return this.fillLeaf(eff, fqn, scopes, targetPath, required);
 	}
@@ -551,6 +583,7 @@ export class SchemaFiller {
 	 * @param targetPath The target path.
 	 * @param required Whether the node is required.
 	 * @param seenRefs The `$ref`s already expanded on this branch.
+	 * @param terms The term to IRI map for the node's children.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -560,7 +593,8 @@ export class SchemaFiller {
 		scopes: IFillScope[],
 		targetPath: string,
 		required: boolean,
-		seenRefs: Set<string>
+		seenRefs: Set<string>,
+		terms: { [term: string]: string } | undefined
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
 		const match = this.findEntry(fqn, eff.typeFqn, scopes);
 		if (Is.undefined(match)) {
@@ -587,7 +621,8 @@ export class SchemaFiller {
 				childScopes,
 				childPath,
 				eff.required.has(name),
-				seenRefs
+				seenRefs,
+				terms
 			);
 			if (!Is.undefined(filled)) {
 				result[name] = filled.value;
@@ -610,6 +645,7 @@ export class SchemaFiller {
 	 * @param targetPath The target path.
 	 * @param required Whether the node is required.
 	 * @param seenRefs The `$ref`s already expanded on this branch.
+	 * @param terms The term to IRI map for the array items.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -619,7 +655,8 @@ export class SchemaFiller {
 		scopes: IFillScope[],
 		targetPath: string,
 		required: boolean,
-		seenRefs: Set<string>
+		seenRefs: Set<string>,
+		terms: { [term: string]: string } | undefined
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
 		const itemsEff = Is.undefined(eff.items)
 			? undefined
@@ -655,7 +692,8 @@ export class SchemaFiller {
 				this.scopesFor(match.entry, elements[i]),
 				`${targetPath}[${i}]`,
 				false,
-				seenRefs
+				seenRefs,
+				terms
 			);
 			if (!Is.undefined(filled)) {
 				result.push(filled.value);
@@ -720,6 +758,92 @@ export class SchemaFiller {
 			paths.push(path);
 		}
 		return paths;
+	}
+
+	/**
+	 * Load the JSON-LD context declared as an `@context` const, as a term to
+	 * IRI map, cached per context URL.
+	 * @param contextNode The `@context` schema node.
+	 * @returns The term map, or undefined when there is no fetchable context.
+	 * @internal
+	 */
+	private async loadContextTerms(
+		contextNode: unknown
+	): Promise<{ [term: string]: string } | undefined> {
+		const contextEff = await this.resolveEffective(contextNode, new Set());
+		const url = Is.stringValue(contextEff.const) ? contextEff.const.trim() : undefined;
+		if (!Is.stringValue(url) || !/^https?:/.test(url)) {
+			return undefined;
+		}
+		if (!SchemaFiller._CONTEXT_CACHE.has(url)) {
+			SchemaFiller._CONTEXT_CACHE.set(url, await this.fetchContextTerms(url));
+		}
+		return SchemaFiller._CONTEXT_CACHE.get(url);
+	}
+
+	/**
+	 * Fetch a JSON-LD context document and flatten its term definitions to a
+	 * term to IRI map, expanding prefixed values.
+	 * @param url The context URL.
+	 * @returns The term map, or undefined when the fetch or parse fails.
+	 * @internal
+	 */
+	private async fetchContextTerms(url: string): Promise<{ [term: string]: string } | undefined> {
+		try {
+			const response = await fetch(url, {
+				headers: { accept: "application/ld+json, application/json" },
+				signal: AbortSignal.timeout(10000)
+			});
+			if (!response.ok) {
+				return undefined;
+			}
+			const body: unknown = await response.json();
+			const context = Is.object<{ [key: string]: unknown }>(body) ? body["@context"] : undefined;
+			if (!Is.object<{ [key: string]: unknown }>(context)) {
+				return undefined;
+			}
+			const terms: { [term: string]: string } = {};
+			for (const [term, value] of Object.entries(context)) {
+				if (!term.startsWith("@")) {
+					const iri = this.expandContextValue(value, context);
+					if (Is.stringValue(iri)) {
+						terms[term] = iri;
+					}
+				}
+			}
+			return terms;
+		} catch {
+			return undefined;
+		}
+	}
+
+	/**
+	 * Expand one JSON-LD context term definition to a full IRI.
+	 * @param value The term definition (an IRI, a prefixed name or an object).
+	 * @param context The enclosing context, for prefix resolution.
+	 * @returns The IRI, or undefined.
+	 * @internal
+	 */
+	private expandContextValue(
+		value: unknown,
+		context: { [key: string]: unknown }
+	): string | undefined {
+		if (Is.object<{ [key: string]: unknown }>(value)) {
+			return this.expandContextValue(value["@id"], context);
+		}
+		if (!Is.stringValue(value)) {
+			return undefined;
+		}
+		if (/^https?:/.test(value)) {
+			return value;
+		}
+		const colon = value.indexOf(":");
+		if (colon > 0) {
+			const prefix = context[value.slice(0, colon)];
+			if (Is.stringValue(prefix) && /^https?:/.test(prefix)) {
+				return `${prefix}${value.slice(colon + 1)}`;
+			}
+		}
 	}
 
 	/**

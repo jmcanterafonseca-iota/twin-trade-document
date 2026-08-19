@@ -1,11 +1,11 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
+import type { IConsignmentItem } from "../entities/IConsignmentItem.js";
 import type { ILocation } from "../entities/ILocation.js";
 import type { IParty } from "../entities/IParty.js";
 import type { TradeDocumentContexts } from "../tradeDocumentContexts.js";
 import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
-import type { IConsignmentItem } from "../entities/IConsignmentItem.js";
 import type { IMeasure } from "../valueObjects/IMeasure.js";
 import type { IMonetaryAmount } from "../valueObjects/IMonetaryAmount.js";
 
@@ -68,22 +68,26 @@ export interface IBillOfLading {
 	estimatedTimeOfArrival?: string;
 
 	/**
-	 * The party consigning the goods as stipulated in the transport
+	 * The party consigning the goods as stipulated in the transport contract.
+	 * x-json-ld-property: https://vocabulary.uncefact.org/consignorParty
 	 */
 	consignor: IParty;
 
 	/**
 	 * The party to which the goods are consigned (UNVTD `consignee`).
+	 * x-json-ld-property: https://vocabulary.uncefact.org/consigneeParty
 	 */
 	consignee: IParty;
 
 	/**
-	 * The party providing the transport of the goods between named points
+	 * The party providing the transport of the goods between named points.
+	 * x-json-ld-property: https://vocabulary.uncefact.org/carrierParty
 	 */
 	carrier: IParty;
 
 	/**
 	 * The party to be notified of the shipment (UNVTD `notifyParty`).
+	 * x-json-ld-property: https://vocabulary.uncefact.org/notifyParty
 	 */
 	notifyParty?: IParty;
 
