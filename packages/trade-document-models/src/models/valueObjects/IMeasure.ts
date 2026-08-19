@@ -8,4 +8,9 @@ import type { IUneceMeasureType } from "@twin.org/standards-unece";
  * x-json-ld-type: https://vocabulary.uncefact.org/Measurement
  */
 export type IMeasure = IUneceMeasureType &
-	Required<Pick<IUneceMeasureType, "MeasureTypeValue" | "MeasureTypeCode">>;
+	Required<Pick<IUneceMeasureType, "MeasureTypeValue" | "type">> & {
+		/**
+		 * Measure type code
+		 */
+		MeasureTypeCode?: string;
+	};

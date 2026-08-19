@@ -5,18 +5,22 @@
 	"description": "A measured value such as a weight.\nx-json-ld-type: https://vocabulary.uncefact.org/Measurement",
 	"type": "object",
 	"properties": {
+		"type": {
+			"const": "MeasureType",
+			"description": "JSON-LD Type."
+		},
 		"MeasureTypeValue": {
 			"type": "string",
 			"description": "The numeric value."
 		},
 		"MeasureTypeCode": {
-			"$ref": "https://schema.twindev.org/unece/UneceMeasureCode",
-			"description": "The unit code."
+			"type": "string",
+			"description": "Measure type code"
 		}
 	},
 	"required": [
-		"MeasureTypeValue",
-		"MeasureTypeCode"
+		"type",
+		"MeasureTypeValue"
 	],
 	"allOf": [
 		{

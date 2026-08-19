@@ -19,11 +19,15 @@
  * its own top-level entry. A *leaf* carrying both annotations is a pinned
  * property: its value belongs to an entity of the annotated type, so it is
  * indexed under an entry keyed by that type FQN rather than under its
- * enclosing entity. An `x-json-ld-parent-property` annotation overrides the
- * parent deduced from the schema tree: the property is recorded under the
- * entry keyed by that parent property FQN instead. Annotated properties
- * above the first entity are collected under the `@root` entry, whose type
- * is the schema root's `x-json-ld-type`.
+ * enclosing entity. An `x-json-ld-property` holding an *array* of FQNs is a
+ * property chain: it denotes the full set of nodes that lead to the proper
+ * semantic nesting, wherever the annotated node sits in the schema tree.
+ * The last element is the property holding the value, recorded under the
+ * entry keyed by the second-to-last element (entries for the leading
+ * elements are created when missing); on a leaf, an accompanying
+ * `x-json-ld-type` describes that owning entity. Annotated properties above
+ * the first entity are collected under the `@root` entry, whose type is the
+ * schema root's `x-json-ld-type`.
  *
  * Annotations are read from the `x-json-ld-type` / `x-json-ld-property`
  * schema keywords or, failing those, from `x-json-ld-type: <uri>` /
@@ -43,30 +47,29 @@
  * stdout as JSON.
  */
 
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const TYPE_KEY = "x-json-ld-type";
-const PROPERTY_KEY = "x-json-ld-property";
-const PARENT_PROPERTY_KEY = "x-json-ld-parent-property";
+const TYPE_KEY = 'x-json-ld-type';
+const PROPERTY_KEY = 'x-json-ld-property';
 const TYPE_REGEX = /x-json-ld-type:\s*"?([^\s"]+)/;
 const PROPERTY_REGEX = /x-json-ld-property:\s*"?([^\s"]+)/;
-const PARENT_PROPERTY_REGEX = /x-json-ld-parent-property:\s*"?([^\s"]+)/;
-const ROOT_ENTRY = "@root";
+const ROOT_ENTRY = '@root';
 
 /**
  * Read an annotation from a schema node: keyword first, description line second.
+ * The keyword may hold a single FQN or an array of FQNs (a property chain).
  * @param node The schema node.
  * @param key The annotation keyword.
  * @param regex The description-line fallback regex.
- * @returns The annotation FQN, or undefined.
+ * @returns The annotation FQN (or FQN chain), or undefined.
  */
 function annotation(node, key, regex) {
-	if (typeof node[key] === "string") {
+	if (typeof node[key] === 'string' || Array.isArray(node[key])) {
 		return node[key];
 	}
-	if (typeof node.description === "string") {
+	if (typeof node.description === 'string') {
 		return regex.exec(node.description)?.[1];
 	}
 	return undefined;
@@ -98,11 +101,11 @@ export function jsonLdType(node) {
  */
 function resolvePointer(schema, ref) {
 	let node = schema;
-	for (const segment of ref.replace(/^#\//, "").split("/")) {
-		if (typeof node !== "object" || node === null) {
+	for (const segment of ref.replace(/^#\//, '').split('/')) {
+		if (typeof node !== 'object' || node === null) {
 			return undefined;
 		}
-		node = node[decodeURIComponent(segment.replaceAll("~1", "/").replaceAll("~0", "~"))];
+		node = node[decodeURIComponent(segment.replaceAll('~1', '/').replaceAll('~0', '~'))];
 	}
 	return node;
 }
@@ -146,7 +149,7 @@ export function buildSchemaIndex(schema) {
 		if (type && entry.type === undefined) {
 			entry.type = type;
 		}
-		addPath(entry, "path", path);
+		addPath(entry, 'path', path);
 		return entry;
 	}
 
@@ -157,12 +160,12 @@ export function buildSchemaIndex(schema) {
 	 * @returns The dereferenced node and the updated seen set, or undefined on a cycle.
 	 */
 	function deref(node, seenRefs) {
-		if (typeof node.$ref === "string" && node.$ref.startsWith("#/")) {
+		if (typeof node.$ref === 'string' && node.$ref.startsWith('#/')) {
 			if (seenRefs.has(node.$ref)) {
 				return undefined;
 			}
 			const resolved = resolvePointer(schema, node.$ref);
-			if (typeof resolved === "object" && resolved !== null) {
+			if (typeof resolved === 'object' && resolved !== null) {
 				seenRefs = new Set([...seenRefs, node.$ref]);
 				const { $ref, ...rest } = node;
 				node = { ...resolved, ...rest };
@@ -178,8 +181,8 @@ export function buildSchemaIndex(schema) {
 	 */
 	function hasStructure(node) {
 		return (
-			(typeof node.properties === "object" && node.properties !== null) ||
-			(typeof node.items === "object" && node.items !== null)
+			(typeof node.properties === 'object' && node.properties !== null) ||
+			(typeof node.items === 'object' && node.items !== null)
 		);
 	}
 
@@ -191,15 +194,15 @@ export function buildSchemaIndex(schema) {
 	 * @param seenRefs The `$ref`s already expanded on this branch.
 	 */
 	function walkChildren(node, path, entry, seenRefs) {
-		if (typeof node.properties === "object" && node.properties !== null) {
+		if (typeof node.properties === 'object' && node.properties !== null) {
 			for (const [name, child] of Object.entries(node.properties)) {
 				walk(child, `${path}.${name}`, entry, seenRefs);
 			}
 		}
-		if (typeof node.items === "object" && node.items !== null) {
+		if (typeof node.items === 'object' && node.items !== null) {
 			walk(node.items, `${path}[*]`, entry, seenRefs);
 		}
-		for (const combinator of ["allOf", "anyOf", "oneOf"]) {
+		for (const combinator of ['allOf', 'anyOf', 'oneOf']) {
 			if (Array.isArray(node[combinator])) {
 				for (const branch of node[combinator]) {
 					walk(branch, path, entry, seenRefs);
@@ -216,7 +219,7 @@ export function buildSchemaIndex(schema) {
 	 * @param seenRefs The `$ref`s already expanded on this branch.
 	 */
 	function walk(rawNode, path, entry, seenRefs) {
-		if (typeof rawNode !== "object" || rawNode === null) {
+		if (typeof rawNode !== 'object' || rawNode === null) {
 			return;
 		}
 		const dereffed = deref(rawNode, seenRefs);
@@ -228,28 +231,37 @@ export function buildSchemaIndex(schema) {
 
 		const property = annotation(node, PROPERTY_KEY, PROPERTY_REGEX);
 		const type = annotation(node, TYPE_KEY, TYPE_REGEX);
-		const parentProperty = annotation(node, PARENT_PROPERTY_KEY, PARENT_PROPERTY_REGEX);
 
 		if (property) {
-			if (parentProperty) {
-				// Explicit re-parenting: the property belongs to the entry
-				// keyed by the parent property FQN, not to the entity deduced
-				// from its position in the schema tree.
-				const owner = (index[parentProperty] ??= { properties: {} });
-				addPath(owner.properties, property, path);
+			const chain = Array.isArray(property) ? property : [property];
+			const last = chain.at(-1);
+			if (chain.length > 1) {
+				// A property chain: the leading FQNs are the entity properties
+				// that nest the value semantically, wherever the node sits in
+				// the schema tree. The value is a property of the entity
+				// addressed by the second-to-last element.
+				for (let i = 0; i < chain.length - 1; i++) {
+					index[chain[i]] ??= { properties: {} };
+				}
+				const owner = index[chain.at(-2)];
+				addPath(owner.properties, last, path);
+				if (type && !hasStructure(node)) {
+					// On a leaf, the type describes the owning entity.
+					owner.type ??= type;
+				}
 			} else if (type && !hasStructure(node)) {
 				// A pinned leaf: the value is a property OF an entity of the
 				// annotated type. Indexed under an entry keyed by that type.
 				const owner = (index[type] ??= { type, properties: {} });
-				addPath(owner.properties, property, path);
+				addPath(owner.properties, last, path);
 				return;
 			} else {
-				addPath(entry.properties, property, path);
+				addPath(entry.properties, last, path);
 			}
 			if (hasStructure(node)) {
 				// An entity subproperty: listed above under its parent, and
 				// opened as its own top-level entry for its children.
-				entry = openEntry(property, type, path);
+				entry = openEntry(last, type, path);
 			}
 		}
 
@@ -258,8 +270,8 @@ export function buildSchemaIndex(schema) {
 
 	const dereffed = deref(schema, new Set());
 	if (dereffed) {
-		const root = openEntry(ROOT_ENTRY, annotation(dereffed.node, TYPE_KEY, TYPE_REGEX), "$");
-		walkChildren(dereffed.node, "$", root, dereffed.seenRefs);
+		const root = openEntry(ROOT_ENTRY, annotation(dereffed.node, TYPE_KEY, TYPE_REGEX), '$');
+		walkChildren(dereffed.node, '$', root, dereffed.seenRefs);
 	}
 	return index;
 }
@@ -267,7 +279,7 @@ export function buildSchemaIndex(schema) {
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
 	const here = dirname(fileURLToPath(import.meta.url));
-	const schemaFile = process.argv[2] ?? join(here, "schema", "sales_contract.schema.json");
-	const schema = JSON.parse(readFileSync(schemaFile, "utf8"));
-	process.stdout.write(`${JSON.stringify(buildSchemaIndex(schema), undefined, "\t")}\n`);
+	const schemaFile = process.argv[2] ?? join(here, 'schema', 'sales_contract.schema.json');
+	const schema = JSON.parse(readFileSync(schemaFile, 'utf8'));
+	process.stdout.write(`${JSON.stringify(buildSchemaIndex(schema), undefined, '\t')}\n`);
 }

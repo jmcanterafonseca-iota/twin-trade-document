@@ -9,19 +9,19 @@
 			"const": "SupplyChainPackaging",
 			"description": "JSON-LD Type."
 		},
-		"capacityMeasure": {
-			"$ref": "https://schema.twindev.org/unece/UneceMeasureType",
-			"description": "The measure of the capacity of this supply chain packaging."
-		},
 		"packageTypeCode": {
 			"$ref": "https://schema.twindev.org/unece/UnecePackageTypeCodeList",
 			"description": "The code specifying the type of supply chain packaging."
+		},
+		"capacityMeasure": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "Capacity measure"
 		}
 	},
 	"required": [
 		"type",
-		"capacityMeasure",
-		"packageTypeCode"
+		"packageTypeCode",
+		"capacityMeasure"
 	],
 	"allOf": [
 		{

@@ -42,13 +42,13 @@
  * ./schema/sales_contract.schema.json, printing the document to stdout.
  */
 
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { buildSchemaIndex, jsonLdProperty, jsonLdType } from "./buildSchemaIndex.js";
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildSchemaIndex, jsonLdProperty, jsonLdType } from './buildSchemaIndex.js';
 
-const VOCABULARY_BASE = "https://vocabulary.uncefact.org/";
-const JSONLD_CONTEXT_VALUE = "https://vocabulary.uncefact.org/";
+const VOCABULARY_BASE = 'https://vocabulary.uncefact.org/';
+const JSONLD_CONTEXT_VALUE = 'https://vocabulary.uncefact.org/';
 
 /**
  * Parse an index JSON path into segments ("[*]" marks array items).
@@ -57,16 +57,16 @@ const JSONLD_CONTEXT_VALUE = "https://vocabulary.uncefact.org/";
  */
 function parsePath(path) {
 	const segments = [];
-	for (const part of path.replace(/^\$\.?/, "").split(".")) {
-		if (part === "") {
+	for (const part of path.replace(/^\$\.?/, '').split('.')) {
+		if (part === '') {
 			continue;
 		}
-		const [name, ...stars] = part.split("[*]");
+		const [name, ...stars] = part.split('[*]');
 		if (name) {
 			segments.push(name);
 		}
 		for (let i = 0; i < stars.length; i++) {
-			segments.push("[*]");
+			segments.push('[*]');
 		}
 	}
 	return segments;
@@ -95,12 +95,12 @@ function materialize(segments, context) {
 	const concrete = [];
 	for (let i = 0; i < segments.length; i++) {
 		if (i < context.length) {
-			if (segments[i] === context[i] || (segments[i] === "[*]" && typeof context[i] === "number")) {
+			if (segments[i] === context[i] || (segments[i] === '[*]' && typeof context[i] === 'number')) {
 				concrete.push(context[i]);
 			} else {
 				return undefined;
 			}
-		} else if (segments[i] === "[*]") {
+		} else if (segments[i] === '[*]') {
 			return undefined;
 		} else {
 			concrete.push(segments[i]);
@@ -118,7 +118,7 @@ function materialize(segments, context) {
 function getData(data, concrete) {
 	let value = data;
 	for (const segment of concrete) {
-		if (typeof value !== "object" || value === null) {
+		if (typeof value !== 'object' || value === null) {
 			return undefined;
 		}
 		value = value[segment];
@@ -141,12 +141,12 @@ function loadSchemasById(folders) {
 			continue;
 		}
 		for (const entry of entries) {
-			if (!entry.endsWith(".json")) {
+			if (!entry.endsWith('.json')) {
 				continue;
 			}
 			try {
-				const schema = JSON.parse(readFileSync(join(folder, entry), "utf8"));
-				if (typeof schema.$id === "string" && !byId.has(schema.$id)) {
+				const schema = JSON.parse(readFileSync(join(folder, entry), 'utf8'));
+				if (typeof schema.$id === 'string' && !byId.has(schema.$id)) {
 					byId.set(schema.$id, schema);
 				}
 			} catch {
@@ -182,7 +182,7 @@ function resolveEffective(node, schemasById) {
 	 * @param n The node to merge.
 	 */
 	function merge(n) {
-		if (typeof n !== "object" || n === null) {
+		if (typeof n !== 'object' || n === null) {
 			return;
 		}
 		eff.propertyFqn ??= jsonLdProperty(n);
@@ -193,13 +193,13 @@ function resolveEffective(node, schemasById) {
 		if (n.type !== undefined && eff.type === undefined) {
 			eff.type = n.type;
 		}
-		if (typeof n.format === "string" && eff.format === undefined) {
+		if (typeof n.format === 'string' && eff.format === undefined) {
 			eff.format = n.format;
 		}
-		if (typeof n.items === "object" && n.items !== null && eff.items === undefined) {
+		if (typeof n.items === 'object' && n.items !== null && eff.items === undefined) {
 			eff.items = n.items;
 		}
-		if (typeof n.properties === "object" && n.properties !== null) {
+		if (typeof n.properties === 'object' && n.properties !== null) {
 			for (const [name, child] of Object.entries(n.properties)) {
 				if (!(name in eff.properties)) {
 					eff.properties[name] = child;
@@ -211,11 +211,11 @@ function resolveEffective(node, schemasById) {
 				eff.required.add(name);
 			}
 		}
-		if (typeof n.$ref === "string" && schemasById.has(n.$ref) && !seen.has(n.$ref)) {
+		if (typeof n.$ref === 'string' && schemasById.has(n.$ref) && !seen.has(n.$ref)) {
 			seen.add(n.$ref);
 			merge(schemasById.get(n.$ref));
 		}
-		for (const combinator of ["allOf", "anyOf", "oneOf"]) {
+		for (const combinator of ['allOf', 'anyOf', 'oneOf']) {
 			if (Array.isArray(n[combinator])) {
 				for (const branch of n[combinator]) {
 					merge(branch);
@@ -258,7 +258,7 @@ class Filler {
 		const scopes = [{ entry, context }];
 		const pinned = entry.type ? this.index[entry.type] : undefined;
 		if (pinned && pinned !== entry) {
-			scopes.push({ entry: pinned, context: [] });
+			scopes.push({ entry: pinned, context });
 		}
 		return scopes;
 	}
@@ -279,8 +279,9 @@ class Filler {
 				continue;
 			}
 			for (const segments of slotPaths(slot)) {
-				// In context first; globally second, for re-parented or pinned
-				// properties whose value lives outside the entity's subtree.
+				// Relative to the current context first; relative to the
+				// outermost context second, for properties whose value lives
+				// outside the entity's subtree.
 				const concrete = materialize(segments, context) ?? materialize(segments, []);
 				if (concrete) {
 					return concrete;
@@ -318,9 +319,10 @@ class Filler {
 				return undefined;
 			}
 			if (entry.path === undefined) {
-				// A pinned (type-keyed) entry has no location of its own; its
-				// property paths are absolute.
-				return { entry, context: [] };
+				// A pinned or chain-created entry is entered right here, so
+				// its property paths resolve relative to the current context
+				// (the outermost context is retried by the value lookup).
+				return { entry, context };
 			}
 			for (const segments of slotPaths(entry.path)) {
 				const concrete = materialize(segments, context) ?? materialize(segments, []);
@@ -340,10 +342,14 @@ class Filler {
 	 */
 	coerce(value, eff) {
 		const types = Array.isArray(eff.type) ? eff.type : [eff.type];
-		if (eff.format === "date-time" && typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+		if (
+			eff.format === 'date-time' &&
+			typeof value === 'string' &&
+			/^\d{4}-\d{2}-\d{2}$/.test(value)
+		) {
 			return `${value}T00:00:00Z`;
 		}
-		if (typeof value === "number" && types.includes("string") && !types.includes("number")) {
+		if (typeof value === 'number' && types.includes('string') && !types.includes('number')) {
 			return String(value);
 		}
 		return value;
@@ -374,16 +380,20 @@ class Filler {
 		if (eff.const !== undefined) {
 			return { value: eff.const, hasData: false };
 		}
-		if (propertyName === "@context") {
+		if (propertyName === '@context') {
 			return { value: JSONLD_CONTEXT_VALUE, hasData: false };
 		}
 
-		const fqn = eff.propertyFqn ?? (propertyName ? `${VOCABULARY_BASE}${propertyName}` : undefined);
+		const own = Array.isArray(eff.propertyFqn) ? eff.propertyFqn.at(-1) : eff.propertyFqn;
+		const fqn = own ?? (propertyName ? `${VOCABULARY_BASE}${propertyName}` : undefined);
 
 		if (Object.keys(eff.properties).length > 0) {
 			return this.fillObject(eff, fqn, scopes, targetPath, required);
 		}
-		if (eff.items !== undefined || (Array.isArray(eff.type) ? eff.type : [eff.type]).includes("array")) {
+		if (
+			eff.items !== undefined ||
+			(Array.isArray(eff.type) ? eff.type : [eff.type]).includes('array')
+		) {
 			return this.fillArray(eff, fqn, scopes, targetPath, required);
 		}
 		return this.fillLeaf(eff, fqn, scopes, targetPath, required);
@@ -405,7 +415,7 @@ class Filler {
 		const result = {};
 		let hasData = false;
 		for (const [name, child] of Object.entries(eff.properties)) {
-			const childPath = targetPath === "" ? name : `${targetPath}.${name}`;
+			const childPath = targetPath === '' ? name : `${targetPath}.${name}`;
 			const filled = this.fill(child, name, childScopes, childPath, eff.required.has(name));
 			if (filled !== undefined) {
 				result[name] = filled.value;
@@ -414,7 +424,7 @@ class Filler {
 		}
 
 		if (!hasData) {
-			this.report(targetPath, required, "no matching source data");
+			this.report(targetPath, required, 'no matching source data');
 			return undefined;
 		}
 		return { value: result, hasData };
@@ -433,24 +443,26 @@ class Filler {
 		const itemsEff = eff.items ? resolveEffective(eff.items, this.schemasById) : undefined;
 		const match = this.findEntry(fqn, itemsEff?.typeFqn, scopes);
 		if (!match || match.entry.path === undefined) {
-			this.report(targetPath, required, "no matching source entry");
+			this.report(targetPath, required, 'no matching source entry');
 			return undefined;
 		}
 
 		// An entry matched by its items' type points at the elements; the
 		// array itself is one level up.
 		const arrayContext =
-			match.context.length > 0 && !this.index[fqn] && typeof match.context.at(-1) === "number"
+			match.context.length > 0 && !this.index[fqn] && typeof match.context.at(-1) === 'number'
 				? match.context.slice(0, -1)
 				: match.context;
 
 		const source = getData(this.data, arrayContext);
 		if (source === null || source === undefined) {
-			this.report(targetPath, required, `source ${arrayContext.join(".") || "$"} is null`);
+			this.report(targetPath, required, `source ${arrayContext.join('.') || '$'} is null`);
 			return undefined;
 		}
 
-		const elements = Array.isArray(source) ? source.map((_, i) => [...arrayContext, i]) : [arrayContext];
+		const elements = Array.isArray(source)
+			? source.map((_, i) => [...arrayContext, i])
+			: [arrayContext];
 		const result = [];
 		for (let i = 0; i < elements.length; i++) {
 			const filled = this.fill(
@@ -465,7 +477,7 @@ class Filler {
 			}
 		}
 		if (result.length === 0) {
-			this.report(targetPath, required, "no element could be filled");
+			this.report(targetPath, required, 'no element could be filled');
 			return undefined;
 		}
 		return { value: result, hasData: true };
@@ -483,15 +495,15 @@ class Filler {
 	fillLeaf(eff, fqn, scopes, targetPath, required) {
 		const concrete = this.findValuePath(fqn, scopes);
 		if (!concrete) {
-			this.report(targetPath, required, "no matching source field");
+			this.report(targetPath, required, 'no matching source field');
 			return undefined;
 		}
 		const value = getData(this.data, concrete);
 		if (value === null || value === undefined) {
-			this.report(targetPath, required, `source field ${concrete.join(".")} is null`);
+			this.report(targetPath, required, `source field ${concrete.join('.')} is null`);
 			return undefined;
 		}
-		this.consumed.add(concrete.join("."));
+		this.consumed.add(concrete.join('.'));
 		return { value: this.coerce(value, eff), hasData: true };
 	}
 }
@@ -503,14 +515,14 @@ class Filler {
  * @param paths The accumulator.
  * @returns The collected paths.
  */
-function leafPaths(data, path = "", paths = []) {
+function leafPaths(data, path = '', paths = []) {
 	if (Array.isArray(data)) {
 		for (let i = 0; i < data.length; i++) {
-			leafPaths(data[i], path === "" ? String(i) : `${path}.${i}`, paths);
+			leafPaths(data[i], path === '' ? String(i) : `${path}.${i}`, paths);
 		}
-	} else if (typeof data === "object" && data !== null) {
+	} else if (typeof data === 'object' && data !== null) {
 		for (const [name, value] of Object.entries(data)) {
-			leafPaths(value, path === "" ? name : `${path}.${name}`, paths);
+			leafPaths(value, path === '' ? name : `${path}.${name}`, paths);
 		}
 	} else if (data !== null && data !== undefined) {
 		paths.push(path);
@@ -529,27 +541,32 @@ function leafPaths(data, path = "", paths = []) {
 export function fillTarget(sourceSchema, sourceData, targetSchema, schemasById = new Map()) {
 	const index = buildSchemaIndex(sourceSchema);
 	const filler = new Filler(index, sourceData, schemasById);
-	const root = index["@root"] ?? { properties: {} };
-	const filled = filler.fill(targetSchema, undefined, filler.scopesFor(root, []), "", true);
-	const unconsumed = leafPaths(sourceData).filter((p) => !filler.consumed.has(p));
+	const root = index['@root'] ?? { properties: {} };
+	const filled = filler.fill(targetSchema, undefined, filler.scopesFor(root, []), '', true);
+	const unconsumed = leafPaths(sourceData).filter(p => !filler.consumed.has(p));
 	return { document: filled?.value ?? {}, unfilled: filler.unfilled, unconsumed };
 }
 
 const isMain = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
 if (isMain) {
 	const here = dirname(fileURLToPath(import.meta.url));
-	const dataFile = process.argv[2] ?? join(here, "data", "extracted-data.json");
-	const targetSchemaFile = process.argv[3] ?? join(here, "..", "schemas", "TradeAgreement.json");
-	const sourceSchemaFile = process.argv[4] ?? join(here, "schema", "sales_contract.schema.json");
+	const dataFile = process.argv[2] ?? join(here, 'data', 'extracted-data.json');
+	const targetSchemaFile = process.argv[3] ?? join(here, '..', 'schemas', 'TradeAgreement.json');
+	const sourceSchemaFile = process.argv[4] ?? join(here, 'schema', 'sales_contract.schema.json');
 	const outputFile = process.argv[5];
 
-	const sourceData = JSON.parse(readFileSync(dataFile, "utf8"));
-	const sourceSchema = JSON.parse(readFileSync(sourceSchemaFile, "utf8"));
-	const targetSchema = JSON.parse(readFileSync(targetSchemaFile, "utf8"));
-	const schemasById = loadSchemasById([dirname(targetSchemaFile), join(here, "..", "schemas")]);
+	const sourceData = JSON.parse(readFileSync(dataFile, 'utf8'));
+	const sourceSchema = JSON.parse(readFileSync(sourceSchemaFile, 'utf8'));
+	const targetSchema = JSON.parse(readFileSync(targetSchemaFile, 'utf8'));
+	const schemasById = loadSchemasById([dirname(targetSchemaFile), join(here, '..', 'schemas')]);
 
-	const { document, unfilled, unconsumed } = fillTarget(sourceSchema, sourceData, targetSchema, schemasById);
-	const json = `${JSON.stringify(document, undefined, "\t")}\n`;
+	const { document, unfilled, unconsumed } = fillTarget(
+		sourceSchema,
+		sourceData,
+		targetSchema,
+		schemasById
+	);
+	const json = `${JSON.stringify(document, undefined, '\t')}\n`;
 
 	if (outputFile) {
 		writeFileSync(outputFile, json);
@@ -559,13 +576,13 @@ if (isMain) {
 	}
 
 	if (unfilled.length > 0) {
-		console.error("\nUnfilled target fields:");
+		console.error('\nUnfilled target fields:');
 		for (const { path, required, reason } of unfilled) {
-			console.error(`  ${required ? "[required] " : ""}${path || "<root>"}: ${reason}`);
+			console.error(`  ${required ? '[required] ' : ''}${path || '<root>'}: ${reason}`);
 		}
 	}
 	if (unconsumed.length > 0) {
-		console.error("\nSource fields never consumed:");
+		console.error('\nSource fields never consumed:');
 		for (const path of unconsumed) {
 			console.error(`  ${path}`);
 		}

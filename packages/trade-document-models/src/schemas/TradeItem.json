@@ -13,19 +13,23 @@
 			"$ref": "https://schema.twindev.org/trade-document/Product",
 			"description": "The goods on this line, including their description.\nx-json-ld-property: https://vocabulary.uncefact.org/applicableProduct"
 		},
+		"agreedPriceProductPrice": {
+			"$ref": "https://schema.twindev.org/trade-document/TradePrice",
+			"description": "The price"
+		},
 		"unitPrice": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
 			"description": "Unit price"
 		},
 		"orderedQuantity": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "Quantity ordered"
+			"description": "Quantity ordered\nx-json-ld-property: https://test.uncefact.org/vocabulary/orderedQuantity"
 		}
 	},
 	"required": [
 		"type",
 		"applicableProduct",
-		"unitPrice",
+		"agreedPriceProductPrice",
 		"orderedQuantity"
 	]
 }

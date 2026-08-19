@@ -4,6 +4,7 @@
 import type { IUneceLineTradeAgreement } from "@twin.org/standards-unece";
 import type { IMeasure } from "./IMeasure.js";
 import type { IMonetaryAmount } from "./IMonetaryAmount.js";
+import type { ITradePrice } from "./ITradePrice.js";
 import type { IProduct } from "../entities/IProduct.js";
 
 /**
@@ -18,12 +19,18 @@ export type ITradeItem = Required<Pick<IUneceLineTradeAgreement, "type">> & {
 	applicableProduct: IProduct;
 
 	/**
+	 * The price
+	 */
+	agreedPriceProductPrice: ITradePrice;
+
+	/**
 	 * Unit price
 	 */
-	unitPrice: IMonetaryAmount;
+	unitPrice?: IMonetaryAmount;
 
 	/**
 	 * Quantity ordered
+	 * x-json-ld-property: https://test.uncefact.org/vocabulary/orderedQuantity
 	 */
 	orderedQuantity: IMeasure;
 };
