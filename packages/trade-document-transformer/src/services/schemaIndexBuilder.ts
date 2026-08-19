@@ -4,8 +4,8 @@
 import { Guards, Is } from "@twin.org/core";
 import type { IJsonSchema } from "@twin.org/data-core";
 import { nameof } from "@twin.org/nameof";
-import type { ISemanticIndex } from "./models/ISemanticIndex.js";
-import type { ISemanticIndexEntry } from "./models/ISemanticIndexEntry.js";
+import type { ISemanticIndex } from "../models/ISemanticIndex.js";
+import type { ISemanticIndexEntry } from "../models/ISemanticIndexEntry.js";
 
 /**
  * Builds a semantic index from a JSON-LD annotated JSON schema, keyed by the

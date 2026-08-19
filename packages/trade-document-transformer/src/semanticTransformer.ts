@@ -8,7 +8,7 @@ import { nameof } from "@twin.org/nameof";
 import { UneceDataTypes } from "@twin.org/standards-unece";
 import { TradeDocumentContexts, TradeDocumentDataTypes } from "@twin.org/trade-document-models";
 import type { ITransformer } from "./models/ITransformer.js";
-import { SchemaFiller } from "./schemaFiller.js";
+import { SchemaFiller } from "./services/schemaFiller.js";
 
 /**
  * Transforms source documents into documents conforming to a semantic
