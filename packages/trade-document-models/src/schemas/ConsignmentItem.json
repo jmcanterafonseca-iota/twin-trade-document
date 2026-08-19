@@ -1,0 +1,40 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/ConsignmentItem",
+	"title": "ConsignmentItem",
+	"description": "One goods item covered by a transport document, such as a bill of lading\nline (UNVTD `goods` item).\nx-json-ld-type: https://vocabulary.uncefact.org/ConsignmentItem",
+	"type": "object",
+	"properties": {
+		"type": {
+			"const": "ConsignmentItem",
+			"description": "JSON-LD Type."
+		},
+		"itemQuantity": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "Number of items"
+		},
+		"commodityCode": {
+			"type": "string",
+			"description": "Hs code"
+		},
+		"packedIn": {
+			"$ref": "https://schema.twindev.org/trade-document/TransportPackage",
+			"description": "Transport package"
+		},
+		"grossWeight": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The gross weight of this item including packaging (UNVTD `grossWeight`)."
+		}
+	},
+	"required": [
+		"type",
+		"itemQuantity",
+		"commodityCode",
+		"packedIn"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceConsignmentItem"
+		}
+	]
+}

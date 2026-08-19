@@ -1,0 +1,34 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/TransportPackage",
+	"title": "TransportPackage",
+	"description": "How the goods are packed\nx-json-ld-type: https://test.uncefact.org/vocabulary/TransportPackage",
+	"type": "object",
+	"properties": {
+		"type": {
+			"const": "Package",
+			"description": "JSON-LD Type."
+		},
+		"packageTypeCode": {
+			"type": "array",
+			"items": {
+				"$ref": "https://schema.twindev.org/unece/UnecePackageTypeCodeList"
+			},
+			"description": "A code specifying the type of logistics package."
+		},
+		"packageCount": {
+			"type": "number",
+			"description": "Package count\nx-json-ld-property:"
+		}
+	},
+	"required": [
+		"type",
+		"packageTypeCode",
+		"packageCount"
+	],
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UnecePackage"
+		}
+	]
+}

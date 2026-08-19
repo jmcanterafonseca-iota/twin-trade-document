@@ -25,7 +25,12 @@ export const TradeDocumentContexts = {
 	/**
 	 * The namespace location of the hosted version of the JSON Schema.
 	 */
-	JsonSchemaNamespace: "https://schema.twindev.org/trade-document/"
+	JsonSchemaNamespace: "https://schema.twindev.org/trade-document/",
+
+	/**
+	 * Bill of lading context.
+	 */
+	BillOfLadingContext: "https://unvtd.unece.org/bill-of-lading-context.json "
 } as const;
 
 /**

@@ -18,9 +18,24 @@ export const TradeDocumentTypes = {
 	PurchaseOrder: "PurchaseOrder",
 
 	/**
+	 * A commercial invoice: goods delivered together with a demand for payment.
+	 */
+	CommercialInvoice: "CommercialInvoice",
+
+	/**
+	 * A bill of lading: a carrier issued document evidencing a transport contract.
+	 */
+	BillOfLading: "BillOfLading",
+
+	/**
 	 * A single contracted lot, carried as one line of a trade document.
 	 */
 	TradeItem: "TradeItem",
+
+	/**
+	 * One goods item covered by a transport document.
+	 */
+	ConsignmentItem: "ConsignmentItem",
 
 	/**
 	 * A trade price
@@ -68,11 +83,6 @@ export const TradeDocumentTypes = {
 	DeliveryTerms: "DeliveryTerms",
 
 	/**
-	 * A commercial invoice: goods delivered together with a demand for payment.
-	 */
-	CommercialInvoice: "CommercialInvoice",
-
-	/**
 	 * A measured value such as a weight.
 	 */
 	Measure: "Measure",
@@ -83,9 +93,14 @@ export const TradeDocumentTypes = {
 	Period: "Period",
 
 	/**
-	 * How goods are packed.
+	 * How products are packed.
 	 */
 	ProductPackage: "ProductPackage",
+
+	/**
+	 * How goods are packed.
+	 */
+	TransportPackage: "TransportPackage",
 
 	/**
 	 * The goods on a line.

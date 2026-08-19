@@ -4,11 +4,11 @@
 import { Guards, Is } from "@twin.org/core";
 import type { IJsonSchema } from "@twin.org/data-core";
 import { nameof } from "@twin.org/nameof";
-import type { IEffectiveSchemaNode } from "./models/IEffectiveSchemaNode.js";
-import type { IFillScope } from "./models/IFillScope.js";
-import type { ISemanticIndex } from "./models/ISemanticIndex.js";
-import type { ISemanticIndexEntry } from "./models/ISemanticIndexEntry.js";
 import { SchemaIndexBuilder } from "./schemaIndexBuilder.js";
+import type { IEffectiveSchemaNode } from "../models/IEffectiveSchemaNode.js";
+import type { IFillScope } from "../models/IFillScope.js";
+import type { ISemanticIndex } from "../models/ISemanticIndex.js";
+import type { ISemanticIndexEntry } from "../models/ISemanticIndexEntry.js";
 
 /**
  * Fills a document conforming to a semantic target schema with the values of

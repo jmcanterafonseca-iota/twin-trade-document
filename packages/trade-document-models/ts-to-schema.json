@@ -4,6 +4,7 @@
 		"./src/models/documents/ITradeAgreement.ts",
 		"./src/models/documents/IPurchaseOrder.ts",
 		"./src/models/documents/ICommercialInvoice.ts",
+		"./src/models/documents/IBillOfLading.ts",
 		"./src/models/entities/IParty.ts",
 		"./src/models/valueObjects/ITradeItem.ts",
 		"./src/models/entities/IProduct.ts",
@@ -17,7 +18,9 @@
 		"./src/models/valueObjects/IProductPackage.ts",
 		"./src/models/valueObjects/IPeriod.ts",
 		"./src/models/valueObjects/IMeasure.ts",
-		"./src/models/valueObjects/ITradePrice.ts"
+		"./src/models/valueObjects/ITradePrice.ts",
+		"./src/models/valueObjects/ITransportPackage.ts",
+		"./src/models/valueObjects/IConsignmentItem.ts"
 	],
 	"externalReferences": {
 		"JsonLd(.*)": "https://schema.twindev.org/json-ld/JsonLd$1",
