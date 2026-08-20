@@ -12,6 +12,8 @@ import type { ISemanticIndexEntry } from "../models/ISemanticIndexEntry.js";
  * `x-json-ld-property` FQN of each entity property. Property annotations may
  * be a single FQN or an array of FQNs denoting the semantic nesting chain; a
  * leaf carrying only a type is indexed under an entry keyed by that type.
+ * An `x-json-field` annotation adds a syntactic mapping — target field name
+ * to source path — collected under the reserved `@fields` entry.
  *
  * Warning: AI authored and not reviewed in depth
  */
@@ -45,6 +47,24 @@ export class SchemaIndexBuilder {
 	 * @internal
 	 */
 	private static readonly _ROOT_ENTRY: string = "@root";
+
+	/**
+	 * Keyword holding the direct target field name (syntactic mapping).
+	 * @internal
+	 */
+	private static readonly _FIELD_KEY: string = "x-json-field";
+
+	/**
+	 * Fallback extraction of the target field name from description lines.
+	 * @internal
+	 */
+	private static readonly _FIELD_REGEX: RegExp = /x-json-field:\s*"?([^\s"]+)/;
+
+	/**
+	 * Entry collecting syntactic mappings: target field name to source path.
+	 * @internal
+	 */
+	private static readonly _FIELDS_ENTRY: string = "@fields";
 
 	/**
 	 * Runtime name for the class.
@@ -257,6 +277,21 @@ export class SchemaIndexBuilder {
 		}
 		const node = dereffed.node;
 		seenRefs = dereffed.seenRefs;
+
+		const field = this.annotation(
+			node,
+			SchemaIndexBuilder._FIELD_KEY,
+			SchemaIndexBuilder._FIELD_REGEX
+		);
+		if (!Is.empty(field)) {
+			// A syntactic mapping: the value fills the target field with this
+			// exact name, regardless of semantics.
+			index[SchemaIndexBuilder._FIELDS_ENTRY] ??= { properties: {} };
+			const fields = index[SchemaIndexBuilder._FIELDS_ENTRY];
+			for (const name of Is.array<string>(field) ? field : [field]) {
+				fields.properties[name] = this.combinePaths(fields.properties[name], path);
+			}
+		}
 
 		const property = this.annotation(
 			node,

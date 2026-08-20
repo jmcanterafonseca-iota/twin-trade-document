@@ -65,19 +65,19 @@
 			"$ref": "https://schema.twindev.org/trade-document/Party",
 			"description": "The party responsible for paying the freight charges"
 		},
-		"loadingLocation": {
+		"originalLoadingLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The location where the goods were loaded onto the means of"
 		},
-		"unloadingLocation": {
+		"baseportUnloadingLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The place or port at which the cargo is discharged"
 		},
-		"finalDestinationLocation": {
+		"deliveryLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The location to which the consignment is delivered to the final"
 		},
-		"departureLocation": {
+		"placeOfDeparture": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The port from which the means of transport departs"
 		},
@@ -89,7 +89,7 @@
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The place where the freight payment has been or is to be made"
 		},
-		"issueLocation": {
+		"placeOfIssue": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
 			"description": "The location where the document was issued."
 		},
@@ -121,31 +121,31 @@
 			"type": "string",
 			"description": "The identification number of the seal affixed to the transport\nequipment."
 		},
-		"grossWeightMeasure": {
+		"grossWeight": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
 			"description": "The total gross weight of the consignment including packaging\n(UNVTD `grossWeight`)."
 		},
-		"grossVolumeMeasure": {
+		"volume": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The total volume of the consignment (UNVTD `volume`)."
+			"description": "The total volume of the consignment"
 		},
-		"packageQuantity": {
+		"numberOfPackages": {
 			"type": "number",
-			"description": "The total number of packages (UNVTD `numberOfPackages`)."
+			"description": "The total number of packages"
 		},
-		"description": {
+		"descriptionOfGoods": {
 			"type": "string",
 			"description": "The plain language description of the goods\n(UNVTD `descriptionOfGoods`)."
 		},
-		"summaryDescription": {
+		"consignmentSummaryDescription": {
 			"type": "string",
 			"description": "The summary description of the consignment"
 		},
-		"physicalShippingMarks": {
+		"shippingMarks": {
 			"type": "string",
 			"description": "The marks and numbers on the transport units or packages"
 		},
-		"termsAndConditionsDescription": {
+		"transportContractConditions": {
 			"type": "string",
 			"description": "The reference to the carrier's conditions of carriage"
 		},
@@ -153,7 +153,7 @@
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
 			"description": "The charges paid in advance (UNVTD `prepaidAmount`)."
 		},
-		"collectChargeAmount": {
+		"collectCharges": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
 			"description": "The charges to be collected from the consignee"
 		},
@@ -181,7 +181,7 @@
 		"consignor",
 		"consignee",
 		"carrier",
-		"loadingLocation",
-		"unloadingLocation"
+		"originalLoadingLocation",
+		"baseportUnloadingLocation"
 	]
 }

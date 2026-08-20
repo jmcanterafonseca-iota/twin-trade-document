@@ -5,6 +5,10 @@
 	"description": "A relevant location\nx-json-ld-type: https://vocabulary.uncefact.org/TradeLocation",
 	"type": "object",
 	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
 		"type": {
 			"const": "TradeLocation",
 			"description": "JSON-LD Type."
@@ -31,12 +35,17 @@
 			"type": "string",
 			"description": "Location name"
 		},
+		"country": {
+			"type": "string",
+			"description": "ISO country\nx-json-ld-property: https://vocabulary.uncefact.org/tradeLocationCountryId"
+		},
 		"countryName": {
 			"type": "string",
 			"description": "Country name"
 		}
 	},
 	"required": [
+		"@context",
 		"type",
 		"locationFunctionTypeCode"
 	],

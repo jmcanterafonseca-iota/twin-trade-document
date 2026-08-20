@@ -12,14 +12,14 @@ The target document type is resolved from the registered data types.
 ## Usage
 
 ```ts
-import { SemanticTransformer } from "@twin.org/trade-document-transformer";
+import { SemanticTransformer } from '@twin.org/trade-document-transformer';
 
 const transformer = new SemanticTransformer();
 
 const { document, report } = await transformer.transform(
- inputData, // the extracted source document
- inputDataSchema, // its annotated JSON schema
- "TradeAgreement" // the target document type
+  inputData, // the extracted source document
+  inputDataSchema, // its annotated JSON schema
+  'TradeAgreement' // the target document type
 );
 ```
 

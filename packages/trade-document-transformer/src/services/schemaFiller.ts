@@ -49,6 +49,12 @@ export class SchemaFiller {
 	private static readonly _ROOT_ENTRY: string = "@root";
 
 	/**
+	 * Index entry collecting syntactic target-field mappings.
+	 * @internal
+	 */
+	private static readonly _FIELDS_ENTRY: string = "@fields";
+
+	/**
 	 * The JSON-LD vocabulary used to derive FQNs for unannotated properties.
 	 * @internal
 	 */
@@ -64,8 +70,10 @@ export class SchemaFiller {
 	 * Fetched JSON-LD contexts, term to IRI, cached per context URL.
 	 * @internal
 	 */
-	private static readonly _CONTEXT_CACHE =
-		new Map<string, { [term: string]: string } | undefined>();
+	private static readonly _CONTEXT_CACHE = new Map<
+		string,
+		{ [term: string]: string } | undefined
+	>();
 
 	/**
 	 * Runtime name for the class.
@@ -107,7 +115,6 @@ export class SchemaFiller {
 	 * @internal
 	 */
 	private _consumed: Set<string>;
-
 
 	/**
 	 * Create a new instance of SchemaFiller.
@@ -386,6 +393,25 @@ export class SchemaFiller {
 	}
 
 	/**
+	 * Find the concrete data path of a syntactic `x-json-field` mapping for a
+	 * target field name, resolved against the current context.
+	 * @param propertyName The target field name.
+	 * @param scopes The current lookup scopes.
+	 * @returns The concrete path, or undefined.
+	 * @internal
+	 */
+	private findFieldPath(
+		propertyName: string | undefined,
+		scopes: IFillScope[]
+	): (string | number)[] | undefined {
+		const fields = this._index[SchemaFiller._FIELDS_ENTRY];
+		if (Is.undefined(fields) || !Is.stringValue(propertyName)) {
+			return undefined;
+		}
+		return this.findValuePath(propertyName, [{ entry: fields, context: scopes[0]?.context ?? [] }]);
+	}
+
+	/**
 	 * Find the concrete data path of a property FQN in the given scopes.
 	 * @param fqn The property FQN.
 	 * @param scopes The lookup scopes.
@@ -572,7 +598,7 @@ export class SchemaFiller {
 		) {
 			return this.fillArray(eff, fqn, scopes, targetPath, required, branchRefs, childTerms);
 		}
-		return this.fillLeaf(eff, fqn, scopes, targetPath, required);
+		return this.fillLeaf(eff, fqn, propertyName, scopes, targetPath, required);
 	}
 
 	/**
@@ -710,6 +736,7 @@ export class SchemaFiller {
 	 * Fill a leaf target node.
 	 * @param eff The effective node.
 	 * @param fqn The node's property FQN.
+	 * @param propertyName The property name holding the node, if any.
 	 * @param scopes The current lookup scopes.
 	 * @param targetPath The target path.
 	 * @param required Whether the node is required.
@@ -719,11 +746,14 @@ export class SchemaFiller {
 	private fillLeaf(
 		eff: IEffectiveSchemaNode,
 		fqn: string | undefined,
+		propertyName: string | undefined,
 		scopes: IFillScope[],
 		targetPath: string,
 		required: boolean
 	): { value: unknown; hasData: boolean } | undefined {
-		const concrete = this.findValuePath(fqn, scopes);
+		// An explicit syntactic mapping to this exact field name wins over
+		// semantic matching.
+		const concrete = this.findFieldPath(propertyName, scopes) ?? this.findValuePath(fqn, scopes);
 		if (Is.undefined(concrete)) {
 			this.recordUnfilled(targetPath, required, "no matching source field");
 			return undefined;

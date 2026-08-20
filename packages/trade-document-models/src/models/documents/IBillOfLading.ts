@@ -99,22 +99,22 @@ export interface IBillOfLading {
 	/**
 	 * The location where the goods were loaded onto the means of
 	 */
-	loadingLocation: ILocation;
+	originalLoadingLocation: ILocation;
 
 	/**
 	 * The place or port at which the cargo is discharged
 	 */
-	unloadingLocation: ILocation;
+	baseportUnloadingLocation: ILocation;
 
 	/**
 	 * The location to which the consignment is delivered to the final
 	 */
-	finalDestinationLocation?: ILocation;
+	deliveryLocation?: ILocation;
 
 	/**
 	 * The port from which the means of transport departs
 	 */
-	departureLocation?: ILocation;
+	placeOfDeparture?: ILocation;
 
 	/**
 	 * The port at which the means of transport arrives
@@ -129,7 +129,7 @@ export interface IBillOfLading {
 	/**
 	 * The location where the document was issued.
 	 */
-	issueLocation?: ILocation;
+	placeOfIssue?: ILocation;
 
 	/**
 	 * The journey identifier of the means of transport, such as the
@@ -176,38 +176,38 @@ export interface IBillOfLading {
 	 * The total gross weight of the consignment including packaging
 	 * (UNVTD `grossWeight`).
 	 */
-	grossWeightMeasure?: IMeasure;
+	grossWeight?: IMeasure;
 
 	/**
-	 * The total volume of the consignment (UNVTD `volume`).
+	 * The total volume of the consignment
 	 */
-	grossVolumeMeasure?: IMeasure;
+	volume?: IMeasure;
 
 	/**
-	 * The total number of packages (UNVTD `numberOfPackages`).
+	 * The total number of packages
 	 */
-	packageQuantity?: number;
+	numberOfPackages?: number;
 
 	/**
 	 * The plain language description of the goods
 	 * (UNVTD `descriptionOfGoods`).
 	 */
-	description?: string;
+	descriptionOfGoods?: string;
 
 	/**
 	 * The summary description of the consignment
 	 */
-	summaryDescription?: string;
+	consignmentSummaryDescription?: string;
 
 	/**
 	 * The marks and numbers on the transport units or packages
 	 */
-	physicalShippingMarks?: string;
+	shippingMarks?: string;
 
 	/**
 	 * The reference to the carrier's conditions of carriage
 	 */
-	termsAndConditionsDescription?: string;
+	transportContractConditions?: string;
 
 	/**
 	 * The charges paid in advance (UNVTD `prepaidAmount`).
@@ -217,7 +217,7 @@ export interface IBillOfLading {
 	/**
 	 * The charges to be collected from the consignee
 	 */
-	collectChargeAmount?: IMonetaryAmount;
+	collectCharges?: IMonetaryAmount;
 
 	/**
 	 * The identifier of the underlying trade contract
