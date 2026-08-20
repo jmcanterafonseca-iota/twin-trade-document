@@ -91,7 +91,10 @@
 			"type": ["string", "null"],
 			"minLength": 1,
 			"description": "Place of receipt for combined transport; null if port-to-port only",
-			"x-json-ld-property": "https://schema.org/toLocation"
+			"x-json-ld-property": [
+				"https://schema.org/departurePoint",
+				"https://vocabulary.uncefact.org/name"
+			]
 		},
 		"vessel_name": {
 			"type": ["string", "null"],
@@ -157,7 +160,10 @@
 			"type": ["string", "null"],
 			"minLength": 1,
 			"description": "Final place of delivery; null if port-to-port only",
-			"x-json-ld-property": "https://vocabulary.uncefact.org/finalDestinationLocation"
+			"x-json-ld-property": [
+				"https://vocabulary.uncefact.org/finalDestinationLocation",
+				"https://vocabulary.uncefact.org/name"
+			]
 		},
 		"marks_and_numbers": {
 			"type": ["string", "null"],
@@ -166,6 +172,8 @@
 			"x-json-ld-property": "https://vocabulary.uncefact.org/physicalShippingMarks"
 		},
 		"containers": {
+			"x-json-ld-property": "https://vocabulary.uncefact.org/includedConsignmentItem",
+			"x-json-ld-type": "https://vocabulary.uncefact.org/ConsignmentItem",
 			"type": ["array", "null"],
 			"description": "One entry per container",
 			"items": {
@@ -184,23 +192,41 @@
 					},
 					"packages_count": {
 						"type": ["integer", "null"],
-						"description": "Number of packages in this container"
+						"description": "Number of packages in this container",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/packedIn",
+							"https://vocabulary.uncefact.org/packageCount"
+						],
+						"x-json-ld-type": "https://test.uncefact.org/vocabulary/TransportPackage"
 					},
 					"package_kind": {
-						"$ref": "#/$defs/rec21-package"
+						"$ref": "#/$defs/rec21-package",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/packedIn",
+							"https://vocabulary.uncefact.org/packageTypeCode"
+						]
 					},
 					"goods_description": {
+						"x-json-ld-property": "https://vocabulary.uncefact.org/description",
 						"type": ["string", "null"],
 						"minLength": 1,
 						"description": "Description of goods"
 					},
 					"gross_weight_kg": {
 						"type": ["number", "null"],
-						"description": "Gross weight in kilograms"
+						"description": "Gross weight in kilograms",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/grossWeightMeasure",
+							"https://vocabulary.uncefact.org/MeasureTypeValue"
+						]
 					},
 					"volume_cbm": {
 						"type": ["number", "null"],
-						"description": "Measurement in cubic metres"
+						"description": "Measurement in cubic metres",
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/grossVolumeMeasure",
+							"https://vocabulary.uncefact.org/MeasureTypeValue"
+						]
 					}
 				},
 				"required": [

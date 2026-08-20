@@ -30,7 +30,17 @@ export const TradeDocumentContexts = {
 	/**
 	 * Bill of lading context.
 	 */
-	BillOfLadingContext: "https://unvtd.unece.org/bill-of-lading-context.json"
+	BillOfLadingContext: "https://unvtd.unece.org/bill-of-lading-context.json",
+
+	/**
+	 * Commercial invoice context.
+	 */
+	CommercialInvoiceContext: "https://unvtd.unece.org/commercial-invoice-context.json",
+
+	/**
+	 * Purchase order context.
+	 */
+	PurchaseOrderContext: "https://unvtd.unece.org/purchase-order-context.json"
 } as const;
 
 /**

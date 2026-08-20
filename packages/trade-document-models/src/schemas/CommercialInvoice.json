@@ -6,114 +6,146 @@
 	"type": "object",
 	"properties": {
 		"@context": {
-			"$ref": "https://schema.twindev.org/unece/UneceContextType",
-			"description": "JSON-LD Context."
+			"const": "https://unvtd.unece.org/commercial-invoice-context.json",
+			"description": "Context"
 		},
 		"type": {
-			"const": "CommercialInvoice"
+			"const": "CommercialInvoice",
+			"description": "Commercial invoice"
+		},
+		"purchaseOrderNumber": {
+			"type": "string",
+			"description": "Identifier assigned by the buyer to an order."
+		},
+		"contractNumber": {
+			"type": "string",
+			"description": "Identifier of a contract concluded between parties such as between\nbuyer and seller."
 		},
 		"invoiceNumber": {
 			"type": "string",
-			"description": "The invoice number, as printed in the document's own heading.\nUNVTD `invoiceNumber`."
+			"description": "Reference number to identify an invoice."
 		},
-		"issueDateTime": {
+		"issueDate": {
 			"type": "string",
-			"description": "The date the invoice was issued. UNVTD `invoiceDate`.",
+			"description": "Date that a document was issued and when appropriate, signed or\notherwise authenticated.",
 			"format": "date-time"
 		},
-		"invoicerParty": {
-			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party issuing the invoice and to be paid."
+		"invoiceDate": {
+			"type": "string",
+			"description": "Date of issue of an invoice.",
+			"format": "date-time"
 		},
-		"invoiceeParty": {
-			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party the invoice is addressed to."
+		"paymentDueDate": {
+			"type": "string",
+			"description": "Date when an amount due should be made available to the creditor under\nthe terms of payment.",
+			"format": "date-time"
 		},
-		"notifyParty": {
-			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to be notified of the shipment. UN/CEFACT declares no\nnotify-party property on any settlement or agreement class."
+		"billOfLadingNumber": {
+			"type": "string",
+			"description": "Carrier-issued Bill of Lading or Waybill number for the shipment."
 		},
-		"specifiedTradeProduct": {
+		"shippingMark": {
+			"type": "string",
+			"description": "Marks and numbers placed on packages to identify the consignment and\nlink physical goods to the document."
+		},
+		"letterOfCreditNumber": {
+			"type": "string",
+			"description": "Letter of Credit reference number if applicable for payment."
+		},
+		"portOfEntry": {
+			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"description": "Port where the goods will enter the destination country."
+		},
+		"destinationCountry": {
+			"type": "string",
+			"description": "Two-letter ISO 3166-1 alpha-2 country code for final destination."
+		},
+		"buyer": {
+			"$ref": "https://schema.twindev.org/trade-document/Party",
+			"description": "Party to which merchandise or services are sold."
+		},
+		"invoicee": {
+			"$ref": "https://schema.twindev.org/trade-document/Party",
+			"description": "Party to whom an invoice is issued."
+		},
+		"consignee": {
+			"$ref": "https://schema.twindev.org/trade-document/Party",
+			"description": "Party to whom the goods are consigned (may differ from buyer)."
+		},
+		"sellersBank": {
+			"$ref": "https://schema.twindev.org/trade-document/Party",
+			"description": "Bank designated by the seller to receive payment."
+		},
+		"seller": {
+			"$ref": "https://schema.twindev.org/trade-document/Party",
+			"description": "Party selling merchandise or services to a buyer."
+		},
+		"sellerBankAccountNumber": {
+			"type": "string",
+			"description": "Identifier of an account with the bank designated to receive payment."
+		},
+		"originalLoadingLocation": {
+			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"description": "Seaport, airport, freight terminal, rail station or other location\nwhere the goods were first loaded onto the means of transport being\nutilised for their carriage."
+		},
+		"originCountry": {
+			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"description": "Name of the country in which the goods have been produced or\nmanufactured, according to criteria laid down for the application of\nthe Customs tariff or quantitative restrictions, or any measure related\nto trade."
+		},
+		"tradeTermsConditionsDescription": {
+			"type": "string",
+			"description": "Free form description of delivery or transport terms (Incoterms)."
+		},
+		"tradeTermsConditionsCode": {
+			"type": "string",
+			"description": "Code specifying the delivery or transport terms (Incoterms)."
+		},
+		"paymentTerms": {
+			"type": "string",
+			"description": "Identification of the terms of payment between the parties to a\ntransaction (generic term)."
+		},
+		"paymentMethod": {
+			"type": "string",
+			"description": "Code specifying a method of payment."
+		},
+		"itemsShipped": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/Product"
 			},
-			"description": "The goods being invoiced: `description` carries the goods row verbatim,\n`designation` the grade when the document states one."
+			"description": "Invoice line items"
 		},
-		"packageQuantity": {
-			"type": "number",
-			"description": "The number of packages invoiced, such as the total number of bags."
-		},
-		"includedPackaging": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/ProductPackage"
-			},
-			"description": "How the goods are packed, when the document states it."
-		},
-		"finalDestinationLocation": {
-			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The destination of the goods."
-		},
-		"grossWeightMeasure": {
-			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The gross weight of the consignment."
-		},
-		"tareWeightMeasure": {
-			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The tare weight of the consignment."
-		},
-		"netWeightMeasure": {
-			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The net weight of the consignment."
-		},
-		"price": {
+		"freightCost": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
-			"description": "The unit price and the quantity it is quoted against."
+			"description": "Cost of freight/shipping charges."
 		},
-		"totalInvoiceAmount": {
+		"insuranceCost": {
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
+			"description": "Cost of insurance for the shipment."
+		},
+		"allowancesCharges": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
+				"$ref": "https://schema.twindev.org/trade-document/AllowanceCharge"
 			},
-			"description": "The total value of the invoice, as printed."
+			"description": "Discounts or surcharges applied at invoice level, after line item\ntotals and before the final total."
 		},
-		"duePayableAmount": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount"
-			},
-			"description": "The amount the invoicee is asked to pay. Kept separate from\n`totalInvoiceAmount`: a real invoice can print two different figures."
-		},
-		"payeeParty": {
-			"type": "array",
-			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Party"
-			},
-			"description": "The party payment is due to, when the document names one."
+		"totalAmount": {
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
+			"description": "Total monetary amount charged in respect of one or more invoices."
 		}
 	},
 	"required": [
 		"@context",
 		"type",
+		"purchaseOrderNumber",
 		"invoiceNumber",
-		"issueDateTime",
-		"invoicerParty",
-		"invoiceeParty",
-		"notifyParty",
-		"specifiedTradeProduct",
-		"packageQuantity",
-		"finalDestinationLocation",
-		"grossWeightMeasure",
-		"tareWeightMeasure",
-		"netWeightMeasure",
-		"price",
-		"totalInvoiceAmount",
-		"duePayableAmount"
-	],
-	"allOf": [
-		{
-			"$ref": "https://schema.twindev.org/unece/UneceDocument"
-		}
+		"issueDate",
+		"invoiceDate",
+		"paymentDueDate",
+		"invoicee",
+		"seller",
+		"itemsShipped",
+		"totalAmount"
 	]
 }

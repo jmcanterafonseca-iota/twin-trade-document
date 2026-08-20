@@ -27,210 +27,207 @@ export interface IBillOfLading {
 	type: typeof TradeDocumentTypes.BillOfLading;
 
 	/**
-	 * The bill of lading number, identifying the transport contract
+	 * Reference number to identify a document evidencing a transport contract.
 	 * x-json-ld-property: https://vocabulary.uncefact.org/identifier
 	 */
 	billOfLadingNumber: string;
 
 	/**
-	 * A further reference identifying this specific document, when it
-	 * differs from the bill of lading number (UNVTD `documentIdentifier`).
+	 * Reference number identifying a specific document.
 	 */
 	documentIdentifier?: string;
 
 	/**
-	 * The booking reference assigned by the carrier to the consignment
+	 * Reference number assigned by a carrier to identify a specific
+	 * consignment.
 	 */
 	bookingReferenceNumber?: string;
 
 	/**
-	 * The date the bill of lading was issued (UNVTD `issueDate`).
+	 * Date that a document was issued.
 	 * @json-schema format:date-time
 	 */
 	issueDate: string;
 
 	/**
-	 * The date the consignment was loaded onto the means of transport
+	 * Date when a consignment is loaded onto a means of transport.
 	 * @json-schema format:date-time
 	 */
 	consignmentLoadingDate?: string;
 
 	/**
-	 * The scheduled departure of the means of transport
+	 * Date and time when a transport means is scheduled to depart.
 	 * @json-schema format:date-time
 	 */
 	estimatedTimeOfDeparture?: string;
 
 	/**
-	 * The estimated arrival of the means of transport
+	 * Date and time of the estimated arrival of means of transport.
 	 * @json-schema format:date-time
 	 */
 	estimatedTimeOfArrival?: string;
 
 	/**
-	 * The party consigning the goods as stipulated in the transport contract.
+	 * Party consigning goods as stipulated in the transport contract.
 	 * x-json-ld-property: https://vocabulary.uncefact.org/consignorParty
 	 */
 	consignor: IParty;
 
 	/**
-	 * The party to which the goods are consigned (UNVTD `consignee`).
+	 * Party to which goods are consigned.
 	 * x-json-ld-property: https://vocabulary.uncefact.org/consigneeParty
 	 */
 	consignee: IParty;
 
 	/**
-	 * The party providing the transport of the goods between named points.
+	 * Party providing the transport of goods between named points.
 	 * x-json-ld-property: https://vocabulary.uncefact.org/carrierParty
 	 */
 	carrier: IParty;
 
 	/**
-	 * The party to be notified of the shipment (UNVTD `notifyParty`).
+	 * Party to be notified.
 	 * x-json-ld-property: https://vocabulary.uncefact.org/notifyParty
 	 */
 	notifyParty?: IParty;
 
 	/**
-	 * The party responsible for paying the freight charges
+	 * Party responsible for the payment of freight charges.
 	 */
 	freightPayer?: IParty;
 
 	/**
-	 * The location where the goods were loaded onto the means of
+	 * Location where the goods were first loaded onto the means of transport.
 	 */
 	originalLoadingLocation: ILocation;
 
 	/**
-	 * The place or port at which the cargo is discharged
+	 * The place or port at which the cargo is discharged.
 	 */
 	baseportUnloadingLocation: ILocation;
 
 	/**
-	 * The location to which the consignment is delivered to the final
+	 * Location to which a consignment is to be delivered to the final
+	 * consignee.
 	 */
 	deliveryLocation?: ILocation;
 
 	/**
-	 * The port from which the means of transport departs
+	 * Port from which a means of transport is scheduled to depart.
 	 */
 	placeOfDeparture?: ILocation;
 
 	/**
-	 * The port at which the means of transport arrives
+	 * Port at which a means of transport is scheduled to arrive.
 	 */
 	arrivalLocation?: ILocation;
 
 	/**
-	 * The place where the freight payment has been or is to be made
+	 * Place where the payment has been or should be made.
 	 */
 	paymentLocation?: ILocation;
 
 	/**
-	 * The location where the document was issued.
+	 * Location where a document was issued.
 	 */
 	placeOfIssue?: ILocation;
 
 	/**
-	 * The journey identifier of the means of transport, such as the
-	 * voyage number
+	 * Identifier of a journey of a means of transport, for example voyage
+	 * number.
 	 */
 	conveyanceReferenceNumber?: string;
 
 	/**
-	 * The name of the means of transport, such as the vessel name.
+	 * Name of a specific means of transport such as the vessel name.
 	 */
 	transportMeansIdentifier?: string;
 
 	/**
-	 * The registration of the means of transport, such as the IMO number
-	 *
+	 * Identifier of a specific means of transport.
 	 */
 	transportMeansRegistration?: string;
 
 	/**
-	 * The code for the size and type of the transport equipment
-	 *
+	 * Code specifying the characteristics, i.e. size and type of a piece of
+	 * transport equipment.
 	 */
 	containerSizeAndType?: string;
 
 	/**
-	 * The code specifying how full the transport equipment is, e.g. `5`
-	 * for full.
+	 * Code specifying how full a piece of transport equipment is (5=Full).
 	 */
 	fullOrEmptyContainer?: string;
 
 	/**
-	 * The identifier of the transport equipment, such as the container
-	 * number .
+	 * Identifier of a piece of transport equipment e.g. container.
 	 */
 	transportEquipmentIdentifier?: string;
 
 	/**
-	 * The identification number of the seal affixed to the transport
+	 * The identification number of a seal affixed to a piece of transport
 	 * equipment.
 	 */
 	sealIdentifier?: string;
 
 	/**
-	 * The total gross weight of the consignment including packaging
-	 * (UNVTD `grossWeight`).
+	 * Total gross weight including packaging.
 	 */
 	grossWeight?: IMeasure;
 
 	/**
-	 * The total volume of the consignment
+	 * Total volume measurement.
 	 */
 	volume?: IMeasure;
 
 	/**
-	 * The total number of packages
+	 * Number of packages.
 	 */
 	numberOfPackages?: number;
 
 	/**
-	 * The plain language description of the goods
-	 * (UNVTD `descriptionOfGoods`).
+	 * Plain language description of the nature of a goods item.
 	 */
 	descriptionOfGoods?: string;
 
 	/**
-	 * The summary description of the consignment
+	 * Plain language description of a consignment in summary terms.
 	 */
 	consignmentSummaryDescription?: string;
 
 	/**
-	 * The marks and numbers on the transport units or packages
+	 * Free form description of the marks and numbers on a transport unit or
+	 * package.
 	 */
 	shippingMarks?: string;
 
 	/**
-	 * The reference to the carrier's conditions of carriage
+	 * Reference to carrier's conditions of carriage.
 	 */
 	transportContractConditions?: string;
 
 	/**
-	 * The charges paid in advance (UNVTD `prepaidAmount`).
+	 * Monetary amount of charges which have been paid in advance.
 	 */
 	prepaidAmount?: IMonetaryAmount;
 
 	/**
-	 * The charges to be collected from the consignee
+	 * Monetary amount of charges to be collected from the consignee.
 	 */
 	collectCharges?: IMonetaryAmount;
 
 	/**
-	 * The identifier of the underlying trade contract
+	 * Identifier of a contract concluded between parties.
 	 */
 	contractNumber?: string;
 
 	/**
-	 * The unique consignment reference (UNVTD `ucr`).
+	 * Unique Consignment Reference identifying a particular consignment.
 	 */
 	ucr?: string;
 
 	/**
-	 * The goods covered by the bill of lading (UNVTD `goods`).
+	 * Goods covered by the bill of lading
 	 */
 	goods?: IConsignmentItem[];
 }

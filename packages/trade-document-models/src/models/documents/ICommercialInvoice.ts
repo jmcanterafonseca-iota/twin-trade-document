@@ -1,118 +1,182 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import type { IUneceDocument } from "@twin.org/standards-unece";
 import type { ILocation } from "../entities/ILocation.js";
 import type { IParty } from "../entities/IParty.js";
 import type { IProduct } from "../entities/IProduct.js";
+import type { TradeDocumentContexts } from "../tradeDocumentContexts.js";
 import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
-import type { IMeasure } from "../valueObjects/IMeasure.js";
+import type { IAllowanceCharge } from "../valueObjects/IAllowanceCharge.js";
 import type { IMonetaryAmount } from "../valueObjects/IMonetaryAmount.js";
-import type { IProductPackage } from "../valueObjects/IProductPackage.js";
+import type { IPaymentMeans } from "../valueObjects/IPaymentMeans.js";
+import type { IPaymentTerms } from "../valueObjects/IPaymentTerms.js";
 
 /**
  * A commercial invoice: an itemized account of goods delivered together with a
  * demand for payment.
  */
-export type ICommercialInvoice = IUneceDocument &
-	Required<Pick<IUneceDocument, "@context" | "type">> & {
-		type: typeof TradeDocumentTypes.CommercialInvoice;
+export interface ICommercialInvoice {
+	/**
+	 * Context
+	 */
+	"@context": typeof TradeDocumentContexts.CommercialInvoiceContext;
 
-		/**
-		 * The invoice number, as printed in the document's own heading.
-		 * UNVTD `invoiceNumber`.
-		 */
-		invoiceNumber: string;
+	/**
+	 * Commercial invoice
+	 */
+	type: typeof TradeDocumentTypes.CommercialInvoice;
 
-		/**
-		 * The date the invoice was issued. UNVTD `invoiceDate`.
-		 * @see https://vocabulary.uncefact.org/issueDateTime
-		 * @json-schema format:date-time
-		 */
-		issueDateTime: string;
+	/**
+	 * Identifier assigned by the buyer to an order.
+	 */
+	purchaseOrderNumber: string;
 
-		/**
-		 * The party issuing the invoice and to be paid.
-		 */
-		invoicerParty: IParty;
+	/**
+	 * Identifier of a contract concluded between parties such as between
+	 * buyer and seller.
+	 */
+	contractNumber?: string;
 
-		/**
-		 * The party the invoice is addressed to.
-		 */
-		invoiceeParty: IParty;
+	/**
+	 * Reference number to identify an invoice.
+	 */
+	invoiceNumber: string;
 
-		/**
-		 * The party to be notified of the shipment. UN/CEFACT declares no
-		 * notify-party property on any settlement or agreement class.
-		 */
-		notifyParty: IParty;
+	/**
+	 * Date that a document was issued and when appropriate, signed or
+	 * otherwise authenticated.
+	 * @json-schema format:date-time
+	 */
+	issueDate: string;
 
-		/**
-		 * The goods being invoiced: `description` carries the goods row verbatim,
-		 * `designation` the grade when the document states one.
-		 * @see https://vocabulary.uncefact.org/specifiedTradeProduct
-		 */
-		specifiedTradeProduct: IProduct[];
+	/**
+	 * Date of issue of an invoice.
+	 * @json-schema format:date-time
+	 */
+	invoiceDate: string;
 
-		/**
-		 * The number of packages invoiced, such as the total number of bags.
-		 * @see https://vocabulary.uncefact.org/packageQuantity
-		 */
-		packageQuantity: number;
+	/**
+	 * Date when an amount due should be made available to the creditor under
+	 * the terms of payment.
+	 * @json-schema format:date-time
+	 */
+	paymentDueDate: string;
 
-		/**
-		 * How the goods are packed, when the document states it.
-		 * @see https://vocabulary.uncefact.org/includedPackaging
-		 */
-		includedPackaging?: IProductPackage[];
+	/**
+	 * Carrier-issued Bill of Lading or Waybill number for the shipment.
+	 */
+	billOfLadingNumber?: string;
 
-		/**
-		 * The destination of the goods.
-		 * @see https://vocabulary.uncefact.org/finalDestinationLocation
-		 */
-		finalDestinationLocation: ILocation;
+	/**
+	 * Marks and numbers placed on packages to identify the consignment and
+	 * link physical goods to the document.
+	 */
+	shippingMark?: string;
 
-		/**
-		 * The gross weight of the consignment.
-		 * @see https://vocabulary.uncefact.org/grossWeightMeasure
-		 */
-		grossWeightMeasure: IMeasure;
+	/**
+	 * Letter of Credit reference number if applicable for payment.
+	 */
+	letterOfCreditNumber?: string;
 
-		/**
-		 * The tare weight of the consignment.
-		 * @see https://vocabulary.uncefact.org/tareWeightMeasure
-		 */
-		tareWeightMeasure: IMeasure;
+	/**
+	 * Port where the goods will enter the destination country.
+	 */
+	portOfEntry?: ILocation;
 
-		/**
-		 * The net weight of the consignment.
-		 * @see https://vocabulary.uncefact.org/netWeightMeasure
-		 */
-		netWeightMeasure: IMeasure;
+	/**
+	 * Two-letter ISO 3166-1 alpha-2 country code for final destination.
+	 */
+	destinationCountry?: string;
 
-		/**
-		 * The unit price and the quantity it is quoted against.
-		 */
-		price: IMonetaryAmount;
+	/**
+	 * Party to which merchandise or services are sold.
+	 */
+	buyer?: IParty;
 
-		/**
-		 * The total value of the invoice, as printed.
-		 */
-		totalInvoiceAmount: IMonetaryAmount[];
+	/**
+	 * Party to whom an invoice is issued.
+	 */
+	invoicee: IParty;
 
-		/**
-		 * The amount the invoicee is asked to pay. Kept separate from
-		 * `totalInvoiceAmount`: a real invoice can print two different figures.
-		 */
-		duePayableAmount: IMonetaryAmount[];
+	/**
+	 * Party to whom the goods are consigned (may differ from buyer).
+	 */
+	consignee?: IParty;
 
-		/**
-		 * The party payment is due to, when the document names one.
-		 */
-		payeeParty?: IParty[];
+	/**
+	 * Bank designated by the seller to receive payment.
+	 */
+	sellersBank?: IParty;
 
-		/**
-		 * The bank details for payment: institution, account, branch and codes.
-		 */
-		// specifiedPaymentMeans: IPaymentMeans[];
-	};
+	/**
+	 * Party selling merchandise or services to a buyer.
+	 */
+	seller: IParty;
+
+	/**
+	 * Identifier of an account with the bank designated to receive payment.
+	 */
+	sellerBankAccountNumber?: string;
+
+	/**
+	 * Seaport, airport, freight terminal, rail station or other location
+	 * where the goods were first loaded onto the means of transport being
+	 * utilised for their carriage.
+	 */
+	originalLoadingLocation?: ILocation;
+
+	/**
+	 * Name of the country in which the goods have been produced or
+	 * manufactured, according to criteria laid down for the application of
+	 * the Customs tariff or quantitative restrictions, or any measure related
+	 * to trade.
+	 */
+	originCountry?: ILocation;
+
+	/**
+	 * Free form description of delivery or transport terms (Incoterms).
+	 */
+	tradeTermsConditionsDescription?: string;
+
+	/**
+	 * Code specifying the delivery or transport terms (Incoterms).
+	 */
+	tradeTermsConditionsCode?: string;
+
+	/**
+	 * Identification of the terms of payment between the parties to a
+	 * transaction (generic term).
+	 */
+	paymentTerms?: IPaymentTerms;
+
+	/**
+	 * Code specifying a method of payment.
+	 */
+	paymentMethod?: IPaymentMeans;
+
+	/**
+	 * Invoice line items
+	 */
+	itemsShipped: IProduct[];
+
+	/**
+	 * Cost of freight/shipping charges.
+	 */
+	freightCost?: IMonetaryAmount;
+
+	/**
+	 * Cost of insurance for the shipment.
+	 */
+	insuranceCost?: IMonetaryAmount;
+
+	/**
+	 * Discounts or surcharges applied at invoice level, after line item
+	 * totals and before the final total.
+	 */
+	allowancesCharges?: IAllowanceCharge[];
+
+	/**
+	 * Total monetary amount charged in respect of one or more invoices.
+	 */
+	totalAmount: IMonetaryAmount;
+}

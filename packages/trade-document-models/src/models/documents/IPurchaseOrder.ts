@@ -1,13 +1,12 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
-import type { IUneceDocument } from "@twin.org/standards-unece";
 import type { ILocation } from "../entities/ILocation.js";
 import type { IParty } from "../entities/IParty.js";
+import type { TradeDocumentContexts } from "../tradeDocumentContexts.js";
 import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
 import type { IAllowanceCharge } from "../valueObjects/IAllowanceCharge.js";
-import type { IDeliveryTerms } from "../valueObjects/IDeliveryTerms.js";
-import type { IMeasure } from "../valueObjects/IMeasure.js";
+import type { IMonetaryAmount } from "../valueObjects/IMonetaryAmount.js";
 import type { IPaymentMeans } from "../valueObjects/IPaymentMeans.js";
 import type { IPaymentTerms } from "../valueObjects/IPaymentTerms.js";
 import type { ITradeItem } from "../valueObjects/ITradeItem.js";
@@ -16,67 +15,73 @@ import type { ITradeItem } from "../valueObjects/ITradeItem.js";
  * A buyer issued purchase contract, also called a purchase order.
  *
  */
-export type IPurchaseOrder = IUneceDocument &
-	Required<Pick<IUneceDocument, "@context">> & {
-		type: typeof TradeDocumentTypes.PurchaseOrder;
-		/**
-		 * The date the order was issued. UNVTD `orderDate`.
-		 * @see https://vocabulary.uncefact.org/issueDateTime
-		 * @json-schema format:date-time
-		 */
-		issueDateTime: string;
+export interface IPurchaseOrder {
+	/**
+	 * The context
+	 */
+	"@context": typeof TradeDocumentContexts.PurchaseOrderContext;
 
-		/**
-		 * The buyer party placing this order. UNVTD `buyer`.
-		 */
-		buyerParty: IParty;
+	/**
+	 * Purchase order type
+	 */
+	type: typeof TradeDocumentTypes.PurchaseOrder;
 
-		/**
-		 * The seller party the order is placed with. UNVTD `seller`.
-		 */
-		sellerParty: IParty;
+	/**
+	 * Identifier assigned by the buyer to an order.
+	 */
+	purchaseOrderNumber: string;
 
-		/**
-		 * Where the goods are to be delivered. UNVTD `deliveryLocation`.
-		 * Other places, such as a place of payment presentation, go in the
-		 * inherited `applicableLocation`.
-		 */
-		deliveryLocation: ILocation;
+	/**
+	 * Date of order.
+	 * @json-schema format:date-time
+	 */
+	orderDate: string;
 
-		/**
-		 * An ordered lot. UNVTD `orderedItems`, minimum one.
-		 * @see https://vocabulary.uncefact.org/includedSupplyChainTradeLineItem
-		 */
-		includedSupplyChainTradeLineItem: ITradeItem[];
+	/**
+	 * Party to which merchandise or services are sold.
+	 */
+	buyer: IParty;
 
-		/**
-		 * The terms of payment. UNVTD `paymentTerms`.
-		 */
-		paymentTerms: IPaymentTerms;
+	/**
+	 * Party selling merchandise or services to a buyer.
+	 */
+	seller: IParty;
 
-		/**
-		 * The delivery terms in coded form: the Incoterm and its named place. The
-		 * verbatim source text of the same row is in `basis`.
-		 */
-		applicableDeliveryTerms: IDeliveryTerms;
+	/**
+	 * Party to whom an invoice is issued.
+	 */
+	invoicee?: IParty;
 
-		/**
-		 * The means by which payment is to be made. UNVTD `paymentMethod`.
-		 */
-		paymentMethod?: IPaymentMeans;
+	/**
+	 * Location to which a consignment is to be delivered to the final
+	 * consignee.
+	 */
+	deliveryLocation: ILocation;
 
-		/**
-		 * An allowance or charge applied to this order. UNVTD `allowanceCharge`.
-		 */
-		allowanceCharge?: IAllowanceCharge;
+	/**
+	 * Identification of the terms of payment between the parties to a
+	 * transaction.
+	 */
+	paymentTerms?: IPaymentTerms;
 
-		/**
-		 * The total amount of this order. UNVTD `totalOrderAmount`.
-		 */
-		totalOrderAmount?: IMeasure;
+	/**
+	 * Code specifying a method of payment.
+	 */
+	paymentMethod?: IPaymentMeans;
 
-		/**
-		 * The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`.
-		 */
-		invoiceeParty?: IParty;
-	};
+	/**
+	 * Code specifying a type of an adjustment to a monetary amount such as an
+	 * allowance or charge.
+	 */
+	allowanceCharge?: IAllowanceCharge;
+
+	/**
+	 * Total amount of an order.
+	 */
+	totalOrderAmount?: IMonetaryAmount;
+
+	/**
+	 * Items being ordered
+	 */
+	orderedItems: ITradeItem[];
+}
