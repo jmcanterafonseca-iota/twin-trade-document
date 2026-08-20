@@ -15,162 +15,162 @@
 		},
 		"billOfLadingNumber": {
 			"type": "string",
-			"description": "The bill of lading number, identifying the transport contract\nx-json-ld-property: https://vocabulary.uncefact.org/identifier"
+			"description": "Reference number to identify a document evidencing a transport contract.\nx-json-ld-property: https://vocabulary.uncefact.org/identifier"
 		},
 		"documentIdentifier": {
 			"type": "string",
-			"description": "A further reference identifying this specific document, when it\ndiffers from the bill of lading number (UNVTD `documentIdentifier`)."
+			"description": "Reference number identifying a specific document."
 		},
 		"bookingReferenceNumber": {
 			"type": "string",
-			"description": "The booking reference assigned by the carrier to the consignment"
+			"description": "Reference number assigned by a carrier to identify a specific\nconsignment."
 		},
 		"issueDate": {
 			"type": "string",
-			"description": "The date the bill of lading was issued (UNVTD `issueDate`).",
+			"description": "Date that a document was issued.",
 			"format": "date-time"
 		},
 		"consignmentLoadingDate": {
 			"type": "string",
-			"description": "The date the consignment was loaded onto the means of transport",
+			"description": "Date when a consignment is loaded onto a means of transport.",
 			"format": "date-time"
 		},
 		"estimatedTimeOfDeparture": {
 			"type": "string",
-			"description": "The scheduled departure of the means of transport",
+			"description": "Date and time when a transport means is scheduled to depart.",
 			"format": "date-time"
 		},
 		"estimatedTimeOfArrival": {
 			"type": "string",
-			"description": "The estimated arrival of the means of transport",
+			"description": "Date and time of the estimated arrival of means of transport.",
 			"format": "date-time"
 		},
 		"consignor": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party consigning the goods as stipulated in the transport contract.\nx-json-ld-property: https://vocabulary.uncefact.org/consignorParty"
+			"description": "Party consigning goods as stipulated in the transport contract.\nx-json-ld-property: https://vocabulary.uncefact.org/consignorParty"
 		},
 		"consignee": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to which the goods are consigned (UNVTD `consignee`).\nx-json-ld-property: https://vocabulary.uncefact.org/consigneeParty"
+			"description": "Party to which goods are consigned.\nx-json-ld-property: https://vocabulary.uncefact.org/consigneeParty"
 		},
 		"carrier": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party providing the transport of the goods between named points.\nx-json-ld-property: https://vocabulary.uncefact.org/carrierParty"
+			"description": "Party providing the transport of goods between named points.\nx-json-ld-property: https://vocabulary.uncefact.org/carrierParty"
 		},
 		"notifyParty": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to be notified of the shipment (UNVTD `notifyParty`).\nx-json-ld-property: https://vocabulary.uncefact.org/notifyParty"
+			"description": "Party to be notified.\nx-json-ld-property: https://vocabulary.uncefact.org/notifyParty"
 		},
 		"freightPayer": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party responsible for paying the freight charges"
+			"description": "Party responsible for the payment of freight charges."
 		},
 		"originalLoadingLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The location where the goods were loaded onto the means of"
+			"description": "Location where the goods were first loaded onto the means of transport."
 		},
 		"baseportUnloadingLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The place or port at which the cargo is discharged"
+			"description": "The place or port at which the cargo is discharged."
 		},
 		"deliveryLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The location to which the consignment is delivered to the final"
+			"description": "Location to which a consignment is to be delivered to the final\nconsignee."
 		},
 		"placeOfDeparture": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The port from which the means of transport departs"
+			"description": "Port from which a means of transport is scheduled to depart."
 		},
 		"arrivalLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The port at which the means of transport arrives"
+			"description": "Port at which a means of transport is scheduled to arrive."
 		},
 		"paymentLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The place where the freight payment has been or is to be made"
+			"description": "Place where the payment has been or should be made."
 		},
 		"placeOfIssue": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "The location where the document was issued."
+			"description": "Location where a document was issued."
 		},
 		"conveyanceReferenceNumber": {
 			"type": "string",
-			"description": "The journey identifier of the means of transport, such as the\nvoyage number"
+			"description": "Identifier of a journey of a means of transport, for example voyage\nnumber."
 		},
 		"transportMeansIdentifier": {
 			"type": "string",
-			"description": "The name of the means of transport, such as the vessel name."
+			"description": "Name of a specific means of transport such as the vessel name."
 		},
 		"transportMeansRegistration": {
 			"type": "string",
-			"description": "The registration of the means of transport, such as the IMO number"
+			"description": "Identifier of a specific means of transport."
 		},
 		"containerSizeAndType": {
 			"type": "string",
-			"description": "The code for the size and type of the transport equipment"
+			"description": "Code specifying the characteristics, i.e. size and type of a piece of\ntransport equipment."
 		},
 		"fullOrEmptyContainer": {
 			"type": "string",
-			"description": "The code specifying how full the transport equipment is, e.g. `5`\nfor full."
+			"description": "Code specifying how full a piece of transport equipment is (5=Full)."
 		},
 		"transportEquipmentIdentifier": {
 			"type": "string",
-			"description": "The identifier of the transport equipment, such as the container\nnumber ."
+			"description": "Identifier of a piece of transport equipment e.g. container."
 		},
 		"sealIdentifier": {
 			"type": "string",
-			"description": "The identification number of the seal affixed to the transport\nequipment."
+			"description": "The identification number of a seal affixed to a piece of transport\nequipment."
 		},
 		"grossWeight": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The total gross weight of the consignment including packaging\n(UNVTD `grossWeight`)."
+			"description": "Total gross weight including packaging."
 		},
 		"volume": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The total volume of the consignment"
+			"description": "Total volume measurement."
 		},
 		"numberOfPackages": {
 			"type": "number",
-			"description": "The total number of packages"
+			"description": "Number of packages."
 		},
 		"descriptionOfGoods": {
 			"type": "string",
-			"description": "The plain language description of the goods\n(UNVTD `descriptionOfGoods`)."
+			"description": "Plain language description of the nature of a goods item."
 		},
 		"consignmentSummaryDescription": {
 			"type": "string",
-			"description": "The summary description of the consignment"
+			"description": "Plain language description of a consignment in summary terms."
 		},
 		"shippingMarks": {
 			"type": "string",
-			"description": "The marks and numbers on the transport units or packages"
+			"description": "Free form description of the marks and numbers on a transport unit or\npackage."
 		},
 		"transportContractConditions": {
 			"type": "string",
-			"description": "The reference to the carrier's conditions of carriage"
+			"description": "Reference to carrier's conditions of carriage."
 		},
 		"prepaidAmount": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
-			"description": "The charges paid in advance (UNVTD `prepaidAmount`)."
+			"description": "Monetary amount of charges which have been paid in advance."
 		},
 		"collectCharges": {
 			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
-			"description": "The charges to be collected from the consignee"
+			"description": "Monetary amount of charges to be collected from the consignee."
 		},
 		"contractNumber": {
 			"type": "string",
-			"description": "The identifier of the underlying trade contract"
+			"description": "Identifier of a contract concluded between parties."
 		},
 		"ucr": {
 			"type": "string",
-			"description": "The unique consignment reference (UNVTD `ucr`)."
+			"description": "Unique Consignment Reference identifying a particular consignment."
 		},
 		"goods": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/ConsignmentItem"
 			},
-			"description": "The goods covered by the bill of lading (UNVTD `goods`)."
+			"description": "Goods covered by the bill of lading"
 		}
 	},
 	"required": [

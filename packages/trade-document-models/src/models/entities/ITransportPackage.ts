@@ -11,7 +11,7 @@ export type ITransportPackage = IUnecePackage &
 	Required<Pick<IUnecePackage, "type" | "packageTypeCode">> & {
 		/**
 		 * Package count
-		 * x-json-ld-property:
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/packageCount
 		 */
 		packageCount: number;
 	};

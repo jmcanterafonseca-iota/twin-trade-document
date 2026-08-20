@@ -5,28 +5,41 @@
 	"description": "One goods item covered by a transport document, such as a bill of lading\nline (UNVTD `goods` item).\nx-json-ld-type: https://vocabulary.uncefact.org/ConsignmentItem",
 	"type": "object",
 	"properties": {
+		"@context": {
+			"$ref": "https://schema.twindev.org/unece/UneceContextType",
+			"description": "JSON-LD Context."
+		},
 		"type": {
 			"const": "ConsignmentItem",
 			"description": "JSON-LD Type."
 		},
 		"itemQuantity": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "Number of items"
+			"description": "Number of items\nx-json-ld-property: https://test.uncefact.org/vocabulary/itemQuantity"
 		},
 		"commodityCode": {
 			"type": "string",
-			"description": "Hs code"
+			"description": "Hs code\nx-json-ld-property: https://test.uncefact.org/vocabulary/commodityCode"
 		},
 		"packedIn": {
 			"$ref": "https://schema.twindev.org/trade-document/TransportPackage",
-			"description": "Transport package"
+			"description": "Transport package\nx-json-ld-property: https://test.uncefact.org/vocabulary/packedIn"
 		},
 		"grossWeight": {
 			"$ref": "https://schema.twindev.org/trade-document/Measure",
-			"description": "The gross weight of this item including packaging (UNVTD `grossWeight`)."
+			"description": "The gross weight of this item including packaging (UNVTD `grossWeight`).\nx-json-ld-property: https://test.uncefact.org/vocabulary/grossWeight"
+		},
+		"grossVolume": {
+			"$ref": "https://schema.twindev.org/trade-document/Measure",
+			"description": "The gross volume of this item including packaging (UNVTD `grossWeight`).\nx-json-ld-property: https://test.uncefact.org/vocabulary/grossVolume"
+		},
+		"carriedIn": {
+			"$ref": "https://schema.twindev.org/trade-document/TransportEquipment",
+			"description": "Where the consignment item is carried in\nx-json-ld-property: https://test.uncefact.org/vocabulary/carriedIn"
 		}
 	},
 	"required": [
+		"@context",
 		"type",
 		"itemQuantity",
 		"commodityCode",

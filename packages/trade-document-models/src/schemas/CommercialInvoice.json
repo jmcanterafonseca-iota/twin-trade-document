@@ -101,11 +101,11 @@
 			"description": "Code specifying the delivery or transport terms (Incoterms)."
 		},
 		"paymentTerms": {
-			"type": "string",
+			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
 			"description": "Identification of the terms of payment between the parties to a\ntransaction (generic term)."
 		},
 		"paymentMethod": {
-			"type": "string",
+			"$ref": "https://schema.twindev.org/trade-document/PaymentMeans",
 			"description": "Code specifying a method of payment."
 		},
 		"itemsShipped": {

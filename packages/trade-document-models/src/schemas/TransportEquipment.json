@@ -1,0 +1,40 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://schema.twindev.org/trade-document/TransportEquipment",
+	"title": "TransportEquipment",
+	"description": "A relevant location\nx-json-ld-type: https://vocabulary.uncefact.org/LogisiticsTransportEquipment",
+	"allOf": [
+		{
+			"$ref": "https://schema.twindev.org/unece/UneceLogisticsTransportEquipment"
+		},
+		{
+			"description": "A piece of equipment used to hold, protect or secure cargo for logistics purposes.\nA referenced piece of equipment used to hold, protect or secure cargo for logistics purposes.",
+			"type": "object",
+			"properties": {
+				"type": {
+					"const": "LogisticsTransportEquipment",
+					"description": "JSON-LD Type."
+				},
+				"identifier": {
+					"anyOf": [
+						{
+							"type": "string"
+						},
+						{
+							"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
+						}
+					],
+					"description": "The unique identifier of this piece of logistics transport equipment."
+				}
+			},
+			"required": [
+				"type",
+				"identifier"
+			],
+			"$comment": "Inlined utility base type UneceLogisticsTransportEquipment so utility transformations can operate on concrete properties instead of a $ref."
+		},
+		{
+			"type": "object"
+		}
+	]
+}

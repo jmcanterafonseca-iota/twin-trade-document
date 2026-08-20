@@ -22,3 +22,4 @@ export * from "./models/tradeDocumentContexts.js";
 export * from "./models/tradeDocumentTypes.js";
 export * from "./models/entities/IConsignmentItem.js";
 export * from "./models/entities/ITransportPackage.js";
+export * from "./models/entities/ITransportEquipment.js";

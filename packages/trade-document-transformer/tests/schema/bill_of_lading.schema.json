@@ -180,22 +180,35 @@
 				"type": "object",
 				"properties": {
 					"container_number": {
-						"$ref": "#/$defs/iso-6346"
+						"$ref": "#/$defs/iso-6346",
+						"x-json-ld-property": [
+							"https://test.uncefact.org/vocabulary/carriedIn",
+							"https://vocabulary.uncefact.org/identifier"
+						]
 					},
 					"seal_number": {
 						"type": ["string", "null"],
 						"minLength": 1,
-						"description": "Carrier seal number; null when the field shows a placeholder such as 'N/A' or '—'"
+						"description": "Carrier seal number; null when the field shows a placeholder such as 'N/A' or '—'",
+						"x-json-ld-property": [
+							"https://test.uncefact.org/vocabulary/carriedIn",
+							"https://vocabulary.uncefact.org/affixedSeal",
+							"https://vocabulary.uncefact.org/sealNumber"
+						]
 					},
 					"container_type": {
-						"$ref": "#/$defs/container-size-type"
+						"$ref": "#/$defs/container-size-type",
+						"x-json-ld-property": [
+							"https://test.uncefact.org/vocabulary/carriedIn",
+							"https://vocabulary.uncefact.org/equipmentSizeTypeCode"
+						]
 					},
 					"packages_count": {
 						"type": ["integer", "null"],
 						"description": "Number of packages in this container",
 						"x-json-ld-property": [
-							"https://vocabulary.uncefact.org/packedIn",
-							"https://vocabulary.uncefact.org/packageCount"
+							"https://test.uncefact.org/vocabulary/packedIn",
+							"https://test.uncefact.org/vocabularypac"
 						],
 						"x-json-ld-type": "https://test.uncefact.org/vocabulary/TransportPackage"
 					},

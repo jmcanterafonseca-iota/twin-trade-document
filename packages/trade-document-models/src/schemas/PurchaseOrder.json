@@ -15,51 +15,51 @@
 		},
 		"purchaseOrderNumber": {
 			"type": "string",
-			"description": "Purchase order number"
+			"description": "Identifier assigned by the buyer to an order."
 		},
 		"orderDate": {
 			"type": "string",
-			"description": "The date the order was issued.",
+			"description": "Date of order.",
 			"format": "date-time"
 		},
 		"buyer": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The buyer party placing this order. UNVTD `buyer`."
+			"description": "Party to which merchandise or services are sold."
 		},
 		"seller": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The seller party the order is placed with. UNVTD `seller`."
+			"description": "Party selling merchandise or services to a buyer."
 		},
 		"invoicee": {
 			"$ref": "https://schema.twindev.org/trade-document/Party",
-			"description": "The party to be invoiced, when neither buyer nor seller. UNVTD `invoicee`."
+			"description": "Party to whom an invoice is issued."
 		},
 		"deliveryLocation": {
 			"$ref": "https://schema.twindev.org/trade-document/Location",
-			"description": "Where the goods are to be delivered. UNVTD `deliveryLocation`.\nOther places, such as a place of payment presentation, go in the\ninherited `applicableLocation`."
+			"description": "Location to which a consignment is to be delivered to the final\nconsignee."
+		},
+		"paymentTerms": {
+			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
+			"description": "Identification of the terms of payment between the parties to a\ntransaction."
+		},
+		"paymentMethod": {
+			"$ref": "https://schema.twindev.org/trade-document/PaymentMeans",
+			"description": "Code specifying a method of payment."
+		},
+		"allowanceCharge": {
+			"$ref": "https://schema.twindev.org/trade-document/AllowanceCharge",
+			"description": "Code specifying a type of an adjustment to a monetary amount such as an\nallowance or charge."
+		},
+		"totalOrderAmount": {
+			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
+			"description": "Total amount of an order."
 		},
 		"orderedItems": {
 			"type": "array",
 			"items": {
 				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
 			},
-			"description": "Ordered items."
-		},
-		"paymentTerms": {
-			"$ref": "https://schema.twindev.org/trade-document/PaymentTerms",
-			"description": "The terms of payment. UNVTD `paymentTerms`."
-		},
-		"paymentMethod": {
-			"$ref": "https://schema.twindev.org/trade-document/PaymentMeans",
-			"description": "The means by which payment is to be made. UNVTD `paymentMethod`."
-		},
-		"allowanceCharge": {
-			"$ref": "https://schema.twindev.org/trade-document/AllowanceCharge",
-			"description": "An allowance or charge applied to this order. UNVTD `allowanceCharge`."
-		},
-		"totalOrderAmount": {
-			"$ref": "https://schema.twindev.org/trade-document/MonetaryAmount",
-			"description": "The total amount of this order. UNVTD `totalOrderAmount`."
+			"description": "Items being ordered"
 		}
 	},
 	"required": [
