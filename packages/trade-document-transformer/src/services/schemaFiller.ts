@@ -9,6 +9,8 @@ import type { IEffectiveSchemaNode } from "../models/IEffectiveSchemaNode.js";
 import type { IFillScope } from "../models/IFillScope.js";
 import type { ISemanticIndex } from "../models/ISemanticIndex.js";
 import type { ISemanticIndexEntry } from "../models/ISemanticIndexEntry.js";
+import type { ITransformerHooks } from "../models/ITransformerHooks.js";
+import type { IValueHookContext } from "../models/IValueHookContext.js";
 
 /**
  * Fills a document conforming to a semantic target schema with the values of
@@ -53,6 +55,12 @@ export class SchemaFiller {
 	 * @internal
 	 */
 	private static readonly _FIELDS_ENTRY: string = "@fields";
+
+	/**
+	 * Source data field carrying the extracted document conventions.
+	 * @internal
+	 */
+	private static readonly _DOCUMENT_CONVENTIONS_KEY: string = "document_conventions";
 
 	/**
 	 * The JSON-LD vocabulary used to derive FQNs for unannotated properties.
@@ -117,6 +125,18 @@ export class SchemaFiller {
 	private _consumed: Set<string>;
 
 	/**
+	 * The value hooks for the current run.
+	 * @internal
+	 */
+	private _hooks?: ITransformerHooks;
+
+	/**
+	 * The document conventions extracted with the source document.
+	 * @internal
+	 */
+	private _documentConventions?: { [key: string]: unknown };
+
+	/**
 	 * Create a new instance of SchemaFiller.
 	 */
 	constructor() {
@@ -134,13 +154,15 @@ export class SchemaFiller {
 	 * @param targetSchema The semantic target JSON schema.
 	 * @param refResolver Resolves a `$ref` to its schema, called lazily the
 	 * first time each reference is encountered.
+	 * @param hooks Value hooks invoked when target leaves are filled.
 	 * @returns The generated document and a report string for debugging.
 	 */
 	public async fill(
 		sourceSchema: IJsonSchema,
 		sourceData: { [key: string]: unknown },
 		targetSchema: IJsonSchema,
-		refResolver?: (ref: string) => Promise<IJsonSchema | undefined>
+		refResolver?: (ref: string) => Promise<IJsonSchema | undefined>,
+		hooks?: ITransformerHooks
 	): Promise<{ document: { [key: string]: unknown }; report: string }> {
 		Guards.object<IJsonSchema>(this.CLASS_NAME, nameof(sourceSchema), sourceSchema);
 		Guards.object<{ [key: string]: unknown }>(this.CLASS_NAME, nameof(sourceData), sourceData);
@@ -149,6 +171,11 @@ export class SchemaFiller {
 		this._index = new SchemaIndexBuilder().build(sourceSchema);
 		this._data = sourceData;
 		this._refResolver = refResolver;
+		this._hooks = hooks;
+		const conventions = sourceData[SchemaFiller._DOCUMENT_CONVENTIONS_KEY];
+		this._documentConventions = Is.object<{ [key: string]: unknown }>(conventions)
+			? conventions
+			: undefined;
 		this._refCache = new Map<string, IJsonSchema | undefined>();
 		this._unfilled = [];
 		this._consumed = new Set<string>();
@@ -557,7 +584,9 @@ export class SchemaFiller {
 		required: boolean,
 		seenRefs: Set<string>,
 		terms: { [term: string]: string } | undefined
-	): Promise<{ value: unknown; hasData: boolean } | undefined> {
+	): Promise<
+		{ value: unknown; hasData: boolean; siblings?: { [key: string]: unknown } } | undefined
+	> {
 		const branchRefs = new Set(seenRefs);
 		const eff = await this.resolveEffective(node, branchRefs);
 
@@ -638,6 +667,7 @@ export class SchemaFiller {
 		const childScopes = match ? this.scopesFor(match.entry, match.context) : scopes;
 
 		const result: { [key: string]: unknown } = {};
+		const pendingSiblings: { [key: string]: unknown } = {};
 		let hasData = false;
 		for (const [name, child] of Object.entries(eff.properties)) {
 			const childPath = targetPath === "" ? name : `${targetPath}.${name}`;
@@ -653,6 +683,18 @@ export class SchemaFiller {
 			if (!Is.undefined(filled)) {
 				result[name] = filled.value;
 				hasData ||= filled.hasData;
+				if (!Is.undefined(filled.siblings)) {
+					Object.assign(pendingSiblings, filled.siblings);
+				}
+			}
+		}
+
+		// Siblings hung by hooks land beside the elements they came from; a
+		// property filled from the schema is never overwritten.
+		for (const [name, value] of Object.entries(pendingSiblings)) {
+			if (!(name in result)) {
+				result[name] = value;
+				hasData = true;
 			}
 		}
 
@@ -743,14 +785,16 @@ export class SchemaFiller {
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
-	private fillLeaf(
+	private async fillLeaf(
 		eff: IEffectiveSchemaNode,
 		fqn: string | undefined,
 		propertyName: string | undefined,
 		scopes: IFillScope[],
 		targetPath: string,
 		required: boolean
-	): { value: unknown; hasData: boolean } | undefined {
+	): Promise<
+		{ value: unknown; hasData: boolean; siblings?: { [key: string]: unknown } } | undefined
+	> {
 		// An explicit syntactic mapping to this exact field name wins over
 		// semantic matching.
 		const concrete = this.findFieldPath(propertyName, scopes) ?? this.findValuePath(fqn, scopes);
@@ -764,6 +808,37 @@ export class SchemaFiller {
 			return undefined;
 		}
 		this._consumed.add(concrete.join("."));
+
+		const hook =
+			(Is.stringValue(fqn) ? this._hooks?.byProperty?.[fqn] : undefined) ??
+			(Is.stringValue(eff.format) ? this._hooks?.byFormat?.[eff.format] : undefined);
+		if (Is.function(hook)) {
+			const parent = this.getData(concrete.slice(0, -1));
+			const siblings: { [key: string]: unknown } = {};
+			const context: IValueHookContext = {
+				propertyName,
+				fqn,
+				targetPath,
+				sourcePath: concrete.join("."),
+				type: eff.type,
+				format: eff.format,
+				documentConventions: this._documentConventions,
+				sourceObject: Is.object<{ [key: string]: unknown }>(parent) ? parent : undefined,
+				setSibling: (name: string, sibling: unknown): void => {
+					siblings[name] = sibling;
+				}
+			};
+			const hooked = await hook(value, context);
+			if (Is.undefined(hooked)) {
+				this.recordUnfilled(targetPath, required, "suppressed by hook");
+				return undefined;
+			}
+			return {
+				value: hooked,
+				hasData: true,
+				siblings: Object.keys(siblings).length > 0 ? siblings : undefined
+			};
+		}
 		return { value: this.coerce(value, eff), hasData: true };
 	}
 

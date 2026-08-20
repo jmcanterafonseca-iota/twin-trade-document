@@ -33,7 +33,7 @@
 		"@twin.org/data-json-ld": "next",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-unece": "next",
-		"@twin.org/trade-document-models": "0.0.1"
+		"@twin.org/trade-documents-models": "0.0.1"
 	},
 	"devDependencies": {
 		"@twin.org/nameof-transformer": "next",

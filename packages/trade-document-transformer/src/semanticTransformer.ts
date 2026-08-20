@@ -6,8 +6,9 @@ import { DataTypeHandlerFactory, DataTypeHelper, type IJsonSchema } from "@twin.
 import { type IJsonLdNodeObject, JsonLdDataTypes } from "@twin.org/data-json-ld";
 import { nameof } from "@twin.org/nameof";
 import { UneceDataTypes } from "@twin.org/standards-unece";
-import { TradeDocumentContexts, TradeDocumentDataTypes } from "@twin.org/trade-document-models";
+import { TradeDocumentContexts, TradeDocumentDataTypes } from "@twin.org/trade-documents-models";
 import type { ITransformer } from "./models/ITransformer.js";
+import type { ITransformerHooks } from "./models/ITransformerHooks.js";
 import { SchemaFiller } from "./services/schemaFiller.js";
 
 /**
@@ -27,13 +28,22 @@ export class SemanticTransformer implements ITransformer {
 	private _schemasByIdCache?: Map<string, IJsonSchema>;
 
 	/**
+	 * The value hooks invoked when target leaves are filled.
+	 * @internal
+	 */
+	private readonly _hooks?: ITransformerHooks;
+
+	/**
 	 * Create a new instance of SemanticTransformer, registering all the data
 	 * types so that document types can be resolved to their schemas.
+	 * @param hooks Value hooks invoked when target leaves are filled, keyed
+	 * by format or by JSON-LD property FQN.
 	 */
-	constructor() {
+	constructor(hooks?: ITransformerHooks) {
 		JsonLdDataTypes.registerTypes();
 		UneceDataTypes.registerTypes();
 		TradeDocumentDataTypes.registerTypes();
+		this._hooks = hooks;
 	}
 
 	/**
@@ -59,7 +69,8 @@ export class SemanticTransformer implements ITransformer {
 			inputDataSchema,
 			inputData,
 			targetSchema,
-			async ref => this.resolveSchemaRef(ref)
+			async ref => this.resolveSchemaRef(ref),
+			this._hooks
 		);
 
 		return { document: document as IJsonLdNodeObject, report };

@@ -2,33 +2,50 @@
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://schema.twindev.org/trade-document/Address",
 	"title": "Address",
-	"description": "Trade Address\nx-json-ld-type: https://vocabulary.uncefact.org/TradeAddress",
+	"description": "A postal address, expressed with the schema.org vocabulary.\nx-json-ld-type: https://schema.org/PostalAddress",
 	"type": "object",
 	"properties": {
+		"@context": {
+			"const": "https://schema.org",
+			"description": "LD Context"
+		},
 		"type": {
-			"const": "TradeAddress",
-			"description": "JSON-LD Type."
+			"const": "Address",
+			"description": "LD Type"
 		},
-		"countryIdentificationCountry": {
-			"$ref": "https://schema.twindev.org/unece/UneceCountry",
-			"description": "The unique identifier of the country for this trade address."
-		},
-		"cityName": {
+		"addressCountry": {
 			"type": "string",
-			"description": "A name, expressed as text, of the city, town or village of this trade address."
+			"description": "The country. Recommended to be in 2-letter ISO 3166-1 alpha-2 format,\nfor example \"US\".\nx-json-ld-property: https://schema.org/addressCountry"
 		},
-		"postcodeCode": {
+		"addressLocality": {
 			"type": "string",
-			"description": "A code specifying the postcode of this trade address."
+			"description": "The locality in which the street address is, and which is in the\nregion. For example, Mountain View.\nx-json-ld-property: https://schema.org/addressLocality"
+		},
+		"addressRegion": {
+			"type": "string",
+			"description": "The region in which the locality is, and which is in the country. For\nexample, California.\nx-json-ld-property: https://schema.org/addressRegion"
+		},
+		"postOfficeBoxNumber": {
+			"type": "string",
+			"description": "The post office box number for PO box addresses.\nx-json-ld-property: https://schema.org/postOfficeBoxNumber"
+		},
+		"postalCode": {
+			"type": "string",
+			"description": "The postal code. For example, 94043.\nx-json-ld-property: https://schema.org/postalCode"
+		},
+		"streetAddress": {
+			"type": "string",
+			"description": "The street address. For example, 1600 Amphitheatre Pkwy.\nx-json-ld-property: https://schema.org/streetAddress"
 		}
 	},
 	"required": [
+		"@context",
 		"type",
-		"countryIdentificationCountry"
-	],
-	"allOf": [
-		{
-			"$ref": "https://schema.twindev.org/unece/UneceTradeAddress"
-		}
+		"addressCountry",
+		"addressLocality",
+		"addressRegion",
+		"postOfficeBoxNumber",
+		"postalCode",
+		"streetAddress"
 	]
 }

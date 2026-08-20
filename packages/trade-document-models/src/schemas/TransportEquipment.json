@@ -25,11 +25,16 @@
 						}
 					],
 					"description": "The unique identifier of this piece of logistics transport equipment."
+				},
+				"transportEquipmentSizeTypeCharacteristicCode": {
+					"$ref": "https://schema.twindev.org/unece/UneceTransportEquipmentSizeTypeCodeList",
+					"description": "The code specifying the characteristics, such as size and type, of this referenced piece of logistics transport\nequipment."
 				}
 			},
 			"required": [
 				"type",
-				"identifier"
+				"identifier",
+				"transportEquipmentSizeTypeCharacteristicCode"
 			],
 			"$comment": "Inlined utility base type UneceLogisticsTransportEquipment so utility transformations can operate on concrete properties instead of a $ref."
 		},

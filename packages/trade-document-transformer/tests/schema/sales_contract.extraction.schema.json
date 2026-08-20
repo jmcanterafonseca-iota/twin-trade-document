@@ -1,52 +1,65 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
-	"$id": "https://example.invalid/schemas/sales_contract.schema.json",
+	"$id": "https://example.invalid/schemas/sales_contract.extraction.schema.json",
 	"title": "Sales Contract",
 	"description": "Sales contract or sale confirmation for a goods shipment, issued by the seller. Covers commodity trade contracts, where quantity, quality and price are stated per lot. All values are copied from the document — never computed, never converted between units.",
 	"type": "object",
-	"x-json-ld-type": "https://vocabulary.uncefact.org/HeaderTradeAgreement",
 	"properties": {
+		"document_conventions": {
+			"type": "object",
+			"properties": {
+				"date_order": {
+					"type": ["string", "null"],
+					"description": "Order of day/month/year in the dates printed on this document; 'unknown' when no date is printed",
+					"enum": ["DMY", "MDY", "YMD", "unknown", null]
+				},
+				"decimal_style": {
+					"type": ["string", "null"],
+					"description": "How decimal numbers are printed on this document: point_decimal (1,234.56) or comma_decimal (1.234,56); 'unknown' when no number reveals it",
+					"enum": ["point_decimal", "comma_decimal", "unknown", null]
+				}
+			},
+			"required": ["date_order", "decimal_style"],
+			"additionalProperties": false,
+			"description": "FIRST, before extracting any value: classify the document's printed date and number conventions"
+		},
 		"contract_number": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Reference labeled as the contract or confirmation number itself; null when the document prints only party-specific references",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
 		},
 		"seller_reference": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "The seller's own reference for this contract, e.g. from a 'Seller's Ref No.' field",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/sellerReference"
 		},
 		"buyer_reference": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "The buyer's reference exactly as printed, including a placeholder such as 'TBA' when that is what is printed",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/buyerReference"
 		},
 		"contract_date": {
-			"$ref": "#/$defs/date",
-			"description": "Date the contract or confirmation was issued — ISO 8601 (YYYY-MM-DD)",
+			"type": ["string", "null"],
+			"description": "Date the contract or confirmation was issued — the date exactly as printed; do NOT reformat",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/issueDate"
 		},
 		"trade_date": {
-			"$ref": "#/$defs/date",
-			"description": "Date the sale was concluded, from a phrase such as 'we confirm having sold on …'; null when the document prints no separate trade date — ISO 8601 (YYYY-MM-DD)",
+			"type": ["string", "null"],
+			"description": "Date the sale was concluded, from a phrase such as 'we confirm having sold on …'; null when the document prints no separate trade date — the date exactly as printed; do NOT reformat",
 			"x-json-ld-property": "https://test.uncefact.org/vocabulary/agreementDate"
 		},
 		"seller": {
 			"type": "object",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty",
-			"x-json-ld-property": "https://vocabulary.uncefact.org/sellerParty",
 			"properties": {
 				"name": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Company name exactly as printed",
 					"x-json-ld-property": "https://vocabulary.uncefact.org/name"
 				},
 				"address": {
-					"$ref": "#/$defs/postal-address"
+					"type": ["string", "null"],
+					"description": "The party's address block exactly as printed: every address line (street, postal/city, country) verbatim and in printed order. Preserve line breaks as newline characters when the lines are stacked; when the address is printed on a single line, copy that line with its separators as-is. When the only location printed for the party is a country name, that country name IS the address block: copy it here and keep it out of the name field. EXCLUDE labeled non-address lines such as 'VAT: …', 'Tel …' or an email address — those have their own fields",
+					"x-json-ld-property": "https://vocabulary.uncefact.org/lineAddress1"
 				},
 				"tax_ids": {
 					"type": ["array", "null"],
@@ -56,12 +69,10 @@
 						"properties": {
 							"label": {
 								"type": ["string", "null"],
-								"minLength": 1,
 								"description": "Tax-ID label exactly as printed before the value, e.g. 'VAT', 'PIN No', 'USCI', 'Tax ID'"
 							},
 							"value": {
 								"type": ["string", "null"],
-								"minLength": 1,
 								"description": "Tax registration number exactly as printed",
 								"x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
 							}
@@ -72,32 +83,33 @@
 				},
 				"phone": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Phone number exactly as printed — never reformatted to international notation",
 					"x-json-ld-property": "https://test.uncefact.org/vocabulary/telephone"
 				},
 				"email": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Email address",
 					"x-json-ld-property": "https://test.uncefact.org/vocabulary/email"
 				}
 			},
 			"required": ["name", "address", "tax_ids", "phone", "email"],
 			"additionalProperties": false,
-			"description": "Selling party"
+			"description": "Selling party",
+			"x-json-ld-property": "https://vocabulary.uncefact.org/sellerParty",
+			"x-json-ld-type": "https://vocabulary.uncefact.org/TradeParty"
 		},
 		"buyer": {
 			"type": "object",
 			"properties": {
 				"name": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Company name exactly as printed",
 					"x-json-ld-property": "https://vocabulary.uncefact.org/name"
 				},
 				"address": {
-					"$ref": "#/$defs/postal-address"
+					"type": ["string", "null"],
+					"description": "The party's address block exactly as printed: every address line (street, postal/city, country) verbatim and in printed order. Preserve line breaks as newline characters when the lines are stacked; when the address is printed on a single line, copy that line with its separators as-is. When the only location printed for the party is a country name, that country name IS the address block: copy it here and keep it out of the name field. EXCLUDE labeled non-address lines such as 'VAT: …', 'Tel …' or an email address — those have their own fields",
+					"x-json-ld-property": "https://vocabulary.uncefact.org/lineAddress1"
 				},
 				"tax_ids": {
 					"type": ["array", "null"],
@@ -107,12 +119,10 @@
 						"properties": {
 							"label": {
 								"type": ["string", "null"],
-								"minLength": 1,
 								"description": "Tax-ID label exactly as printed before the value, e.g. 'VAT', 'PIN No', 'USCI', 'Tax ID'"
 							},
 							"value": {
 								"type": ["string", "null"],
-								"minLength": 1,
 								"description": "Tax registration number exactly as printed",
 								"x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
 							}
@@ -133,11 +143,11 @@
 			"properties": {
 				"name": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Company name exactly as printed"
 				},
 				"address": {
-					"$ref": "#/$defs/postal-address"
+					"type": ["string", "null"],
+					"description": "The party's address block exactly as printed: every address line (street, postal/city, country) verbatim and in printed order. Preserve line breaks as newline characters when the lines are stacked; when the address is printed on a single line, copy that line with its separators as-is. When the only location printed for the party is a country name, that country name IS the address block: copy it here and keep it out of the name field. EXCLUDE labeled non-address lines such as 'VAT: …', 'Tel …' or an email address — those have their own fields"
 				}
 			},
 			"required": ["name", "address"],
@@ -146,21 +156,21 @@
 		},
 		"commodity": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "The traded commodity ONLY when explicitly printed as its own statement; never inferred from a letterhead or a goods description",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/classificationCode",
 			"x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct"
 		},
 		"total_package_count": {
-			"type": ["integer", "null"],
-			"description": "Total number of packages sold under this contract"
+			"type": ["string", "null"],
+			"description": "Total number of packages sold under this contract — exactly as printed, including any spelled-out form"
 		},
 		"package_type": {
-			"$ref": "#/$defs/rec21-package"
+			"type": ["string", "null"],
+			"description": "Kind of package exactly as printed, e.g. BAGS, CARTONS, DRUMS"
 		},
 		"weight_per_package": {
-			"type": ["number", "null"],
-			"description": "Weight of a single package as printed in the quantity statement, e.g. 60 from \"320 Bags of 60 kg net\"",
+			"type": ["string", "null"],
+			"description": "Weight of a single package as printed in the quantity statement, e.g. 60 from \"320 Bags of 60 kg net\" — the number exactly as printed, keeping separators; no units",
 			"x-json-ld-property": [
 				"https://vocabulary.uncefact.org/applicableSupplyChainPackage",
 				"https://vocabulary.uncefact.org/capacityMeasure",
@@ -169,7 +179,8 @@
 			"x-json-ld-type": "https://vocabulary.uncefact.org/SupplyChainPackaging"
 		},
 		"weight_per_package_unit": {
-			"$ref": "#/$defs/rec20-unit",
+			"type": ["string", "null"],
+			"description": "Unit of the per-package weight exactly as printed, e.g. kg, lbs",
 			"x-json-ld-property": [
 				"https://vocabulary.uncefact.org/applicableSupplyChainPackage",
 				"https://vocabulary.uncefact.org/capacityMeasure",
@@ -179,7 +190,6 @@
 		},
 		"weight_basis": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Basis qualifier printed with the quantity or terms, e.g. 'net', 'net shipping weight', 'gross'; null when not printed",
 			"x-json-ld-property": "https://vocabulary.uncefact.org/basisQuantity"
 		},
@@ -188,24 +198,19 @@
 			"description": "Currency of the contract when stated once for the whole document; null when only per-lot currencies are printed"
 		},
 		"lots": {
-			"x-json-ld-property": "https://test.uncefact.org/vocabulary/includesItem",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement",
 			"type": ["array", "null"],
 			"description": "One entry per quality/price line, in printed order. A single-line contract still yields one entry",
 			"items": {
 				"type": "object",
-				"x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct",
-				"x-json-ld-property": "https://vocabulary.uncefact.org/applicableProduct",
 				"properties": {
 					"lot_reference": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Lot, outturn or contract-part reference exactly as printed, e.g. 'ctr/742'",
 						"x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
 					},
 					"package_count": {
-						"type": ["integer", "null"],
-						"description": "Number of packages in this lot",
+						"type": ["string", "null"],
+						"description": "Number of packages in this lot — exactly as printed, including any spelled-out form",
 						"x-json-ld-property": [
 							"https://test.uncefact.org/vocabulary/orderedQuantity",
 							"https://vocabulary.uncefact.org/MeasureTypeValue"
@@ -213,7 +218,8 @@
 						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"package_type": {
-						"$ref": "#/$defs/rec21-package",
+						"type": ["string", "null"],
+						"description": "Kind of package for this lot exactly as printed",
 						"x-json-ld-property": [
 							"https://vocabulary.uncefact.org/applicableSupplyChainPackage",
 							"https://vocabulary.uncefact.org/packageTypeCode"
@@ -221,19 +227,17 @@
 					},
 					"quality_grade": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Quality grade or classification exactly as printed, e.g. 'AB', 'PB', 'AA'; null when the lot states no grade",
 						"x-json-ld-property": "https://vocabulary.uncefact.org/qualityLevelCode"
 					},
 					"description": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Goods, mark or estate description for this lot as printed, excluding the grade and the quantity",
 						"x-json-ld-property": "https://vocabulary.uncefact.org/description"
 					},
 					"unit_price": {
-						"type": ["number", "null"],
-						"description": "Price figure printed for this lot, without currency or unit",
+						"type": ["string", "null"],
+						"description": "Price figure printed for this lot, without currency or unit — the amount exactly as printed, keeping thousand and decimal separators; no currency symbols or units",
 						"x-json-ld-property": [
 							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
 							"https://vocabulary.uncefact.org/chargeAmount",
@@ -252,8 +256,8 @@
 						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"price_per_quantity": {
-						"type": ["number", "null"],
-						"description": "The quantity the price applies to, e.g. 50 from \"USD 290/50 kgs\". This is frequently NOT the package weight — copy what is printed",
+						"type": ["string", "null"],
+						"description": "The quantity the price applies to, e.g. 50 from \"USD 290/50 kgs\". This is frequently NOT the package weight — copy what is printed — the number exactly as printed, keeping separators; no units",
 						"x-json-ld-property": [
 							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
 							"https://vocabulary.uncefact.org/basisQuantity",
@@ -262,7 +266,8 @@
 						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"price_per_unit": {
-						"$ref": "#/$defs/rec20-unit",
+						"type": ["string", "null"],
+						"description": "Unit the price applies to exactly as printed, e.g. kgs, lb, MT",
 						"x-json-ld-property": [
 							"https://vocabulary.uncefact.org/agreedPriceProductPrice",
 							"https://vocabulary.uncefact.org/basisQuantity",
@@ -271,8 +276,8 @@
 						"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 					},
 					"incoterm": {
-						"$ref": "#/$defs/incoterm",
-						"description": "Delivery term printed on this lot line"
+						"type": ["string", "null"],
+						"description": "Delivery term printed on this lot line — exactly as printed, the three-letter rule or its spelled-out name"
 					}
 				},
 				"required": [
@@ -288,68 +293,60 @@
 					"incoterm"
 				],
 				"additionalProperties": false
-			}
+			},
+			"x-json-ld-property": "https://test.uncefact.org/vocabulary/includesItem",
+			"x-json-ld-type": "https://vocabulary.uncefact.org/LineTradeAgreement"
 		},
 		"conditions": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Conditions the sale is subject to, verbatim, e.g. 'SUBJECT TO APPROVAL OF SAMPLES'; null when the document states none"
 		},
 		"packaging": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Packing specification ONLY from an explicitly labeled packing/packaging field; null when packing is stated inside another line"
 		},
 		"delivery_terms": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "The delivery/terms line verbatim, including any wording beyond the Incoterms rule itself",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/DeliveryTerms",
 			"x-json-ld-property": [
 				"https://vocabulary.uncefact.org/applicableDeliveryTerms",
 				"https://vocabulary.uncefact.org/description"
-			]
+			],
+			"x-json-ld-type": "https://vocabulary.uncefact.org/DeliveryTerms"
 		},
 		"incoterms": {
 			"type": ["object", "null"],
 			"properties": {
 				"rule": {
-					"$ref": "#/$defs/incoterm",
-					"description": "Incoterms rule governing the sale",
+					"type": ["string", "null"],
+					"description": "Incoterms rule governing the sale — exactly as printed, the three-letter rule or its spelled-out name",
 					"x-json-ld-property": "https://test.uncefact.org/vocabulary/incotermsCode"
 				},
 				"named_place": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Named place or port following the rule, exactly as printed; null when no place is printed with the rule"
 				}
 			},
 			"required": ["rule", "named_place"],
 			"additionalProperties": false,
 			"description": "Incoterms rule and its named place; null if the document states no delivery term",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/DeliveryTerms",
-			"x-json-ld-property": "https://vocabulary.uncefact.org/applicableDeliveryTerms"
+			"x-json-ld-property": "https://vocabulary.uncefact.org/applicableDeliveryTerms",
+			"x-json-ld-type": "https://vocabulary.uncefact.org/DeliveryTerms"
 		},
 		"insurance": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Insurance arrangement as printed, e.g. 'For Buyers Account'; null when not stated"
 		},
 		"shipment_period": {
-			"$ref": "#/$defs/iso-date-partial",
-			"description": "Shipment or delivery period. When the printed period has been struck through and replaced by hand, this is the REPLACEMENT value and the struck original belongs in amendments — ISO 8601 at the precision printed (YYYY, YYYY-MM or YYYY-MM-DD)",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/SpecifiedPeriod",
+			"type": ["string", "null"],
+			"description": "Shipment or delivery period. When the printed period has been struck through and replaced by hand, this is the REPLACEMENT value and the struck original belongs in amendments — exactly as printed; do NOT reformat, and do NOT invent a day when only a month is printed",
 			"x-json-ld-property": [
 				"https://vocabulary.uncefact.org/shippingPeriod",
 				"https://vocabulary.uncefact.org/startDateTime"
-			]
+			],
+			"x-json-ld-type": "https://vocabulary.uncefact.org/SpecifiedPeriod"
 		},
 		"destination": {
-			"x-json-ld-type": "https://vocabulary.uncefact.org/LogisticsLocation",
-			"x-json-ld-property": [
-				"https://vocabulary.uncefact.org/applicableDeliveryTerms",
-				"https://vocabulary.uncefact.org/relevantLocation"
-			],
 			"type": "object",
 			"properties": {
 				"locode": {
@@ -358,23 +355,27 @@
 				},
 				"name": {
 					"type": ["string", "null"],
-					"minLength": 1,
 					"description": "Port name exactly as printed, name portion only — from 'ROTTERDAM, NETHERLANDS' copy 'ROTTERDAM'; never reformatted",
 					"x-json-ld-property": "https://vocabulary.uncefact.org/name"
 				},
 				"country": {
-					"$ref": "#/$defs/iso-3166-alpha2",
-					"description": "Port country",
+					"type": ["string", "null"],
+					"description": "Port country — the country exactly as printed (name or code), ONLY when printed; never inferred from an address",
 					"x-json-ld-property": "https://vocabulary.uncefact.org/countryName"
 				}
 			},
 			"required": ["locode", "name", "country"],
 			"additionalProperties": false,
-			"description": "Destination place or port of delivery"
+			"description": "Destination place or port of delivery",
+			"x-json-ld-property": [
+				"https://vocabulary.uncefact.org/applicableDeliveryTerms",
+				"https://vocabulary.uncefact.org/relevantLocation"
+			],
+			"x-json-ld-type": "https://vocabulary.uncefact.org/LogisticsLocation"
 		},
 		"country_of_origin": {
-			"$ref": "#/$defs/iso-3166-alpha2",
-			"description": "The goods' origin country from an explicitly printed origin field",
+			"type": ["string", "null"],
+			"description": "The goods' origin country from an explicitly printed origin field — the country exactly as printed (name or code), ONLY when printed; never inferred from an address",
 			"x-json-ld-property": [
 				"https://vocabulary.uncefact.org/applicableProduct",
 				"https://vocabulary.uncefact.org/originCountry"
@@ -383,14 +384,13 @@
 		},
 		"payment_terms": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Payment terms as printed",
-			"x-json-ld-type": "https://vocabulary.uncefact.org/PaymentTerms",
-			"x-json-ld-property": "https://vocabulary.uncefact.org/description"
+			"x-json-ld-property": "https://vocabulary.uncefact.org/description",
+			"x-json-ld-type": "https://vocabulary.uncefact.org/PaymentTerms"
 		},
 		"total_amount": {
-			"type": ["number", "null"],
-			"description": "Total contract value as printed; null when the document prints no total"
+			"type": ["string", "null"],
+			"description": "Total contract value as printed; null when the document prints no total — the amount exactly as printed, keeping thousand and decimal separators; no currency symbols or units"
 		},
 		"signatories": {
 			"type": ["array", "null"],
@@ -400,12 +400,10 @@
 				"properties": {
 					"party_name": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Name printed on the acceptance or signature line"
 					},
 					"role": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Role label printed with the line, e.g. 'Accepted', 'Seller', 'Buyer'; null when only a name is printed"
 					},
 					"signed": {
@@ -425,17 +423,14 @@
 				"properties": {
 					"field_label": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Label of the field that was altered, exactly as printed"
 					},
 					"original_value": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "The printed value that was struck through or overwritten, as far as it remains legible; null when illegible"
 					},
 					"amended_value": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "The handwritten or stamped replacement value, verbatim"
 					},
 					"initialled": {
@@ -455,17 +450,15 @@
 				"properties": {
 					"text": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "The full stamp text verbatim, newline-separated where the impression is stacked"
 					},
 					"party_name": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "Organisation named inside the stamp; null when it names none"
 					},
 					"date": {
-						"$ref": "#/$defs/date",
-						"description": "Date printed inside the stamp; null when it carries none — ISO 8601 (YYYY-MM-DD)"
+						"type": ["string", "null"],
+						"description": "Date printed inside the stamp; null when it carries none — the date exactly as printed; do NOT reformat"
 					}
 				},
 				"required": ["text", "party_name", "date"],
@@ -480,12 +473,10 @@
 				"properties": {
 					"label": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "The reference's label exactly as printed"
 					},
 					"value": {
 						"type": ["string", "null"],
-						"minLength": 1,
 						"description": "The reference's value exactly as printed"
 					}
 				},
@@ -495,11 +486,11 @@
 		},
 		"notes": {
 			"type": ["string", "null"],
-			"minLength": 1,
 			"description": "Content of an explicitly labeled notes/remarks box ONLY. Never footer or certification boilerplate. null when the box is empty or shows '—'"
 		}
 	},
 	"required": [
+		"document_conventions",
 		"contract_number",
 		"seller_reference",
 		"buyer_reference",
@@ -534,118 +525,13 @@
 	],
 	"additionalProperties": false,
 	"$defs": {
-		"date": {
-			"type": ["string", "null"],
-			"pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-			"format": "date",
-			"description": "ISO 8601 date (YYYY-MM-DD)."
-		},
-		"iso-date-partial": {
-			"type": ["string", "null"],
-			"pattern": "^\\d{4}(?:-\\d{2}(?:-\\d{2})?)?$",
-			"format": "iso-date-partial",
-			"description": "ISO 8601 date at the precision the document carries: YYYY, YYYY-MM or YYYY-MM-DD."
-		},
-		"incoterm": {
-			"type": ["string", "null"],
-			"pattern": "^(?:EXW|FCA|CPT|CIP|DAP|DPU|DDP|FAS|FOB|CFR|CIF)$",
-			"format": "incoterm",
-			"description": "Incoterms 2020 rule (EXW, FCA, CPT, CIP, DAP, DPU, DDP, FAS, FOB, CFR, CIF)."
-		},
-		"iso-3166-alpha2": {
-			"type": ["string", "null"],
-			"pattern": "^[A-Z]{2}$",
-			"format": "iso-3166-alpha2",
-			"description": "ISO 3166-1 alpha-2 country code."
-		},
 		"iso-4217": {
 			"type": ["string", "null"],
-			"pattern": "^[A-Z]{3}$",
-			"format": "iso-4217",
-			"description": "ISO 4217 currency code (EUR, USD, ...)."
+			"description": "Currency exactly as printed — code, symbol or abbreviation (EUR, US$, Ksh, ...), verbatim."
 		},
 		"un-locode": {
 			"type": ["string", "null"],
-			"pattern": "^[A-Z]{2}[A-Z2-9]{3}$",
-			"format": "un-locode",
-			"description": "Five-character UN/LOCODE."
-		},
-		"rec20-unit": {
-			"type": ["string", "null"],
-			"pattern": "^[A-Z0-9]{2,3}$",
-			"format": "rec20-unit",
-			"description": "UNECE Rec 20 unit of measure code (H87 piece, KGM kilogram, ...)."
-		},
-		"rec21-package": {
-			"type": ["string", "null"],
-			"pattern": "^[A-Z0-9]{2}$",
-			"format": "rec21-package",
-			"description": "UNECE Rec 21 package type code (CT carton, PX pallet, ...)."
-		},
-		"postal-address": {
-			"type": ["object", "null"],
-			"properties": {
-				"raw": {
-					"type": "string",
-					"minLength": 1,
-					"description": "The verbatim printed address block, unchanged from the extraction channel",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/lineAddress1"
-				},
-				"po_box": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "PO box line as printed",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/postOfficeBox"
-				},
-				"street": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "The full street line as printed, house number included",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/streetName"
-				},
-				"district": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "Sub-city tier as printed: district, suburb, ward, free zone"
-				},
-				"city": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "City/locality as printed",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/cityName"
-				},
-				"postal_code": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "Postal code as printed",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/postalCode"
-				},
-				"state": {
-					"type": ["string", "null"],
-					"minLength": 1,
-					"description": "State/region as printed"
-				},
-				"country_code": {
-					"$ref": "#/$defs/iso-3166-alpha2",
-					"description": "Country derived from the printed address",
-					"x-json-ld-property": [
-						"https://vocabulary.uncefact.org/countryIdentificationCountry",
-						"https://vocabulary.uncefact.org/countryId"
-					]
-				}
-			},
-			"required": [
-				"raw",
-				"po_box",
-				"street",
-				"district",
-				"city",
-				"postal_code",
-				"state",
-				"country_code"
-			],
-			"additionalProperties": false,
-			"description": "Structured address: raw is verbatim; components are substrings of raw, derived post-extraction and null when not confidently parsed"
+			"description": "Five-character UN/LOCODE exactly as printed, ONLY if explicitly printed on the document. Never derive it from a port or place name; emit null when no code is printed."
 		}
 	}
 }
