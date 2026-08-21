@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceLogisticsTransportEquipment } from "@twin.org/standards-unece";
+import type { ISeal } from "./ISeal.js";
 
 /**
  * A relevant location
@@ -13,4 +14,6 @@ export type ITransportEquipment = IUneceLogisticsTransportEquipment &
 			IUneceLogisticsTransportEquipment,
 			"type" | "identifier" | "transportEquipmentSizeTypeCharacteristicCode"
 		>
-	> & {};
+	> & {
+		affixedSeal?: ISeal;
+	};

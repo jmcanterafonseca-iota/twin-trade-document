@@ -6,10 +6,10 @@ import { TradeDocumentContexts } from "../models/tradeDocumentContexts.js";
 import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
 
 import AddressSchema from "../schemas/Address.json" with { type: "json" };
-import BillOfLadingSchema from "../schemas/BillOfLading.json" with { type: "json" };
-import ConsignmentItemSchema from "../schemas/ConsignmentItem.json" with { type: "json" };
 import AllowanceChargeSchema from "../schemas/AllowanceCharge.json" with { type: "json" };
+import BillOfLadingSchema from "../schemas/BillOfLading.json" with { type: "json" };
 import CommercialInvoiceSchema from "../schemas/CommercialInvoice.json" with { type: "json" };
+import ConsignmentItemSchema from "../schemas/ConsignmentItem.json" with { type: "json" };
 import DeliveryTermsSchema from "../schemas/DeliveryTerms.json" with { type: "json" };
 import LocationSchema from "../schemas/Location.json" with { type: "json" };
 import MeasureSchema from "../schemas/Measure.json" with { type: "json" };
@@ -21,10 +21,12 @@ import PeriodSchema from "../schemas/Period.json" with { type: "json" };
 import ProductSchema from "../schemas/Product.json" with { type: "json" };
 import ProductPackageSchema from "../schemas/ProductPackage.json" with { type: "json" };
 import PurchaseOrderSchema from "../schemas/PurchaseOrder.json" with { type: "json" };
+import SealSchema from "../schemas/Seal.json" with { type: "json" };
 import TradeAgreementSchema from "../schemas/TradeAgreement.json" with { type: "json" };
-import TransportPackageSchema from "../schemas/TransportPackage.json" with { type: "json" };
 import TradeItemSchema from "../schemas/TradeItem.json" with { type: "json" };
 import TradePriceSchema from "../schemas/TradePrice.json" with { type: "json" };
+import TransportEquipmentSchema from "../schemas/TransportEquipment.json" with { type: "json" };
+import TransportPackageSchema from "../schemas/TransportPackage.json" with { type: "json" };
 
 /**
  * Handle all the data types for trade documents.
@@ -43,6 +45,7 @@ export class TradeDocumentDataTypes {
 			{ type: TradeDocumentTypes.BillOfLading, schema: BillOfLadingSchema },
 			{ type: TradeDocumentTypes.ConsignmentItem, schema: ConsignmentItemSchema },
 			{ type: TradeDocumentTypes.TransportPackage, schema: TransportPackageSchema },
+			{ type: TradeDocumentTypes.TransportEquipment, schema: TransportEquipmentSchema },
 			{ type: TradeDocumentTypes.Party, schema: PartySchema },
 			{ type: TradeDocumentTypes.TradeItem, schema: TradeItemSchema },
 			{ type: TradeDocumentTypes.TradePrice, schema: TradePriceSchema },
@@ -56,7 +59,8 @@ export class TradeDocumentDataTypes {
 			{ type: TradeDocumentTypes.Measure, schema: MeasureSchema },
 			{ type: TradeDocumentTypes.Period, schema: PeriodSchema },
 			{ type: TradeDocumentTypes.ProductPackage, schema: ProductPackageSchema },
-			{ type: TradeDocumentTypes.Product, schema: ProductSchema }
+			{ type: TradeDocumentTypes.Product, schema: ProductSchema },
+			{ type: TradeDocumentTypes.Seal, schema: SealSchema }
 		];
 
 		DataTypeHelper.registerTypes(

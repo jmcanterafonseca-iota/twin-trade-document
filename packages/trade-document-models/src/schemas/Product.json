@@ -13,17 +13,6 @@
 			"type": "string",
 			"description": "The code specifying the classification for this trade product."
 		},
-		"identifier": {
-			"anyOf": [
-				{
-					"type": "string"
-				},
-				{
-					"$ref": "https://schema.twindev.org/json-ld/JsonLdValueObject"
-				}
-			],
-			"description": "A unique identifier for this trade product."
-		},
 		"name": {
 			"type": "string",
 			"description": "Product name"
@@ -43,12 +32,15 @@
 		"applicableSupplyChainPackage": {
 			"$ref": "https://schema.twindev.org/trade-document/ProductPackage",
 			"description": "Product package."
+		},
+		"itemNumber": {
+			"type": "string",
+			"description": "The SKU\nx-json-ld-property: https://test.uncefact.org/vocabulary/itemNumber"
 		}
 	},
 	"required": [
 		"type",
 		"classificationCode",
-		"identifier",
 		"applicableSupplyChainPackage"
 	],
 	"allOf": [

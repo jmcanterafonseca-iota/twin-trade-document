@@ -52,7 +52,7 @@ export interface IAddress {
 	postalCode: string;
 
 	/**
-	 * The street address. For example, 1600 Amphitheatre Pkwy.
+	 * The street address.
 	 * x-json-ld-property: https://schema.org/streetAddress
 	 */
 	streetAddress: string;

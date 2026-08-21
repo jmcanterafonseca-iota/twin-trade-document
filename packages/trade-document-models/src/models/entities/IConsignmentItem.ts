@@ -32,20 +32,23 @@ export type IConsignmentItem = IUneceConsignmentItem &
 		packedIn: ITransportPackage;
 
 		/**
-		 * The gross weight of this item including packaging (UNVTD `grossWeight`).
-		 * x-json-ld-property: https://test.uncefact.org/vocabulary/grossWeight
+		 * The gross weight of this item including packaging.
 		 */
-		grossWeight?: IMeasure;
+		grossWeightMeasure?: IMeasure;
 
 		/**
-		 * The gross volume of this item including packaging (UNVTD `grossWeight`).
-		 * x-json-ld-property: https://test.uncefact.org/vocabulary/grossVolume
+		 * The gross volume of this item including packaging.
 		 */
-		grossVolume?: IMeasure;
+		grossVolumeMeasure?: IMeasure;
 
 		/**
 		 * Where the consignment item is carried in
 		 * x-json-ld-property: https://test.uncefact.org/vocabulary/carriedIn
 		 */
 		carriedIn?: ITransportEquipment;
+
+		/**
+		 * Description.
+		 */
+		description?: string;
 	};

@@ -35,7 +35,7 @@
 		},
 		"streetAddress": {
 			"type": "string",
-			"description": "The street address. For example, 1600 Amphitheatre Pkwy.\nx-json-ld-property: https://schema.org/streetAddress"
+			"description": "The street address.\nx-json-ld-property: https://schema.org/streetAddress"
 		},
 		"freeForm": {
 			"type": "string",

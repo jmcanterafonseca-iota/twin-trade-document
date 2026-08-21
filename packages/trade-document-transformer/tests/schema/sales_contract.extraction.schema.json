@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://example.invalid/schemas/sales_contract.extraction.schema.json",
-	"title": "Sales Contract",
+	"title": "TradeAgreement",
 	"description": "Sales contract or sale confirmation for a goods shipment, issued by the seller. Covers commodity trade contracts, where quantity, quality and price are stated per lot. All values are copied from the document — never computed, never converted between units.",
 	"type": "object",
 	"properties": {
@@ -59,7 +59,7 @@
 				"address": {
 					"type": ["string", "null"],
 					"description": "The party's address block exactly as printed: every address line (street, postal/city, country) verbatim and in printed order. Preserve line breaks as newline characters when the lines are stacked; when the address is printed on a single line, copy that line with its separators as-is. When the only location printed for the party is a country name, that country name IS the address block: copy it here and keep it out of the name field. EXCLUDE labeled non-address lines such as 'VAT: …', 'Tel …' or an email address — those have their own fields",
-					"x-json-ld-property": "https://vocabulary.uncefact.org/lineAddress1"
+					"x-json-ld-property": "https://test.uncefact.org/vocabulary/freeForm"
 				},
 				"tax_ids": {
 					"type": ["array", "null"],
@@ -206,7 +206,10 @@
 					"lot_reference": {
 						"type": ["string", "null"],
 						"description": "Lot, outturn or contract-part reference exactly as printed, e.g. 'ctr/742'",
-						"x-json-ld-property": "https://vocabulary.uncefact.org/identifier"
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/applicableProduct",
+							"https://test.uncefact.org/vocabulary/itemNumber"
+						]
 					},
 					"package_count": {
 						"type": ["string", "null"],
@@ -228,12 +231,20 @@
 					"quality_grade": {
 						"type": ["string", "null"],
 						"description": "Quality grade or classification exactly as printed, e.g. 'AB', 'PB', 'AA'; null when the lot states no grade",
-						"x-json-ld-property": "https://vocabulary.uncefact.org/qualityLevelCode"
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/applicableProduct",
+							"https://vocabulary.uncefact.org/qualityLevelCode"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct"
 					},
 					"description": {
 						"type": ["string", "null"],
 						"description": "Goods, mark or estate description for this lot as printed, excluding the grade and the quantity",
-						"x-json-ld-property": "https://vocabulary.uncefact.org/description"
+						"x-json-ld-property": [
+							"https://vocabulary.uncefact.org/applicableProduct",
+							"https://vocabulary.uncefact.org/description"
+						],
+						"x-json-ld-type": "https://vocabulary.uncefact.org/TradeProduct"
 					},
 					"unit_price": {
 						"type": ["string", "null"],

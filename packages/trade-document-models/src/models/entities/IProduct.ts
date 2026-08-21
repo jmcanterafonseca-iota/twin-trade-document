@@ -9,7 +9,7 @@ import type { IProductPackage } from "../valueObjects/IProductPackage.js";
  * x-json-ld-type: https://vocabulary.uncefact.org/TradeProduct
  */
 export type IProduct = IUneceTradeProduct &
-	Required<Pick<IUneceTradeProduct, "type" | "identifier" | "classificationCode">> & {
+	Required<Pick<IUneceTradeProduct, "type" | "classificationCode">> & {
 		/**
 		 * Product name
 		 */
@@ -34,4 +34,10 @@ export type IProduct = IUneceTradeProduct &
 		 * Product package.
 		 */
 		applicableSupplyChainPackage: IProductPackage;
+
+		/**
+		 * The SKU
+		 * x-json-ld-property: https://test.uncefact.org/vocabulary/itemNumber
+		 */
+		itemNumber?: string;
 	};

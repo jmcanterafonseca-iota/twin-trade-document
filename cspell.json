@@ -40,7 +40,8 @@
 		"dereffed",
 		"subproperties",
 		"subproperty",
-		"authored"
+		"authored",
+		"baseport"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",

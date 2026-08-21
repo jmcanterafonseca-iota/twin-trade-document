@@ -103,9 +103,19 @@ export const TradeDocumentTypes = {
 	TransportPackage: "TransportPackage",
 
 	/**
-	 * The goods on a line.
+	 * A piece of transport equipment such as a container.
 	 */
-	Product: "Product"
+	TransportEquipment: "TransportEquipment",
+
+	/**
+	 * A Product
+	 */
+	Product: "Product",
+
+	/**
+	 * A seal
+	 */
+	Seal: "Seal"
 } as const;
 
 /**

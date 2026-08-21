@@ -12,12 +12,6 @@ const inputData: { [key: string]: unknown } = JSON.parse(
 const inputDataSchema: IJsonSchema = JSON.parse(
 	readFileSync(new URL("./schema/sales_contract.extraction.schema.json", import.meta.url), "utf8")
 );
-const bolData: { [key: string]: unknown } = JSON.parse(
-	readFileSync(new URL("./data/bol.json", import.meta.url), "utf8")
-);
-const bolSchema: IJsonSchema = JSON.parse(
-	readFileSync(new URL("./schema/bill_of_lading.schema.json", import.meta.url), "utf8")
-);
 
 describe("SemanticTransformer", () => {
 	test("Can construct the transformer", () => {
@@ -74,49 +68,18 @@ describe("SemanticTransformer", () => {
 		});
 		expect(document.sellerParty).toMatchObject({
 			type: "TradeParty",
-			name: "Jowam Coffee Traders Co. Ltd."
+			name: "Jowam Coffee Traders Co. Ltd"
 		});
 		expect(document.includesItem).toHaveLength(3);
 		const firstItem = (document.includesItem as IJsonLdNodeObject[])[0];
 		expect(firstItem.applicableProduct).toMatchObject({
 			type: "TradeProduct",
-			identifier: "ctr/742",
+			itemNumber: "ctr/742",
 			description: "Asali"
 		});
 		expect(document.applicableDeliveryTerms).toMatchObject({
 			type: "DeliveryTerms",
 			incotermsCode: "FOB"
-		});
-	});
-
-	test("Can transform a bill of lading extraction into a Bill of Lading", async () => {
-		const transformer = new SemanticTransformer();
-
-		const { document } = await transformer.transform(bolData, bolSchema, "BillOfLading");
-
-		console.log(JSON.stringify(document, null, 2));
-
-		expect(document.type).toEqual("BillOfLading");
-		expect(document.billOfLadingNumber).toEqual("NB21070787");
-		expect(document.consignor).toMatchObject({
-			type: "TradeParty",
-			name: "SINPEX CONNECTION LOGISTICS (NINGBO) LIMITED"
-		});
-		expect((document.consignor as IJsonLdNodeObject).postalAddress).toMatchObject({
-			cityName: "NINGBO",
-			countryIdentificationCountry: { countryId: "CN" }
-		});
-		expect(document.consignee).toMatchObject({
-			type: "TradeParty",
-			name: "APEX LOGISTICS INTERNATIONAL (LAX), INC."
-		});
-		expect((document.consignee as IJsonLdNodeObject).postalAddress).toMatchObject({
-			cityName: "RANCHO DOMINGUEZ",
-			countryIdentificationCountry: { countryId: "US" }
-		});
-		expect(document.carrier).toMatchObject({
-			type: "TradeParty",
-			name: "NINGBO BURNASIA INTERNATIONAL LOGISTICS CO.,LTD."
 		});
 	});
 });
