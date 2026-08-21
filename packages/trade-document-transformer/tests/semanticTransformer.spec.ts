@@ -3,8 +3,8 @@
 import { readFileSync } from "node:fs";
 import type { IJsonSchema } from "@twin.org/data-core";
 import type { IJsonLdNodeObject } from "@twin.org/data-json-ld";
+import type { IValueHookContext } from "../src/models/IValueHookContext.js";
 import { SemanticTransformer } from "../src/semanticTransformer.js";
-import { IValueHookContext } from "../src/models/IValueHookContext.js";
 
 const inputData: { [key: string]: unknown } = JSON.parse(
 	readFileSync(new URL("./data/sales_contract.json", import.meta.url), "utf8")
@@ -48,7 +48,7 @@ describe("SemanticTransformer", () => {
 		 * @param context context
 		 * @returns Value
 		 */
-		function dateTimeFunction(v: unknown, context: IValueHookContext): string {
+		function dateTimeFunction(v: unknown, context: IValueHookContext): unknown {
 			return typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T00:00:00Z` : v;
 		}
 

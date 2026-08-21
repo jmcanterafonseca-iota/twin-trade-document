@@ -17,6 +17,13 @@ export interface IValueHookContext {
 	fqn?: string;
 
 	/**
+	 * The type FQN of the nearest enclosing entity, e.g.
+	 * `https://schema.twindev.org/trade-document/Location`, letting a hook on
+	 * a generic property FQN act only in a specific entity context.
+	 */
+	entityType?: string;
+
+	/**
 	 * The path of the property in the generated document.
 	 */
 	targetPath: string;

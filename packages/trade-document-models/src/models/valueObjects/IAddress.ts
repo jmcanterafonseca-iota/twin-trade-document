@@ -56,4 +56,10 @@ export interface IAddress {
 	 * x-json-ld-property: https://schema.org/streetAddress
 	 */
 	streetAddress: string;
+
+	/**
+	 * A free form representation, expressed as text, of this trade address.
+	 * x-json-ld-property: https://test.uncefact.org/vocabulary/freeForm
+	 */
+	freeForm: string;
 }

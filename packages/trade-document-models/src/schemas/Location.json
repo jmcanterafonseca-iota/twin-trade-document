@@ -35,13 +35,17 @@
 			"type": "string",
 			"description": "Location name"
 		},
-		"country": {
+		"countryCode": {
 			"type": "string",
 			"description": "ISO country\nx-json-ld-property: https://vocabulary.uncefact.org/tradeLocationCountryId"
 		},
 		"countryName": {
 			"type": "string",
 			"description": "Country name"
+		},
+		"postalAddress": {
+			"$ref": "https://schema.twindev.org/trade-document/Address",
+			"description": "Locations's postal address\nx-json-ld-property: https://vocabulary.uncefact.org/postalAdress"
 		}
 	},
 	"required": [

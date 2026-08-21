@@ -573,6 +573,7 @@ export class SchemaFiller {
 	 * @param seenRefs The `$ref`s already expanded on this branch.
 	 * @param terms The term to IRI map of the enclosing schema's JSON-LD
 	 * context, used to derive the FQN of unannotated properties.
+	 * @param entityType The type FQN of the nearest enclosing entity.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -583,7 +584,8 @@ export class SchemaFiller {
 		targetPath: string,
 		required: boolean,
 		seenRefs: Set<string>,
-		terms: { [term: string]: string } | undefined
+		terms: { [term: string]: string } | undefined,
+		entityType?: string
 	): Promise<
 		{ value: unknown; hasData: boolean; siblings?: { [key: string]: unknown } } | undefined
 	> {
@@ -619,15 +621,33 @@ export class SchemaFiller {
 		}
 
 		if (Object.keys(eff.properties).length > 0) {
-			return this.fillObject(eff, fqn, scopes, targetPath, required, branchRefs, childTerms);
+			return this.fillObject(
+				eff,
+				fqn,
+				scopes,
+				targetPath,
+				required,
+				branchRefs,
+				childTerms,
+				entityType
+			);
 		}
 		if (
 			!Is.undefined(eff.items) ||
 			(Is.array(eff.type) ? eff.type : [eff.type]).includes("array")
 		) {
-			return this.fillArray(eff, fqn, scopes, targetPath, required, branchRefs, childTerms);
+			return this.fillArray(
+				eff,
+				fqn,
+				scopes,
+				targetPath,
+				required,
+				branchRefs,
+				childTerms,
+				entityType
+			);
 		}
-		return this.fillLeaf(eff, fqn, propertyName, scopes, targetPath, required);
+		return this.fillLeaf(eff, fqn, propertyName, scopes, targetPath, required, entityType);
 	}
 
 	/**
@@ -639,6 +659,8 @@ export class SchemaFiller {
 	 * @param required Whether the node is required.
 	 * @param seenRefs The `$ref`s already expanded on this branch.
 	 * @param terms The term to IRI map for the node's children.
+	 * @param entityType The type FQN of the nearest enclosing entity; the
+	 * node's own type, when it declares one, replaces it for the children.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -649,7 +671,8 @@ export class SchemaFiller {
 		targetPath: string,
 		required: boolean,
 		seenRefs: Set<string>,
-		terms: { [term: string]: string } | undefined
+		terms: { [term: string]: string } | undefined,
+		entityType?: string
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
 		const match = this.findEntry(fqn, eff.typeFqn, scopes);
 		if (Is.undefined(match)) {
@@ -665,6 +688,7 @@ export class SchemaFiller {
 			}
 		}
 		const childScopes = match ? this.scopesFor(match.entry, match.context) : scopes;
+		const childEntityType = eff.typeFqn ?? entityType;
 
 		const result: { [key: string]: unknown } = {};
 		const pendingSiblings: { [key: string]: unknown } = {};
@@ -678,7 +702,8 @@ export class SchemaFiller {
 				childPath,
 				eff.required.has(name),
 				seenRefs,
-				terms
+				terms,
+				childEntityType
 			);
 			if (!Is.undefined(filled)) {
 				result[name] = filled.value;
@@ -714,6 +739,7 @@ export class SchemaFiller {
 	 * @param required Whether the node is required.
 	 * @param seenRefs The `$ref`s already expanded on this branch.
 	 * @param terms The term to IRI map for the array items.
+	 * @param entityType The type FQN of the nearest enclosing entity.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -724,7 +750,8 @@ export class SchemaFiller {
 		targetPath: string,
 		required: boolean,
 		seenRefs: Set<string>,
-		terms: { [term: string]: string } | undefined
+		terms: { [term: string]: string } | undefined,
+		entityType?: string
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
 		const itemsEff = Is.undefined(eff.items)
 			? undefined
@@ -761,7 +788,8 @@ export class SchemaFiller {
 				`${targetPath}[${i}]`,
 				false,
 				seenRefs,
-				terms
+				terms,
+				entityType
 			);
 			if (!Is.undefined(filled)) {
 				result.push(filled.value);
@@ -782,6 +810,7 @@ export class SchemaFiller {
 	 * @param scopes The current lookup scopes.
 	 * @param targetPath The target path.
 	 * @param required Whether the node is required.
+	 * @param entityType The type FQN of the nearest enclosing entity.
 	 * @returns The value and whether it carries source data, or undefined.
 	 * @internal
 	 */
@@ -791,7 +820,8 @@ export class SchemaFiller {
 		propertyName: string | undefined,
 		scopes: IFillScope[],
 		targetPath: string,
-		required: boolean
+		required: boolean,
+		entityType?: string
 	): Promise<
 		{ value: unknown; hasData: boolean; siblings?: { [key: string]: unknown } } | undefined
 	> {
@@ -809,7 +839,9 @@ export class SchemaFiller {
 		}
 		this._consumed.add(concrete.join("."));
 
+		const sourceField = concrete.at(-1);
 		const hook =
+			(Is.stringValue(sourceField) ? this._hooks?.bySourceField?.[sourceField] : undefined) ??
 			(Is.stringValue(fqn) ? this._hooks?.byProperty?.[fqn] : undefined) ??
 			(Is.stringValue(eff.format) ? this._hooks?.byFormat?.[eff.format] : undefined);
 		if (Is.function(hook)) {
@@ -818,6 +850,7 @@ export class SchemaFiller {
 			const context: IValueHookContext = {
 				propertyName,
 				fqn,
+				entityType,
 				targetPath,
 				sourcePath: concrete.join("."),
 				type: eff.type,

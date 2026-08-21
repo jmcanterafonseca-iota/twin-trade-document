@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import type { IUneceTradeLocation } from "@twin.org/standards-unece";
+import type { IAddress } from "../valueObjects/IAddress.js";
 
 /**
  * A relevant location
@@ -25,11 +26,17 @@ export type ILocation = IUneceTradeLocation &
 		 * ISO country
 		 * x-json-ld-property: https://vocabulary.uncefact.org/tradeLocationCountryId
 		 */
-		country?: string;
+		countryCode?: string;
 
 		/**
 		 * Country name
 		 *
 		 */
 		countryName?: string;
+
+		/**
+		 * Locations's postal address
+		 * x-json-ld-property: https://vocabulary.uncefact.org/postalAdress
+		 */
+		postalAddress?: IAddress;
 	};
