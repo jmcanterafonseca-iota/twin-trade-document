@@ -1,6 +1,7 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
+import { readFile } from "node:fs/promises";
 import { Guards, Is } from "@twin.org/core";
 import type { IJsonSchema } from "@twin.org/data-core";
 import { nameof } from "@twin.org/nameof";
@@ -914,9 +915,39 @@ export class SchemaFiller {
 			return undefined;
 		}
 		if (!SchemaFiller._CONTEXT_CACHE.has(url)) {
-			SchemaFiller._CONTEXT_CACHE.set(url, await this.fetchContextTerms(url));
+			SchemaFiller._CONTEXT_CACHE.set(
+				url,
+				(await this.localContextTerms(url)) ?? (await this.fetchContextTerms(url))
+			);
 		}
 		return SchemaFiller._CONTEXT_CACHE.get(url);
+	}
+
+	/**
+	 * Load a JSON-LD context from the package's `ld-contexts` folder, where a
+	 * local copy is stored under the file name of its URL. A local copy wins
+	 * over the online document.
+	 * @param url The context URL, e.g. `https://unvtd.unece.org/bill-of-lading-context.json`.
+	 * @returns The term map, or undefined when there is no local copy.
+	 * @internal
+	 */
+	private async localContextTerms(url: string): Promise<{ [term: string]: string } | undefined> {
+		const name = new URL(url).pathname.split("/").at(-1);
+		if (!Is.stringValue(name)) {
+			return undefined;
+		}
+		// The folder sits at the package root: three levels up from the
+		// compiled dist/es/services, two from src/services when run from source.
+		for (const relative of ["../../../ld-contexts/", "../../ld-contexts/"]) {
+			try {
+				const body: unknown = JSON.parse(
+					await readFile(new URL(`${relative}${name}`, import.meta.url), "utf8")
+				);
+				return this.termsFromContextBody(body);
+			} catch {
+				// No copy at this root: try the next, then fall back to the fetch.
+			}
+		}
 	}
 
 	/**
@@ -935,24 +966,34 @@ export class SchemaFiller {
 			if (!response.ok) {
 				return undefined;
 			}
-			const body: unknown = await response.json();
-			const context = Is.object<{ [key: string]: unknown }>(body) ? body["@context"] : undefined;
-			if (!Is.object<{ [key: string]: unknown }>(context)) {
-				return undefined;
-			}
-			const terms: { [term: string]: string } = {};
-			for (const [term, value] of Object.entries(context)) {
-				if (!term.startsWith("@")) {
-					const iri = this.expandContextValue(value, context);
-					if (Is.stringValue(iri)) {
-						terms[term] = iri;
-					}
-				}
-			}
-			return terms;
+			return this.termsFromContextBody(await response.json());
 		} catch {
 			return undefined;
 		}
+	}
+
+	/**
+	 * Flatten a JSON-LD context document to a term to IRI map, expanding
+	 * prefixed values.
+	 * @param body The parsed context document.
+	 * @returns The term map, or undefined when the document carries no context.
+	 * @internal
+	 */
+	private termsFromContextBody(body: unknown): { [term: string]: string } | undefined {
+		const context = Is.object<{ [key: string]: unknown }>(body) ? body["@context"] : undefined;
+		if (!Is.object<{ [key: string]: unknown }>(context)) {
+			return undefined;
+		}
+		const terms: { [term: string]: string } = {};
+		for (const [term, value] of Object.entries(context)) {
+			if (!term.startsWith("@")) {
+				const iri = this.expandContextValue(value, context);
+				if (Is.stringValue(iri)) {
+					terms[term] = iri;
+				}
+			}
+		}
+		return terms;
 	}
 
 	/**

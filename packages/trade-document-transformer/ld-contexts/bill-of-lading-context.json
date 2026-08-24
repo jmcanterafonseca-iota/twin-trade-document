@@ -1,0 +1,124 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "id": "@id",
+    "type": "@type",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "https://schema.org/",
+    "cred": "https://www.w3.org/2018/credentials#",
+    "unece": "https://vocabulary.uncefact.org/",
+    "VerifiableCredential": "cred:VerifiableCredential",
+    "BillOfLading": "unece:transportContractDocument",
+    "validFrom": {
+      "@id": "cred:validFrom",
+      "@type": "xsd:dateTime"
+    },
+    "validTo": {
+      "@id": "cred:validTo",
+      "@type": "xsd:dateTime"
+    },
+    "issuer": {
+      "@id": "cred:issuer",
+      "@type": "@id"
+    },
+    "credentialSubject": {
+      "@id": "cred:credentialSubject",
+      "@type": "@id"
+    },
+    "credentialSchema": "cred:credentialSchema",
+    "Party": "schema:Organization",
+    "name": "schema:name",
+    "street": "schema:streetAddress",
+    "city": "schema:addressLocality",
+    "state": "schema:addressRegion",
+    "zip": "schema:postalCode",
+    "country": "schema:addressCountry",
+    "billOfLadingNumber": "unece:identifier",
+    "documentIdentifier": "unece:identifier",
+    "bookingReferenceNumber": {
+      "@id": "https://vocabulary.uncefact.org/ReferenceCodeList#BN"
+    },
+    "issueDate": {
+      "@id": "unece:issueDateTime",
+      "@type": "xsd:date"
+    },
+    "consignmentLoadingDate": {
+      "@id": "schema:startDate",
+      "@type": "xsd:date"
+    },
+    "estimatedTimeOfDeparture": {
+      "@id": "schema:departureTime",
+      "@type": "xsd:dateTime"
+    },
+    "estimatedTimeOfArrival": {
+      "@id": "schema:arrivalTime",
+      "@type": "xsd:dateTime"
+    },
+    "Consignor": "unece:TradeParty",
+    "consignor": "unece:consignorParty",
+    "Consignee": "unece:TradeParty",
+    "consignee": "unece:consigneeParty",
+    "NotifyParty": "unece:TradeParty",
+    "notifyParty": "unece:notifiedParty",
+    "Carrier": "unece:TradeParty",
+    "carrier": "unece:carrierParty",
+    "FreightPayer": "unece:TradeParty",
+    "freightPayer": "unece:associatedParty",
+    "originalLoadingLocation": "unece:loadingLocation",
+    "baseportUnloadingLocation": "unece:unloadingLocation",
+    "deliveryLocation": "unece:finalDestinationLocation",
+    "placeOfDeparture": "schema:departurePoint",
+    "arrivalLocation": "schema:toLocation",
+    "paymentLocation": "schema:location",
+    "placeOfIssue": "unece:issueLocation",
+    "conveyanceReferenceNumber": "unece:identifier",
+    "transportMeansIdentifier": "unece:identifier",
+    "transportMeansRegistration": "unece:identifier",
+    "containerSizeAndType": "unece:characteristicCode",
+    "fullOrEmptyContainer": "unece:typeCode",
+    "transportEquipmentIdentifier": "unece:identifier",
+    "sealIdentifier": "unece:identifier",
+    "grossWeight": "unece:grossWeightMeasure",
+    "volume": "unece:grossVolumeMeasure",
+    "numberOfPackages": "unece:packageQuantity",
+    "descriptionOfGoods": "unece:description",
+    "consignmentSummaryDescription": "unece:summaryDescription",
+    "shippingMarks": "unece:physicalShippingMarks",
+    "transportContractConditions": "unece:termsAndConditionsDescription",
+    "prepaidAmount": {
+      "@id": "schema:price",
+      "@type": "xsd:decimal"
+    },
+    "collectCharges": {
+      "@id": "schema:price",
+      "@type": "xsd:decimal"
+    },
+    "contractNumber": "unece:identifier",
+    "ucr": "unece:identifier",
+    "goods": {
+      "@id": "unece:includedConsignmentItem",
+      "@container": "@set"
+    },
+    "description": "unece:description",
+    "hsCode": {
+      "@id": "https://vocabulary.uncefact.org/ReferenceCodeList#HS"
+    },
+    "quantity": "unece:grossVolumeMeasure",
+    "packages": "unece:packageQuantity",
+    "packagingType": "unece:typeCode",
+    "amount": {
+      "@id": "schema:value",
+      "@type": "xsd:decimal"
+    },
+    "unit": "schema:unitCode",
+    "currency": "schema:currency",
+    "unlocode": {
+      "@id": "unece:identifier",
+      "@type": "@id"
+    },
+    "Location": "schema:Place",
+    "MonetaryAmount": "schema:MonetaryAmount",
+    "Quantity": "schema:QuantitativeValue"
+  }
+}
