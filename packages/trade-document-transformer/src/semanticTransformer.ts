@@ -1,12 +1,12 @@
 // Copyright 2026 IOTA Stiftung.
 // SPDX-License-Identifier: Apache-2.0.
 
+import { TradeDocumentContexts, TradeDocumentDataTypes } from "@twin-dev/trade-documents-models";
 import { GeneralError, Guards, Is } from "@twin.org/core";
 import { DataTypeHandlerFactory, DataTypeHelper, type IJsonSchema } from "@twin.org/data-core";
 import { type IJsonLdNodeObject, JsonLdDataTypes } from "@twin.org/data-json-ld";
 import { nameof } from "@twin.org/nameof";
 import { UneceDataTypes } from "@twin.org/standards-unece";
-import { TradeDocumentContexts, TradeDocumentDataTypes } from "@twin.org/trade-documents-models";
 import type { ITransformer } from "./models/ITransformer.js";
 import type { ITransformerHooks } from "./models/ITransformerHooks.js";
 import { SchemaFiller } from "./services/schemaFiller.js";

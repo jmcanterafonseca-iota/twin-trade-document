@@ -1,5 +1,5 @@
 {
-	"name": "@twin.org/twin-trade-document",
+	"name": "@twin-dev/twin-trade-document",
 	"version": "0.0.0",
 	"description": "Modular packages for implementing trade documents.",
 	"repository": {
