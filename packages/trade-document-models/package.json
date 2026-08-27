@@ -29,6 +29,7 @@
 		"dist:no-test": "npm run clean && npm run build && npm run test:build"
 	},
 	"dependencies": {
+		"@twin.org/core": "next",
 		"@twin.org/nameof": "next",
 		"@twin.org/standards-schema-org": "next",
 		"@twin.org/standards-unece": "next",

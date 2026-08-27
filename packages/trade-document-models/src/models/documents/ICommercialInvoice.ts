@@ -3,13 +3,13 @@
 
 import type { ILocation } from "../entities/ILocation.js";
 import type { IParty } from "../entities/IParty.js";
-import type { IProduct } from "../entities/IProduct.js";
 import type { TradeDocumentContexts } from "../tradeDocumentContexts.js";
 import type { TradeDocumentTypes } from "../tradeDocumentTypes.js";
 import type { IAllowanceCharge } from "../valueObjects/IAllowanceCharge.js";
 import type { IMonetaryAmount } from "../valueObjects/IMonetaryAmount.js";
 import type { IPaymentMeans } from "../valueObjects/IPaymentMeans.js";
 import type { IPaymentTerms } from "../valueObjects/IPaymentTerms.js";
+import type { ITradeItem } from "../valueObjects/ITradeItem.js";
 
 /**
  * A commercial invoice: an itemized account of goods delivered together with a
@@ -157,7 +157,7 @@ export interface ICommercialInvoice {
 	/**
 	 * Invoice line items
 	 */
-	itemsShipped: IProduct[];
+	itemsShipped: ITradeItem[];
 
 	/**
 	 * Cost of freight/shipping charges.

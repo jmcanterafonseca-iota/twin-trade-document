@@ -23,3 +23,5 @@ export * from "./models/tradeDocumentTypes.js";
 export * from "./models/entities/IConsignmentItem.js";
 export * from "./models/entities/ITransportPackage.js";
 export * from "./models/entities/ITransportEquipment.js";
+export * from "./dataTypes/documentTypesFactory.js";
+export * from "./dataTypes/IDocumentTypeDescription.js";

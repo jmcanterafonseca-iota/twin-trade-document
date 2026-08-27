@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0.
 
 import { DataTypeHelper } from "@twin.org/data-core";
+import { DocumentTypesFactory } from "./documentTypesFactory.js";
 import { TradeDocumentContexts } from "../models/tradeDocumentContexts.js";
 import { TradeDocumentTypes } from "../models/tradeDocumentTypes.js";
 
@@ -68,5 +69,26 @@ export class TradeDocumentDataTypes {
 			TradeDocumentContexts.Context,
 			types
 		);
+
+		// Register the document types so we can know which documents can be translated
+		DocumentTypesFactory.register(TradeDocumentTypes.TradeAgreement, () => ({
+			documentType: TradeDocumentTypes.TradeAgreement,
+			jsonSchema: TradeAgreementSchema
+		}));
+
+		DocumentTypesFactory.register(TradeDocumentTypes.CommercialInvoice, () => ({
+			documentType: TradeDocumentTypes.CommercialInvoice,
+			jsonSchema: CommercialInvoiceSchema
+		}));
+
+		DocumentTypesFactory.register(TradeDocumentTypes.BillOfLading, () => ({
+			documentType: TradeDocumentTypes.BillOfLading,
+			jsonSchema: BillOfLadingSchema
+		}));
+
+		DocumentTypesFactory.register(TradeDocumentTypes.PurchaseOrder, () => ({
+			documentType: TradeDocumentTypes.PurchaseOrder,
+			jsonSchema: PurchaseOrderSchema
+		}));
 	}
 }

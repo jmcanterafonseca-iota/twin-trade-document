@@ -7,7 +7,7 @@ It provides the common data foundation needed to exchange trade documents across
 ## Installation
 
 ```shell
-npm install @twin.org/trade-document-models
+npm install @twin-dev/trade-document-models
 ```
 
 ## Examples

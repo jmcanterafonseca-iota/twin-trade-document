@@ -111,7 +111,7 @@
 		"itemsShipped": {
 			"type": "array",
 			"items": {
-				"$ref": "https://schema.twindev.org/trade-document/Product"
+				"$ref": "https://schema.twindev.org/trade-document/TradeItem"
 			},
 			"description": "Invoice line items"
 		},
