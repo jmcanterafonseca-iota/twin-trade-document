@@ -477,30 +477,21 @@ export class SchemaFiller {
 	}
 
 	/**
-	 * Find the index entry for an entity node, by property FQN first, then by
-	 * type FQN; in context first, then globally.
+	 * Find the index entry for an entity node by its property FQN, in context
+	 * first, then globally. Matching is by property only: an entity type is
+	 * never enough to bind a source entry, since several entries commonly
+	 * share a type (e.g. the parties of an invoice) and a type-based pick
+	 * would bleed one entity's values into another.
 	 * @param fqn The node's property FQN.
-	 * @param typeFqn The node's type FQN.
 	 * @param scopes The current lookup scopes.
 	 * @returns The entry with its concrete context, or undefined.
 	 * @internal
 	 */
-	private findEntry(
-		fqn: string | undefined,
-		typeFqn: string | undefined,
-		scopes: IFillScope[]
-	): IFillScope | undefined {
+	private findEntry(fqn: string | undefined, scopes: IFillScope[]): IFillScope | undefined {
 		const context = scopes[0]?.context ?? [];
 		const candidates: ISemanticIndexEntry[] = [];
 		if (Is.stringValue(fqn) && !Is.undefined(this._index[fqn])) {
 			candidates.push(this._index[fqn]);
-		}
-		if (Is.stringValue(typeFqn)) {
-			for (const entry of Object.values(this._index)) {
-				if (entry.type === typeFqn && !candidates.includes(entry)) {
-					candidates.push(entry);
-				}
-			}
 		}
 		for (const entry of candidates) {
 			if (entry === scopes[0]?.entry) {
@@ -675,7 +666,7 @@ export class SchemaFiller {
 		terms: { [term: string]: string } | undefined,
 		entityType?: string
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
-		const match = this.findEntry(fqn, eff.typeFqn, scopes);
+		const match = this.findEntry(fqn, scopes);
 		if (Is.undefined(match)) {
 			// A shape mismatch: the FQN addresses a scalar source value, so
 			// descending transparently would leak unrelated context values.
@@ -754,10 +745,7 @@ export class SchemaFiller {
 		terms: { [term: string]: string } | undefined,
 		entityType?: string
 	): Promise<{ value: unknown; hasData: boolean } | undefined> {
-		const itemsEff = Is.undefined(eff.items)
-			? undefined
-			: await this.resolveEffective(eff.items, new Set(seenRefs));
-		const match = this.findEntry(fqn, itemsEff?.typeFqn, scopes);
+		const match = this.findEntry(fqn, scopes);
 		if (Is.undefined(match) || Is.undefined(match.entry.path)) {
 			this.recordUnfilled(targetPath, required, "no matching source entry");
 			return undefined;

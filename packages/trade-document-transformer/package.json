@@ -62,6 +62,7 @@
 	"files": [
 		"dist/es",
 		"dist/types",
+		"ld-contexts",
 		"locales",
 		"docs"
 	],
