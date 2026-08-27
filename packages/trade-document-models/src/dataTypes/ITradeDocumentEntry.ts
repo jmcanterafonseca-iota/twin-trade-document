@@ -6,7 +6,7 @@ import type { IJsonSchema } from "@twin.org/data-core";
 /**
  * Document type description
  */
-export interface IDocumentTypeDescription {
+export interface ITradeDocumentEntry {
 	/**
 	 * The type of document (non qualified)
 	 */

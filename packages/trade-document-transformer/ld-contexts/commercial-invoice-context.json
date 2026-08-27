@@ -1,0 +1,109 @@
+{
+	"@context": {
+		"@version": 1.1,
+		"@protected": true,
+		"id": "@id",
+		"type": "@type",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"schema": "https://schema.org/",
+		"cred": "https://www.w3.org/2018/credentials#",
+		"VerifiableCredential": "cred:VerifiableCredential",
+		"CommercialInvoice": "schema:Invoice",
+		"unece": "https://vocabulary.uncefact.org/",
+		"validFrom": {
+			"@id": "cred:validFrom",
+			"@type": "xsd:dateTime"
+		},
+		"validTo": {
+			"@id": "cred:validTo",
+			"@type": "xsd:dateTime"
+		},
+		"issuer": {
+			"@id": "cred:issuer",
+			"@type": "@id"
+		},
+		"credentialSubject": {
+			"@id": "cred:credentialSubject",
+			"@type": "@id"
+		},
+		"credentialSchema": "cred:credentialSchema",
+		"Party": "schema:Organization",
+		"name": "schema:name",
+		"street": "schema:streetAddress",
+		"city": "schema:addressLocality",
+		"state": "schema:addressRegion",
+		"zip": "schema:postalCode",
+		"country": "schema:addressCountry",
+		"Buyer": "unece:TradeParty",
+		"Seller": "unece:TradeParty",
+		"Invoicee": "unece:TradeParty",
+		"Consignee": "unece:TradeParty",
+		"SellersBank": "unece:TradeParty",
+		"purchaseOrderNumber": "schema:orderNumber",
+		"contractNumber": "unece:identifier",
+		"invoiceNumber": "unece:identifier",
+		"issueDate": {
+			"@id": "unece:issueDateTime",
+			"@type": "xsd:date"
+		},
+		"invoiceDate": {
+			"@id": "unece:issueDateTime",
+			"@type": "xsd:date"
+		},
+		"paymentDueDate": {
+			"@id": "schema:paymentDueDate",
+			"@type": "xsd:date"
+		},
+		"billOfLadingNumber": {
+			"@id": "https://vocabulary.uncefact.org/ReferenceCodeList#BM"
+		},
+		"shippingMark": "unece:physicalShippingMarks",
+		"letterOfCreditNumber": "unece:letterOfCreditDocument",
+		"portOfEntry": "unece:identifier",
+		"unLocode": "unece:identifier",
+		"portName": "unece:locationName",
+		"destinationCountry": "unece:destinationCountry",
+		"buyer": "unece:buyerParty",
+		"seller": "unece:sellerParty",
+		"invoicee": "unece:invoiceeParty",
+		"consignee": "unece:consigneeParty",
+		"sellersBank": "unece:associatedParty",
+		"sellerBankAccountNumber": "unece:identifier",
+		"originalLoadingLocation": "unece:originCountry",
+		"originCountry": "unece:originCountry",
+		"iataAirportCode": "unece:identifier",
+		"unlocode": "unece:identifier",
+		"tradeTermsConditionsDescription": "unece:description",
+		"tradeTermsConditionsCode": "unece:typeCode",
+		"paymentTerms": "unece:description",
+		"paymentMethod": "unece:typeCode",
+		"itemsShipped": "unece:includedSupplyChainTradeLineItem",
+		"product": "unece:specifiedTradeProduct",
+		"sku": "unece:identifier",
+		"itemCount": {
+			"@id": "unece:billedQuantity",
+			"@type": "xsd:decimal"
+		},
+		"description": "schema:description",
+		"netWeight": "unece:netWeightMeasure",
+		"grossWeight": "unece:grossWeightMeasure",
+		"productPrice": "unece:chargeAmount",
+		"price": "unece:chargeAmount",
+		"commodity": "unece:identifier",
+		"amount": {
+			"@id": "schema:value",
+			"@type": "xsd:decimal"
+		},
+		"unit": "schema:unitCode",
+		"currency": "schema:currency",
+		"freightCost": "unece:applicableServiceCharge",
+		"insuranceCost": "unece:insurancePremiumAmount",
+		"allowancesCharges": "unece:applicableServiceCharge",
+		"totalAmount": "unece:totalPrepaidAmount",
+		"MonetaryAmount": "schema:MonetaryAmount",
+		"Quantity": "schema:QuantitativeValue",
+		"Product": "schema:Product",
+		"TradeLineItem": "unece:SupplyChainTradeLineItem",
+		"Location": "schema:Place"
+	}
+}

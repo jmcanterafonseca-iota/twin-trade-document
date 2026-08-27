@@ -41,7 +41,9 @@
 		"subproperties",
 		"subproperty",
 		"authored",
-		"baseport"
+		"baseport",
+		"cred",
+		"unlocode"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",
