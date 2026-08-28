@@ -20,11 +20,13 @@ export type ITradeItem = Required<Pick<IUneceLineTradeAgreement, "type">> & {
 
 	/**
 	 * The price
+	 *
 	 */
 	agreedPriceProductPrice: ITradePrice;
 
 	/**
 	 * Unit price
+	 * x-json-ld-property: https://test.uncefact.org/vocabulary/unitPrice
 	 */
 	unitPrice?: IMonetaryAmount;
 
@@ -33,4 +35,16 @@ export type ITradeItem = Required<Pick<IUneceLineTradeAgreement, "type">> & {
 	 * x-json-ld-property: https://test.uncefact.org/vocabulary/orderedQuantity
 	 */
 	orderedQuantity: IMeasure;
+
+	/**
+	 * Commodity code
+	 * x-json-ld-property: https://test.uncefact.org/vocabulary/commodityCode
+	 */
+	commodityCode?: string;
+
+	/**
+	 * Net amount:
+	 * x-json-ld-property: https://test.uncefact.org/vocabulary/lineAmount
+	 */
+	lineAmount: IMonetaryAmount;
 };

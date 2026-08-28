@@ -89,7 +89,7 @@
 			"description": "Seaport, airport, freight terminal, rail station or other location\nwhere the goods were first loaded onto the means of transport being\nutilised for their carriage."
 		},
 		"originCountry": {
-			"$ref": "https://schema.twindev.org/trade-document/Location",
+			"type": "string",
 			"description": "Name of the country in which the goods have been produced or\nmanufactured, according to criteria laid down for the application of\nthe Customs tariff or quantitative restrictions, or any measure related\nto trade."
 		},
 		"tradeTermsConditionsDescription": {

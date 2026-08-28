@@ -43,7 +43,8 @@
 		"authored",
 		"baseport",
 		"cred",
-		"unlocode"
+		"unlocode",
+		"iata"
 	],
 	"ignoreRegExpList": [
 		"/from\\s+(['\"]).*\\1/",

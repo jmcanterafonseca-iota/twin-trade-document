@@ -131,7 +131,7 @@ export interface ICommercialInvoice {
 	 * the Customs tariff or quantitative restrictions, or any measure related
 	 * to trade.
 	 */
-	originCountry?: ILocation;
+	originCountry?: string;
 
 	/**
 	 * Free form description of delivery or transport terms (Incoterms).
