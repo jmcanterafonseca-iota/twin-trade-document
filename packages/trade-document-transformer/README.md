@@ -1,5 +1,9 @@
 # TWIN Trade Document Transformer
 
+!!!!!
+WARNING: This code has been vibe-coded and has not been reviewed. No guarantees. The plan is to migrate it to a human-developed algorithm with less lines of code than the AI produced.
+!!!!!
+
 Transforms extracted source documents (e.g. the fields captured from a scanned sales contract) into semantic trade documents conforming to the JSON-LD annotated schemas of `@twin.org/trade-document-models`.
 
 Fields are matched purely by their JSON-LD semantics, never by name or position. The source JSON schema annotates each field with:
