@@ -1,6 +1,6 @@
 {
 	"name": "@twin-dev/trade-documents-models",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"description": "Defines shared trade document models using UN/CEFACT.",
 	"repository": {
 		"type": "git",
